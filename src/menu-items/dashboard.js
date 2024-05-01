@@ -1,16 +1,16 @@
 // assets
-import { DashboardOutlined } from '@ant-design/icons';
+import { DashboardOutlined, SettingOutlined } from '@ant-design/icons';
 
 // icons
 const icons = {
-  DashboardOutlined
+  DashboardOutlined, SettingOutlined
 };
 
 // ==============================|| MENU ITEMS - DASHBOARD ||============================== //
 
 const dashboard = {
   id: 'group-dashboard',
-  title: 'Navigation',
+  title: 'Configurations',
   type: 'group',
   children: [
     {
@@ -20,6 +20,14 @@ const dashboard = {
       url: '/dashboard/default',
       icon: icons.DashboardOutlined,
       breadcrumbs: false
+    },
+    {
+      id: 'configuration',
+      title: 'Configurations',
+      type: 'item',
+      url: '/configs',
+      icon: icons.SettingOutlined,
+      breadcrumbs: true
     }
   ]
 };
