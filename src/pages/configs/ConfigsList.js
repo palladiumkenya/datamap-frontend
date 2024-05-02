@@ -94,7 +94,6 @@ const ConfigsList = () =>{
             const response = await  fetch('http://localhost:8000/api/db_access/available_connections')
             if (response.ok) {
                 const jsonData = await response.json();
-                console.log(jsonData.credentials)
                 setData(jsonData?.credentials ?? []);
             } else {
                 throw new Error('Error: ' + response.status);
@@ -106,7 +105,6 @@ const ConfigsList = () =>{
 
 
     const isSelected = (trackingNo) => selected.indexOf(trackingNo) !== -1;
-    console.log(data)
 
     return (
         <Box>
