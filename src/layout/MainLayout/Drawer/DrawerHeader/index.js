@@ -23,8 +23,7 @@ const DrawerHeader = ({ open }) => {
           size="medium"
           sx={{ height: 26, '& .MuiChip-label': { fontSize: '0.925rem', py: 0.25 } }}
           component="a"
-          href="free"
-          target="_blank"
+          href="/"
           clickable
         />
       </Stack>

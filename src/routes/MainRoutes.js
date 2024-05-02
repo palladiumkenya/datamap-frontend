@@ -3,6 +3,7 @@ import { lazy } from 'react';
 // project import
 import Loadable from 'components/Loadable';
 import MainLayout from 'layout/MainLayout';
+import AddConfig from '../pages/configs/AddConfig';
 
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
@@ -42,7 +43,17 @@ const MainRoutes = {
     },
     {
       path: 'configs',
-      element: <Configs />
+      children: [
+        {
+          path: 'list',
+          element: <Configs />
+        },
+        {
+          path: 'add',
+          element: <AddConfig />
+        }
+      ]
+      // element: <Configs />
     },
     // {
     //   path: 'selection',

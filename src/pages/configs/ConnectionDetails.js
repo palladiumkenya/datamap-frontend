@@ -8,38 +8,19 @@ const initialFieldValues = {
 };
 
 const DashboardSelect = () => {
-    const [form] = Form.useForm();
+    // const [form] = Form.useForm();
     return (
-        <Form form={form} name="validateOnly" layout="vertical" autoComplete="off">
-            <Form.Item
-                name="name"
-                label="Name"
-                rules={[
-                    {
-                        required: true,
-                    },
-                ]}
-            >
-                <Input />
-            </Form.Item>
-            <Form.Item
-                name="age"
-                label="Age"
-                rules={[
-                    {
-                        required: true,
-                    },
-                ]}
-            >
-                <Input />
-            </Form.Item>
-            <Form.Item>
-                <Space>
-                    <SubmitButton form={form}>Submit</SubmitButton>
-                    <Button htmlType="reset">Reset</Button>
-                </Space>
-            </Form.Item>
-        </Form>
+        <Box>
+            <Typography variant="h5">BASIC WITH MATERIAL UI</Typography>
+            <form name="validateOnly" layout="vertical" autoComplete="off">
+                <TextField
+                    style={{ width: "200px", margin: "5px" }}
+                    type="text"
+                    label="setgoal"
+                    variant="outlined"
+                />
+            </form>
+        </Box>
     );
 }
 export default DashboardSelect;

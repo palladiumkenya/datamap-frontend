@@ -25,7 +25,7 @@ const dashboard = {
       id: 'configuration',
       title: 'Configurations',
       type: 'item',
-      url: '/configs',
+      url: '/configs/list',
       icon: icons.SettingOutlined,
       breadcrumbs: true
     }
