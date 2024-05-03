@@ -25,34 +25,50 @@ const utilities = {
   title: 'Utilities',
   type: 'group',
   children: [
+    // {
+    //   id: 'util-typography',
+    //   title: 'Typography',
+    //   type: 'item',
+    //   url: '/typography',
+    //   icon: icons.FontSizeOutlined
+    // },
+    // {
+    //   id: 'util-color',
+    //   title: 'Color',
+    //   type: 'item',
+    //   url: '/color',
+    //   icon: icons.BgColorsOutlined
+    // },
+    // {
+    //   id: 'util-shadow',
+    //   title: 'Shadow',
+    //   type: 'item',
+    //   url: '/shadow',
+    //   icon: icons.BarcodeOutlined
+    // },
+    // {
+    //   id: 'ant-icons',
+    //   title: 'Ant Icons',
+    //   type: 'item',
+    //   url: '/icons/ant',
+    //   icon: icons.AntDesignOutlined,
+    //   breadcrumbs: false
+    // },
     {
-      id: 'util-typography',
-      title: 'Typography',
+      id: 'ind-selector',
+      title: 'Indicator Selector',
       type: 'item',
-      url: '/typography',
-      icon: icons.FontSizeOutlined
-    },
-    {
-      id: 'util-color',
-      title: 'Color',
-      type: 'item',
-      url: '/color',
-      icon: icons.BgColorsOutlined
-    },
-    {
-      id: 'util-shadow',
-      title: 'Shadow',
-      type: 'item',
-      url: '/shadow',
-      icon: icons.BarcodeOutlined
-    },
-    {
-      id: 'ant-icons',
-      title: 'Ant Icons',
-      type: 'item',
-      url: '/icons/ant',
+      url: '/selector',
       icon: icons.AntDesignOutlined,
-      breadcrumbs: false
+      breadcrumbs: true
+    },
+    {
+      id: 'indicators',
+      title: 'Indicators',
+      type: 'item',
+      url: '/indicators',
+      icon: icons.AntDesignOutlined,
+      breadcrumbs: true
     }
   ]
 };
