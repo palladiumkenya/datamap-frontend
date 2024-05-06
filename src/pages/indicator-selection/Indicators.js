@@ -12,6 +12,10 @@ import {API_URL} from "../../constants"
 import axios from "axios";
 // ==============================|| SAMPLE PAGE ||============================== //
 
+
+
+
+
 const Indicators = () => {
     const [txcurr, settxcurr] = useState({"indicator_value":"-","indicator_date":"-"});
     const [spinner, setSpinner] = useState(false);
@@ -37,11 +41,8 @@ const Indicators = () => {
                 <Grid item xs={12}>
                     <Stack direction="row" justifyContent="space-between" alignItems="baseline" sx={{ mb: { xs: -0.5, sm: 0.5 } }}>
                         <MainCard border={false} boxShadow  sx={{ width: '100%' }}>
-
                             <Typography variant="h6">TX_CURR</Typography>
-
                             <MainCard sx={{ width: '100%' }}>
-
                                 <Typography variant="caption" color="text.secondary">
                                     <Button variant="contained" color="info" onClick={()=>generateIndicator("tx_curr")}>
                                         Generate indicator
@@ -54,8 +55,6 @@ const Indicators = () => {
                                 </Typography>
                                 <Typography variant="h6">TX_CURR : <b  style={{"color":"#13c2c2"}}>{txcurr.indicator_value}</b></Typography>
                                 <Typography variant="h6">TX_CURR Date: <b style={{"color":"#13c2c2"}}>{txcurr.indicator_date}</b></Typography>
-
-
                             </MainCard>
                         </MainCard>
                     </Stack>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-
+import $ from 'jquery';
 // material-ui
 import {
     Box,
@@ -18,16 +18,12 @@ import {
     Typography, Select,MenuItem
 } from '@mui/material';
 
-// third party
-import * as Yup from 'yup';
-import { Formik } from 'formik';
-
 // project import
 import AnimateButton from 'components/@extended/AnimateButton';
 import { strengthColor, strengthIndicator } from 'utils/password-strength';
 
 // assets
-import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
+import { EyeOutlined, EyeInvisibleOutlined,ArrowRightOutlined  } from '@ant-design/icons';
 import databaseColumns  from '../json/databaseColumns';
 import { API_URL } from '../../../constants';
 
@@ -40,22 +36,22 @@ const SelectorForm = () => {
 
     const [databaseColumns, setdatabaseColumns] = useState({});
     const [tablenames, setTablenames] = useState(Object.keys(databaseColumns));
-    const [columns, setColumns] = useState([]);
     const txcurrBaseIndicators = ['DOB','Sex',	'Patient Identifier',
         'Last Dispense Date',	'All Dispense Dates',	'Start ART Date',	'Next Appointment Date'
     ]
+
+    const allColumns = []
+    txcurrBaseIndicators.map(o =>{
+        allColumns.push({"baseVariable":o,"tableSelected":"", "matchingTableColumns":[]});
+    });
+
+    const [columns, setColumns] = useState(allColumns);
+
     const [formData, setFormData] = useState([]);
 
-    const handleChange = (e, baseVariable, table, column) => {
-        // formData.map(o =>{
-        //     for (let i = formData.length - 1; i >= 0; i--) {
-        //         if ([o].includes(formData[i])) {
-        //             formData.splice(i, 1);
-        //         }
-        //     }
-        // })
-        // document.getElementById(baseVariable+'column.input').setAttribute("disabled", "disabled");
-        console.log(baseVariable+'column input',document.getElementByName(baseVariable+'column'))
+
+
+    const handleColumnChange = (e, baseVariable, table, column) => {
 
         formData.push({"indicator":'TX_CURR',"baseVariableMappedTo":baseVariable, "tablename":table, "columnname":column, "datatype":"string"})
         setFormData(formData)
@@ -64,7 +60,7 @@ const SelectorForm = () => {
 
     const getDatabaseColumns = async() => {
         await axios.get(API_URL+"/indicator_selector/getDatabaseColumns").then(res => {
-            setdatabaseColumns( res.data );
+            setdatabaseColumns(res.data);
             setTablenames(Object.keys(res.data));
         });
     };
@@ -72,7 +68,24 @@ const SelectorForm = () => {
     const handleTableSelect = (tableSelected, basevariable) => {
         const variableObj = {};
         variableObj[tableSelected] = databaseColumns[tableSelected];
-        setColumns(variableObj)
+        variableObj["baseVariable"] = basevariable;
+
+        console.log("all columns",basevariable, columns);
+
+        const updateColumns = columns.filter((item) => item["baseVariable"] === basevariable);
+        console.log("before columns",basevariable, updateColumns);
+        updateColumns[0]["matchingTableColumns"] = databaseColumns[tableSelected];
+        updateColumns[0]["tableSelected"] = tableSelected;
+
+
+        const updatedList = columns.map(item => {
+            if (item["baseVariable"] === basevariable) {
+
+                return { ...item, matchingTableColumns: databaseColumns[tableSelected],tableSelected:tableSelected }; // Update category for 'Banana'
+            }
+            return item; // Return unchanged item for other objects
+        });
+        setColumns(updatedList)
 
     };
 
@@ -85,13 +98,14 @@ const SelectorForm = () => {
         event.preventDefault();
 
         console.log(formData);
-        axios.post(API_URL+ "/indicator_selector/add_indicator_variables",  formData);
+        // axios.post(API_URL+ "/indicator_selector/add_indicator_variables",  formData);
+        window.location.href = `http://localhost:3000/indicators`;
 
     };
 
 
     useEffect(() => {
-        getDatabaseColumns()
+        getDatabaseColumns();
     }, []);
 
     return (
@@ -103,7 +117,7 @@ const SelectorForm = () => {
                             {
                                 txcurrBaseIndicators.map(baseVariable => (
                                     <Grid container spacing={1}>
-                                        <Grid item xs={4} md={4}>
+                                        <Grid item xs={3} md={3}>
                                             <Stack spacing={1}>
                                                 <InputLabel htmlFor="base-variable">Baseline Variable</InputLabel>
                                                 {/*{*/}
@@ -120,9 +134,15 @@ const SelectorForm = () => {
                                             </Stack>
                                         </Grid>
 
+                                        <Grid item xs={1} md={1}>
+                                            <Stack spacing={1}>
+                                                <ArrowRightOutlined style={{"marginTop": "45px"}}/>
+                                            </Stack>
+                                        </Grid>
+
                                         <Grid item xs={4} md={4}>
                                             <Stack spacing={1}>
-                                                <InputLabel htmlFor="tables">Tables</InputLabel>
+                                                <InputLabel htmlFor="tables">Source Table</InputLabel>
                                                 <Select
                                                     id={baseVariable+"table"}
                                                     fullWidth
@@ -145,16 +165,13 @@ const SelectorForm = () => {
                                                     id={baseVariable+"column"}
                                                     placeholder="variable"
                                                     fullWidth
-                                                    onChange={(e)=>{handleChange(e, baseVariable,Object.keys(columns)[0], e.target.value)}}
+                                                    onChange={(e)=>{handleColumnChange(e, baseVariable,Object.keys(columns)[0], e.target.value)}}
                                                 >
-                                                    { Object.keys(columns).length > 0 ?
-                                                        columns[Object.keys(columns)[0]].map(column => (
-                                                                <MenuItem value={column}>{column}</MenuItem>
-                                                            )
-                                                        ) : (
-                                                            <MenuItem value=""></MenuItem>
-                                                        )}
+                                                    { columns.filter(item => item.baseVariable === baseVariable)
+                                                        .map(columnList => ( columnList.matchingTableColumns.map(variable => ( <MenuItem value={variable}>{variable}</MenuItem>))))
+                                                    }
                                                 </Select>
+
                                             </Stack>
                                         </Grid>
                                     </Grid>
@@ -162,23 +179,6 @@ const SelectorForm = () => {
                                 )}
 
 
-                            {/*<Grid item xs={12}>*/}
-                            {/*    <Typography variant="body2">*/}
-                            {/*        By Signing up, you agree to our &nbsp;*/}
-                            {/*        <Link variant="subtitle2" component={RouterLink} to="#">*/}
-                            {/*            Terms of Service*/}
-                            {/*        </Link>*/}
-                            {/*        &nbsp; and &nbsp;*/}
-                            {/*        <Link variant="subtitle2" component={RouterLink} to="#">*/}
-                            {/*            Privacy Policy*/}
-                            {/*        </Link>*/}
-                            {/*    </Typography>*/}
-                            {/*</Grid>*/}
-                            {/*{errors.submit && (*/}
-                            {/*    <Grid item xs={12}>*/}
-                            {/*        <FormHelperText error>{errors.submit}</FormHelperText>*/}
-                            {/*    </Grid>*/}
-                            {/*)}*/}
                             <Grid item xs={12}>
                                 <AnimateButton>
                                     <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="primary">

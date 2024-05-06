@@ -1,9 +1,9 @@
 // assets
-import { DashboardOutlined, SettingOutlined } from '@ant-design/icons';
+import { DashboardOutlined, SettingOutlined,BarChartOutlined,AppstoreAddOutlined } from '@ant-design/icons';
 
 // icons
 const icons = {
-  DashboardOutlined, SettingOutlined
+  DashboardOutlined, SettingOutlined,BarChartOutlined, AppstoreAddOutlined
 };
 
 // ==============================|| MENU ITEMS - DASHBOARD ||============================== //
@@ -27,6 +27,21 @@ const dashboard = {
       type: 'item',
       url: '/configs/list',
       icon: icons.SettingOutlined,
+      breadcrumbs: true
+    },{
+      id: 'ind-selector',
+      title: 'Indicator Selector',
+      type: 'item',
+      url: '/selector',
+      icon: icons.AppstoreAddOutlined,
+      breadcrumbs: true
+    },
+    {
+      id: 'indicators',
+      title: 'Indicators',
+      type: 'item',
+      url: '/indicators',
+      icon: icons.BarChartOutlined,
       breadcrumbs: true
     }
   ]
