@@ -7,14 +7,13 @@ import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 
-import DatabaseSelect from "./DatabaseSelect";
 import ConnectionDetails from "./ConnectionDetails";
 import MainCard from "components/MainCard";
 import SaveConfig from "./SaveConfig";
 
 
 
-const steps = ['Select Database', 'Connection Details', 'Save Configuration'];
+const steps = ['Connection Details', 'Save Configuration'];
 
 const titles = ['Select Database Type', 'Connection Details', 'Save Configuration']
 const AddConfigs = () => {
@@ -43,7 +42,9 @@ const AddConfigs = () => {
         handleNext();
     };
     return (
+
         <Box sx={{width: '100%'}}>
+
             <Stepper activeStep={activeStep}>
                 {steps.map((label) => {
                     const stepProps = {};
@@ -69,9 +70,8 @@ const AddConfigs = () => {
             ) : (
                 <React.Fragment>
                     <MainCard sx={{ mt: 2 }} content={true} title={titles[activeStep]}>
-                        {activeStep === 0 && <DatabaseSelect onNextStep={onNextStep} />}
-                        {activeStep === 1 && <ConnectionDetails driver={selectedDriver} />}
-                        {activeStep === 2 && <SaveConfig driver={selectedDriver} />}
+                        {activeStep === 0 && <ConnectionDetails  onNextStep={onNextStep} />}
+                        {activeStep === 1 && <SaveConfig driver={selectedDriver} />}
                     </MainCard>
                     <Box sx={{display: 'flex', flexDirection: 'row', pt: 2}}>
                         <Button
