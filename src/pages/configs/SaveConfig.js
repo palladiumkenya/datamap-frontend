@@ -2,11 +2,22 @@ import React, { useState } from 'react';
 import { Box, TextField, Typography, Button, CircularProgress } from "@mui/material";
 
 const SaveConfig = ({ conn_string }) => {
-    const [connectionName, setConnectionName] = useState('');
-    const [system, setSystem] = useState('');
+    const [formData, setFormData] = useState({
+        connectionName: '',
+        systemName: '',
+        systemVersion: ''
+    });
     const [loading, setLoading] = useState(false);
     const [submitSuccess, setSubmitSuccess] = useState(false);
     const [submitError, setSubmitError] = useState('');
+
+    const handleChange = (event) => {
+        const { name, value } = event.target;
+        setFormData((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+    };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -14,8 +25,9 @@ const SaveConfig = ({ conn_string }) => {
 
         const connectionData = {
             conn_string: conn_string,
-            name: connectionName,
-            sytem: system
+            name: formData.connectionName,
+            system: formData.systemName,
+            version: formData.systemVersion
         };
 
         try {
@@ -44,8 +56,9 @@ const SaveConfig = ({ conn_string }) => {
                 <TextField
                     label="Connection Name"
                     variant="outlined"
-                    value={connectionName}
-                    onChange={(e) => setConnectionName(e.target.value)}
+                    name={'connectionName'}
+                    value={formData.connectionName}
+                    onChange={handleChange}
                     required
                     fullWidth
                     margin="normal"
@@ -53,8 +66,19 @@ const SaveConfig = ({ conn_string }) => {
                 <TextField
                     label="System Name"
                     variant="outlined"
-                    value={connectionName}
-                    onChange={(e) => setSystem(e.target.value)}
+                    name={'systemName'}
+                    value={formData.systemName}
+                    onChange={handleChange}
+                    required
+                    fullWidth
+                    margin="normal"
+                />
+                <TextField
+                    label="System Version"
+                    variant="outlined"
+                    name={'systemVersion'}
+                    value={formData.systemVersion}
+                    onChange={handleChange}
                     required
                     fullWidth
                     margin="normal"
