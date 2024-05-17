@@ -53,7 +53,6 @@ const MainRoutes = {
           element: <AddConfig />
         }
       ]
-      // element: <Configs />
     },
     // {
     //   path: 'selection',
