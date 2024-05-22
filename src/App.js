@@ -2,6 +2,7 @@
 import Routes from 'routes';
 import ThemeCustomization from 'themes';
 import ScrollTop from 'components/ScrollTop';
+import { useQuery } from '@tanstack/react-query'
 
 // ==============================|| APP - THEME, ROUTER, LOCAL  ||============================== //
 

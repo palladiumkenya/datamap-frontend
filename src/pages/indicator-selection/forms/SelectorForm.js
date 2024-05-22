@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+
 import { Link as RouterLink } from 'react-router-dom';
 import $ from 'jquery';
 // material-ui
@@ -30,15 +32,18 @@ import { API_URL } from '../../../constants';
 import axios from "axios";
 
 
+
 const SelectorForm = () => {
+    const urlSearchString = window.location.search;
+    const params = new URLSearchParams(urlSearchString);
+    const baselookup=params.get('baselookup')
+
 
     const isSubmitting=false;
 
     const [databaseColumns, setdatabaseColumns] = useState({});
     const [tablenames, setTablenames] = useState(Object.keys(databaseColumns));
-    const txcurrBaseIndicators = ['DOB','Sex',	'Patient Identifier',
-        'Last Dispense Date',	'All Dispense Dates',	'Start ART Date',	'Next Appointment Date'
-    ]
+    const [txcurrBaseIndicators, setBaseIndicators] = useState([])
 
     const allColumns = []
     txcurrBaseIndicators.map(o =>{
@@ -50,6 +55,14 @@ const SelectorForm = () => {
     const [formData, setFormData] = useState([]);
 
 
+
+
+    const getBaseVariables = async() => {
+        console.log('params.base_lookup', baselookup)
+        await axios.get(API_URL+"/indicator_selector/base_variables/"+baselookup).then(res => {
+            setBaseIndicators(res.data);
+        });
+    };
 
     const handleColumnChange = (e, baseVariable, table, column) => {
 
@@ -105,7 +118,9 @@ const SelectorForm = () => {
 
 
     useEffect(() => {
+        getBaseVariables();
         getDatabaseColumns();
+
     }, []);
 
     return (
