@@ -50,7 +50,7 @@ const SelectorForm = () => {
         allColumns.push({"baseVariable":o,"tableSelected":"", "matchingTableColumns":[]});
     });
 
-    const [columns, setColumns] = useState(allColumns);
+    const [columns, setColumns] = useState([]);
 
     const [formData, setFormData] = useState([]);
 
@@ -61,6 +61,13 @@ const SelectorForm = () => {
         console.log('params.base_lookup', baselookup)
         await axios.get(API_URL+"/indicator_selector/base_variables/"+baselookup).then(res => {
             setBaseIndicators(res.data);
+
+            const allColumns = []
+            res.data.map(o =>{
+                allColumns.push({"baseVariable":o,"tableSelected":"", "matchingTableColumns":[]});
+            });
+
+            setColumns(allColumns);
         });
     };
 
@@ -75,6 +82,7 @@ const SelectorForm = () => {
         await axios.get(API_URL+"/indicator_selector/getDatabaseColumns").then(res => {
             setdatabaseColumns(res.data);
             setTablenames(Object.keys(res.data));
+
         });
     };
 
