@@ -17,6 +17,8 @@ const Color = Loadable(lazy(() => import('pages/components-overview/Color')));
 const Shadow = Loadable(lazy(() => import('pages/components-overview/Shadow')));
 const AntIcons = Loadable(lazy(() => import('pages/components-overview/AntIcons')));
 const Configs = Loadable(lazy(() => import('pages/configs/Configs')));
+const Selector = Loadable(lazy(() => import('pages/indicator-selection/Selector')));
+const Indicators = Loadable(lazy(() => import('pages/indicator-selection/Indicators')));
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -42,6 +44,14 @@ const MainRoutes = {
       ]
     },
     {
+      path: 'Selector',
+      element: <Selector />
+    },
+    {
+      path: 'Indicators',
+      element: <Indicators />
+    },
+    {
       path: 'configs',
       children: [
         {
@@ -54,15 +64,6 @@ const MainRoutes = {
         }
       ]
     },
-    // {
-    //   path: 'selection',
-    //   children: [
-    //     {
-    //       path: 'default',
-    //       element: <Selection />
-    //     }
-    //   ]
-    // },
     {
       path: 'sample-page',
       element: <SamplePage />
