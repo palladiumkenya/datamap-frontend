@@ -1,24 +1,49 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { NavLink } from 'react-router-dom';
 
 // material-ui
-import {Grid, Stack, Typography,Button, Divider,Box,IconButton,Tooltip, Fab } from '@mui/material';
+import {Grid, Stack, Typography,Button, Divider,Box,IconButton,Tooltip, Fab,Alert } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
-import { CheckCircleFilled,EditOutlined,DownCircleFilled,CloseCircleFilled,CloudUploadOutlined   } from '@ant-design/icons';
-// import LoadingButton from '@mui/lab/LoadingButton';
-// project import
+import { CheckCircleFilled,EditOutlined,DownCircleFilled,CloseCircleFilled,CloudUploadOutlined,
+    FileSyncOutlined,CheckSquareFilled } from '@ant-design/icons';
+
 import MainCard from 'components/MainCard';
-import {Link} from "react-router-dom";
-import SelectorForm from "./forms/SelectorForm";
+
 import {API_URL} from "../../constants"
 import axios from "axios";
+import { useQuery, QueryClient, QueryClientProvider  } from '@tanstack/react-query'
+import {fetchBaseSchemas} from "../../actions";
 // ==============================|| SAMPLE PAGE ||============================== //
 
 
 
+//
+// const queryClient = new QueryClient()
+//
+// export default function IndicatorsSection() {
+//     return (
+//         <QueryClientProvider client={queryClient}>
+//             <Indicators />
+//         </QueryClientProvider>
+//     )
+// }
 
 
-const Indicators = () => {
+const Indicators = () =>{
+
+    // const { isLoading, isPending, data, error } = useQuery({
+    //     queryKey: ['base_schemas'],
+    //     queryFn: ()=> fetch(API_URL+"/indicator_selector/base_schemas").then((res) =>
+    //         res.json(),
+    //     ),
+    // })
+    //
+    // if (isLoading) return 'Loading...'
+    // if (isPending) return 'Pending...'
+    //
+    // if (error) return 'An error has occurred: ' + error.message
+
+    const el = useRef(null)
 
     const [txcurr, settxcurr] = useState({"indicator_value":"-","indicator_date":"-"});
     const [spinner, setSpinner] = useState(false);
@@ -45,12 +70,44 @@ const Indicators = () => {
         }).then((res)=> {settxcurr(res.data.indicators[0]); setSpinner(false)})
     }
 
+    const uploadConfig = async (baseSchema) =>{
+        setSpinner(true);
+        await axios.get(API_URL+"/indicator_selector/generate_config", {
+            params: { baseSchema }
+        }).then((res)=> {setSpinner(false)})
+    }
+
+    const importConfig = async (baseSchema) =>{
+        setSpinner(true);
+        await axios.get(API_URL+"/indicator_selector/import_config", {
+            params: { baseSchema }
+        }).then((res)=> {setSpinner(false); getBaseSchemas()})
+    }
+
+    const expandEl = (isShown) => {
+        console.log('isShown', isShown)
+        if (el.current) {
+            console.log('isShown el', el.current)
+            console.log('isShown el', el.current.style)
+
+            if (isShown==true){
+                el.current.style.display = 'block';
+            }else{
+                el.current.style.display = 'none';
+
+            }
+            console.log('isShown el', el.current.style.display)
+
+        }
+    }
+
     useEffect(() => {
         // getDatabaseColumns()
         getBaseSchemas()
     }, []);
+
     return(
-        <>
+        < >
             <Grid container spacing={3}>
                 <Grid item xs={12}>
                     <Stack direction="row" justifyContent="space-between" alignItems="baseline" sx={{ mb: { xs: -0.5, sm: 0.5 } }}>
@@ -66,15 +123,16 @@ const Indicators = () => {
                                 <Typography variant="h6">
                                     {base.schema}
                                     <Tooltip title="Expand/Hide">
-                                        <DownCircleFilled onClick={()=>setIsExpanded(!isExpanded)} />
+                                        <DownCircleFilled  onClick={(e)=>{setIsExpanded(!isExpanded)}} />
                                     </Tooltip>
                                 </Typography>
+                                {/*{isExpanded[0] && isExpanded[1]==base.schema && (*/}
                                 {isExpanded && (
-                                    <MainCard sx={{ width: '100%' }}>
+                                    <MainCard sx={{ width: '100%'}} ref={el}>
                                         <Box sx={{ p: 2 }}>
                                             <Typography variant="caption" color="text.secondary">
                                                 <Button variant="contained" color="info" onClick={()=>generateIndicator("tx_curr")}>
-                                                    Generate indicator
+                                                    Generate / Load
                                                     {spinner ?
                                                         <CircularProgress style={{"color":"black"}} size="1rem"/>
                                                         :
@@ -88,7 +146,7 @@ const Indicators = () => {
                                                 {/*</LoadingButton>*/}
                                             </Typography>
                                             <Typography variant="h6">{base.schema} : <b  style={{"color":"#13c2c2"}}>{txcurr.indicator_value}</b></Typography>
-                                            <Typography variant="h6">Indicator Date: <b style={{"color":"#13c2c2"}}>{txcurr.indicator_date}</b></Typography>
+                                            <Typography variant="h6">Date: <b style={{"color":"#13c2c2"}}>{txcurr.indicator_date}</b></Typography>
                                         </Box>
 
                                         <Divider/>
@@ -96,24 +154,45 @@ const Indicators = () => {
                                         <Box sx={{ p: 2 }}>
                                             <Typography variant="h4">Base Variables
                                                 <NavLink to={`/selector?baselookup=${base.schema}`} exact activeClassName="active-link">
-                                                    <Tooltip title="Update Variables">
+                                                    <Tooltip title="Manually map/update Variables">
                                                         <IconButton variant="outlined" color="success">
                                                             <EditOutlined />
                                                         </IconButton>
                                                     </Tooltip>
                                                 </NavLink>
+                                                <Tooltip title="Import Config from the MarketPlace">
+                                                    <Button  color="info"
+                                                             onClick={()=>importConfig(base.schema)}
+                                                             endIcon={spinner ?
+                                                        <CircularProgress style={{"color":"black"}} size="1rem"/>
+                                                        :
+                                                        <FileSyncOutlined sx={{ marginLeft: "20px" }}/>
+                                                    }>Import Config</Button>
+                                                </Tooltip>
                                             </Typography>
 
                                             {base.base_variables.map(base => (
                                                 <Button variant="outlined" color={base.matched ? "warning" : "error"} endIcon={base.matched ? <CheckCircleFilled /> : <CloseCircleFilled />} className={{backgroundColor:'rgb(82, 196, 26)'}}>{base.variable}</Button>
                                                 )
                                             )}
+
                                         </Box>
                                         <Tooltip title="Upload Config to the MarketPlace">
-                                            <Fab color="error" variant="extended">
-                                                Upload <CloudUploadOutlined sx={{ marginLeft: "20px" }}/>
+                                            <Fab color="error" variant="extended" onClick={()=>uploadConfig(base.schema)}>
+                                                Upload
+                                                {spinner ?
+                                                    <CircularProgress style={{"color":"black"}} size="1rem"/>
+                                                    :
+                                                    <CloudUploadOutlined sx={{ marginLeft: "20px" }}/>
+                                                }
                                             </Fab>
                                         </Tooltip>
+                                        {!spinner &&
+                                            <Alert color="success" onClose={() => {}}>
+                                                Successfully uploaded {base.schema} config
+                                            </Alert>
+                                        }
+
 
                                     </MainCard>
                                 )}

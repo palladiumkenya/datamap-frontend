@@ -25,8 +25,8 @@ import AnimateButton from 'components/@extended/AnimateButton';
 import { strengthColor, strengthIndicator } from 'utils/password-strength';
 
 // assets
-import { EyeOutlined, EyeInvisibleOutlined,ArrowRightOutlined  } from '@ant-design/icons';
-import databaseColumns  from '../json/databaseColumns';
+import {ArrowRightOutlined, CheckCircleFilled} from '@ant-design/icons';
+
 import { API_URL } from '../../../constants';
 
 import axios from "axios";
@@ -119,7 +119,7 @@ const SelectorForm = () => {
         event.preventDefault();
 
         console.log(formData);
-        // axios.post(API_URL+ "/indicator_selector/add_indicator_variables",  formData);
+        axios.post(API_URL+ "/indicator_selector/add_mapped_variables",  formData);
         window.location.href = `http://localhost:3000/indicators`;
 
     };
@@ -135,11 +135,12 @@ const SelectorForm = () => {
         <>
 
                     <form noValidate onSubmit={handleSubmit}>
-                        <p >TX_CURR</p>
+                        <Typography color="text.info" variant="h4">{baselookup} Mapping</Typography>
+                        <Divider sx={{marginBottom:"20px"}}/>
                         <Grid container spacing={1}>
                             {
                                 txcurrBaseIndicators.map(baseVariable => (
-                                    <Grid container spacing={1}>
+                                    <Grid container spacing={1} sx={{marginBottom:"20px"}}>
                                         <Grid item xs={3} md={3}>
                                             <Stack spacing={1}>
                                                 <InputLabel htmlFor="base-variable">Baseline Variable</InputLabel>
@@ -180,7 +181,7 @@ const SelectorForm = () => {
                                             </Stack>
                                         </Grid>
 
-                                        <Grid item xs={4} md={4}>
+                                        <Grid item xs={3} md={3}>
                                             <Stack spacing={1}>
                                                 <InputLabel htmlFor="columns">Variable</InputLabel>
                                                 <Select
@@ -194,8 +195,12 @@ const SelectorForm = () => {
                                                         .map(columnList => ( columnList.matchingTableColumns.map(variable => ( <MenuItem value={variable}>{variable}</MenuItem>))))
                                                     }
                                                 </Select>
-
                                             </Stack>
+                                        </Grid>
+                                        <Grid item xs={1} md={1}>
+                                            <IconButton variant="outlined" color="success" style={{"marginTop": "35px"}} id={baseVariable+"Mapped"}>
+                                                <CheckCircleFilled />
+                                            </IconButton>
                                         </Grid>
                                     </Grid>
                                 )

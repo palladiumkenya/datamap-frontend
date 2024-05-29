@@ -28,14 +28,15 @@ const dashboard = {
       url: '/configs/list',
       icon: icons.SettingOutlined,
       breadcrumbs: true
-    },{
-      id: 'ind-selector',
-      title: 'Indicator Selector',
-      type: 'item',
-      url: '/selector',
-      icon: icons.AppstoreAddOutlined,
-      breadcrumbs: true
     },
+    // {
+    //   id: 'ind-selector',
+    //   title: 'Indicator Selector',
+    //   type: 'item',
+    //   url: '/selector',
+    //   icon: icons.AppstoreAddOutlined,
+    //   breadcrumbs: true
+    // },
     {
       id: 'indicators',
       title: 'Indicators',
