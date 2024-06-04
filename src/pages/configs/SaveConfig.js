@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
-import { Box, TextField, Typography, Button, CircularProgress } from "@mui/material";
+import {Box, TextField, Typography, Button, CircularProgress, Alert, AlertTitle} from "@mui/material";
 
-const SaveConfig = ({ conn_string }) => {
+const SaveConfig = ({ connString, onFinish }) => {
     const [formData, setFormData] = useState({
         connectionName: '',
         systemName: '',
         systemVersion: ''
     });
     const [loading, setLoading] = useState(false);
-    const [submitSuccess, setSubmitSuccess] = useState(false);
-    const [submitError, setSubmitError] = useState('');
+    const [alertType, setAlertType] = useState(null);
+    const [alertMessage, setAlertMessage] = useState('');
+    const [loader, setLoader] = useState(false);
 
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -19,12 +20,13 @@ const SaveConfig = ({ conn_string }) => {
         }));
     };
 
+
     const handleSubmit = async (event) => {
         event.preventDefault();
         setLoading(true);
 
         const connectionData = {
-            conn_string: conn_string,
+            conn_string: connString,
             name: formData.connectionName,
             system: formData.systemName,
             version: formData.systemVersion
@@ -38,12 +40,23 @@ const SaveConfig = ({ conn_string }) => {
                 },
                 body: JSON.stringify(connectionData),
             });
+            const responseData = await response.json();
             if (!response.ok) {
-                throw new Error('Network response was not ok');
+                setAlertType('error')
+                setAlertMessage(`Database connection failed! ${responseData.detail}`)
+                setLoader(false)
+            } else {
+                setAlertType('success')
+                setAlertMessage(responseData?.message)
+                setLoader(false)
             }
-            setSubmitSuccess(true);
+
+            onFinish();
         } catch (error) {
-            setSubmitError(error.message);
+            setAlertType('error')
+            console.error('Error testing connection:', JSON.stringify(error));
+            setAlertMessage(error.detail)
+            setLoader(false)
         } finally {
             setLoading(false);
         }
@@ -83,12 +96,28 @@ const SaveConfig = ({ conn_string }) => {
                     fullWidth
                     margin="normal"
                 />
-                <Button type="submit" variant="contained" color="primary" disabled={loading}>
-                    {loading ? <CircularProgress size={24} /> : 'Submit'}
-                </Button>
-                {submitSuccess && <Typography variant="body1" color="success">Connection added successfully!</Typography>}
-                {submitError && <Typography variant="body1" color="error">Error: {submitError}</Typography>}
+                <Box sx={{display: 'flex', flexDirection: 'row', pt: 2}}>
+                    <Box sx={{flex: '1 1 auto'}}/>
+                    <Button type="submit" variant="contained" color="primary" disabled={loading}>
+                        { loader ? <CircularProgress size={24} /> : 'Submit' }
+                    </Button>
+                </Box>
             </form>
+            {/* Alert for success */}
+            {alertType === 'success' && (
+                <Alert severity="success">
+                    <AlertTitle>Success</AlertTitle>
+                    <Typography variant="body1">{alertMessage}</Typography>
+                </Alert>
+            )}
+
+            {/* Alert for error */}
+            {alertType === 'error' && (
+                <Alert severity="error">
+                    <AlertTitle>Error</AlertTitle>
+                    <Typography variant="body1">{alertMessage}</Typography>
+                </Alert>
+            )}
         </Box>
     );
 };
