@@ -120,7 +120,7 @@ const SelectorForm = () => {
 
         console.log(formData);
         axios.post(API_URL+ "/indicator_selector/add_mapped_variables",  formData);
-        window.location.href = `http://localhost:3000/indicators`;
+        window.location.href = `http://localhost:3000/schema/config?baselookup=`+baselookup;
 
     };
 

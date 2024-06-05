@@ -39,9 +39,9 @@ const dashboard = {
     // },
     {
       id: 'indicators',
-      title: 'Indicators',
+      title: 'Base Repositories',
       type: 'item',
-      url: '/indicators',
+      url: '/Schema/Configs',
       icon: icons.BarChartOutlined,
       breadcrumbs: true
     }

@@ -29,7 +29,7 @@ import {fetchBaseSchemas} from "../../actions";
 // }
 
 
-const Indicators = () =>{
+const DictionaryConfigs = () =>{
 
     // const { isLoading, isPending, data, error } = useQuery({
     //     queryKey: ['base_schemas'],
@@ -46,7 +46,11 @@ const Indicators = () =>{
     const el = useRef(null)
 
     const [txcurr, settxcurr] = useState({"indicator_value":"-","indicator_date":"-"});
-    const [spinner, setSpinner] = useState(false);
+    const [spinner, setSpinner] = useState(null);
+    const [uploadSpinner, setUploadSpinner] = useState(null);
+    const [importSpinner, setImportSpinner] = useState(null);
+    const [successSpinner, setSuccessSpinner] = useState(null);
+
     const [baseSchemas, setBaseSchemas] = useState([]);
     const [isExpanded,setIsExpanded] = useState(false);
     const urlSearchString = window.location.search;
@@ -55,51 +59,33 @@ const Indicators = () =>{
 
 
     const getBaseSchemas = async() => {
-        console.log()
-        await axios.get(API_URL+"/indicator_selector/base_schemas").then(res => {
+        await axios.get(API_URL+"/indicator_selector/base_schema_variables/"+baselookup).then(res => {
             setBaseSchemas(res.data);
-            console.log(res.data)
-
         });
     };
 
     const generateIndicator = async (indicator) =>{
         setSpinner(true)
-        await axios.get(API_URL+"/indicator_selector/tx_curr_generate_indicator", {
+        await axios.get(API_URL+"/indicator_selector/tx_curr_generate-indicator", {
             params: { indicator }
         }).then((res)=> {settxcurr(res.data.indicators[0]); setSpinner(false)})
     }
 
     const uploadConfig = async (baseSchema) =>{
-        setSpinner(true);
+        setUploadSpinner(true);
         await axios.get(API_URL+"/indicator_selector/generate_config", {
             params: { baseSchema }
-        }).then((res)=> {setSpinner(false)})
+        }).then((res)=> { setTimeout(setUploadSpinner(false), 300)})
     }
 
     const importConfig = async (baseSchema) =>{
-        setSpinner(true);
+        setImportSpinner(true);
         await axios.get(API_URL+"/indicator_selector/import_config", {
             params: { baseSchema }
-        }).then((res)=> {setSpinner(false); getBaseSchemas()})
+        }).then((res)=> {setImportSpinner(false); getBaseSchemas()})
     }
 
-    const expandEl = (isShown) => {
-        console.log('isShown', isShown)
-        if (el.current) {
-            console.log('isShown el', el.current)
-            console.log('isShown el', el.current.style)
 
-            if (isShown==true){
-                el.current.style.display = 'block';
-            }else{
-                el.current.style.display = 'none';
-
-            }
-            console.log('isShown el', el.current.style.display)
-
-        }
-    }
 
     useEffect(() => {
         // getDatabaseColumns()
@@ -110,8 +96,8 @@ const Indicators = () =>{
         < >
             <Grid container spacing={3}>
                 <Grid item xs={12}>
-                    <Stack direction="row" justifyContent="space-between" alignItems="baseline" sx={{ mb: { xs: -0.5, sm: 0.5 } }}>
-                        <Typography variant="h3">Base Repositories</Typography>
+                    <Stack direction="row" justifyContent="space-between" alignItems="baseline" sx={{ mb: { xs: 0.5, sm: 0.5 } }}>
+                        <Typography variant="h3">Indicators</Typography>
                     </Stack>
                 </Grid>
 
@@ -123,15 +109,12 @@ const Indicators = () =>{
                                 <Typography variant="h6">
                                     {base.schema}
                                     <Tooltip title="Expand/Hide">
-                                        <NavLink to={`/schema/config?baselookup=${base.schema}`} exact activeClassName="active-link">
-                                            <RightCircleFilled
-                                                // onClick={(e)=>{setIsExpanded(!isExpanded)}}
-                                            />
+                                        <NavLink to={`/Schema/config?baselookup=${base.schema}`} exact activeClassName="active-link">
+                                            <RightCircleFilled  onClick={(e)=>{setIsExpanded(!isExpanded)}} />
                                         </NavLink>
                                     </Tooltip>
                                 </Typography>
-                                {/*{isExpanded[0] && isExpanded[1]==base.schema && (*/}
-                                {isExpanded && (
+
                                     <MainCard sx={{ width: '100%'}} ref={el}>
                                         <Box sx={{ p: 2 }}>
                                             <Typography variant="caption" color="text.secondary">
@@ -167,7 +150,7 @@ const Indicators = () =>{
                                                 <Tooltip title="Import Config from the MarketPlace">
                                                     <Button  color="info"
                                                              onClick={()=>importConfig(base.schema)}
-                                                             endIcon={spinner ?
+                                                             endIcon={importSpinner ?
                                                         <CircularProgress style={{"color":"black"}} size="1rem"/>
                                                         :
                                                         <FileSyncOutlined sx={{ marginLeft: "20px" }}/>
@@ -183,23 +166,21 @@ const Indicators = () =>{
                                         </Box>
                                         <Tooltip title="Upload Config to the MarketPlace">
                                             <Fab color="error" variant="extended" onClick={()=>uploadConfig(base.schema)}>
-                                                Upload
-                                                {spinner ?
-                                                    <CircularProgress style={{"color":"black"}} size="1rem"/>
+                                                Upload to Marketplace
+                                                {uploadSpinner ?
+                                                    <CircularProgress style={{"color":"black", "marginLeft":"10px"}} size="1rem"/>
                                                     :
-                                                    <CloudUploadOutlined sx={{ marginLeft: "20px" }}/>
+                                                    <CloudUploadOutlined style={{ marginLeft: "10px" }}/>
                                                 }
                                             </Fab>
                                         </Tooltip>
-                                        {!spinner &&
+                                        {successSpinner &&
                                             <Alert color="success" onClose={() => {}}>
                                                 Successfully uploaded {base.schema} config
                                             </Alert>
                                         }
 
-
                                     </MainCard>
-                                )}
                             </MainCard>
                         </Stack>
                     ) )}
@@ -209,4 +190,4 @@ const Indicators = () =>{
     );
 };
 
-export default Indicators;
+export default DictionaryConfigs;
