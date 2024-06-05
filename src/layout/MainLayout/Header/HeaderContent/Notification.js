@@ -78,9 +78,9 @@ const Notification = () => {
         aria-haspopup="true"
         onClick={handleToggle}
       >
-        <Badge badgeContent={4} color="primary">
-          <BellOutlined />
-        </Badge>
+        {/*<Badge badgeContent={4} color="primary">*/}
+        {/*  <BellOutlined />*/}
+        {/*</Badge>*/}
       </IconButton>
       <Popper
         placement={matchesXs ? 'bottom' : 'bottom-end'}

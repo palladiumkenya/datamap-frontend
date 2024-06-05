@@ -4,6 +4,7 @@ import { lazy } from 'react';
 import Loadable from 'components/Loadable';
 import MainLayout from 'layout/MainLayout';
 import AddConfig from '../pages/configs/AddConfig';
+import DictionaryConfigs from "../pages/indicator-selection/DictionaryConfigs";
 
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
@@ -43,13 +44,26 @@ const MainRoutes = {
         }
       ]
     },
+    // {
+    //   path: 'Selector',
+    //   element: <Selector />
+    // },
     {
-      path: 'Selector',
-      element: <Selector />
-    },
-    {
-      path: 'Indicators',
-      element: <Indicators />
+      path: 'Schema',
+      children: [
+        {
+          path: 'Configs',
+          element: <Indicators />
+        },
+        {
+          path: 'Selector',
+          element: <Selector />
+        },
+        {
+          path: 'Config',
+          element: <DictionaryConfigs />
+        }
+        ]
     },
     {
       path: 'configs',

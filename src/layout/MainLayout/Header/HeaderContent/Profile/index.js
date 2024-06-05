@@ -96,10 +96,10 @@ const Profile = () => {
         aria-haspopup="true"
         onClick={handleToggle}
       >
-        <Stack direction="row" spacing={2} alignItems="center" sx={{ p: 0.5 }}>
-          <Avatar alt="profile user" src={avatar1} sx={{ width: 32, height: 32 }} />
-          <Typography variant="subtitle1">John Doe</Typography>
-        </Stack>
+        {/*<Stack direction="row" spacing={2} alignItems="center" sx={{ p: 0.5 }}>*/}
+        {/*  <Avatar alt="profile user" src={avatar1} sx={{ width: 32, height: 32 }} />*/}
+        {/*  <Typography variant="subtitle1">John Doe</Typography>*/}
+        {/*</Stack>*/}
       </ButtonBase>
       <Popper
         placement="bottom-end"
