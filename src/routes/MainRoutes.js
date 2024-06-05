@@ -77,7 +77,6 @@ const MainRoutes = {
           element: <AddConfig />
         }
       ]
-      // element: <Configs />
     },
     {
       path: 'sample-page',

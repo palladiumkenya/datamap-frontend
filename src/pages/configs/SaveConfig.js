@@ -1,21 +1,35 @@
 import React, { useState } from 'react';
-import { Box, TextField, Typography, Button, CircularProgress } from "@mui/material";
+import {Box, TextField, Typography, Button, CircularProgress, Alert, AlertTitle} from "@mui/material";
 
-const SaveConfig = ({ conn_string }) => {
-    const [connectionName, setConnectionName] = useState('');
-    const [system, setSystem] = useState('');
+const SaveConfig = ({ connString, onFinish }) => {
+    const [formData, setFormData] = useState({
+        connectionName: '',
+        systemName: '',
+        systemVersion: ''
+    });
     const [loading, setLoading] = useState(false);
-    const [submitSuccess, setSubmitSuccess] = useState(false);
-    const [submitError, setSubmitError] = useState('');
+    const [alertType, setAlertType] = useState(null);
+    const [alertMessage, setAlertMessage] = useState('');
+    const [loader, setLoader] = useState(false);
+
+    const handleChange = (event) => {
+        const { name, value } = event.target;
+        setFormData((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+    };
+
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         setLoading(true);
 
         const connectionData = {
-            conn_string: conn_string,
-            name: connectionName,
-            sytem: system
+            conn_string: connString,
+            name: formData.connectionName,
+            system: formData.systemName,
+            version: formData.systemVersion
         };
 
         try {
@@ -26,12 +40,23 @@ const SaveConfig = ({ conn_string }) => {
                 },
                 body: JSON.stringify(connectionData),
             });
+            const responseData = await response.json();
             if (!response.ok) {
-                throw new Error('Network response was not ok');
+                setAlertType('error')
+                setAlertMessage(`Database connection failed! ${responseData.detail}`)
+                setLoader(false)
+            } else {
+                setAlertType('success')
+                setAlertMessage(responseData?.message)
+                setLoader(false)
             }
-            setSubmitSuccess(true);
+
+            onFinish();
         } catch (error) {
-            setSubmitError(error.message);
+            setAlertType('error')
+            console.error('Error testing connection:', JSON.stringify(error));
+            setAlertMessage(error.detail)
+            setLoader(false)
         } finally {
             setLoading(false);
         }
@@ -44,8 +69,9 @@ const SaveConfig = ({ conn_string }) => {
                 <TextField
                     label="Connection Name"
                     variant="outlined"
-                    value={connectionName}
-                    onChange={(e) => setConnectionName(e.target.value)}
+                    name={'connectionName'}
+                    value={formData.connectionName}
+                    onChange={handleChange}
                     required
                     fullWidth
                     margin="normal"
@@ -53,18 +79,45 @@ const SaveConfig = ({ conn_string }) => {
                 <TextField
                     label="System Name"
                     variant="outlined"
-                    value={connectionName}
-                    onChange={(e) => setSystem(e.target.value)}
+                    name={'systemName'}
+                    value={formData.systemName}
+                    onChange={handleChange}
                     required
                     fullWidth
                     margin="normal"
                 />
-                <Button type="submit" variant="contained" color="primary" disabled={loading}>
-                    {loading ? <CircularProgress size={24} /> : 'Submit'}
-                </Button>
-                {submitSuccess && <Typography variant="body1" color="success">Connection added successfully!</Typography>}
-                {submitError && <Typography variant="body1" color="error">Error: {submitError}</Typography>}
+                <TextField
+                    label="System Version"
+                    variant="outlined"
+                    name={'systemVersion'}
+                    value={formData.systemVersion}
+                    onChange={handleChange}
+                    required
+                    fullWidth
+                    margin="normal"
+                />
+                <Box sx={{display: 'flex', flexDirection: 'row', pt: 2}}>
+                    <Box sx={{flex: '1 1 auto'}}/>
+                    <Button type="submit" variant="contained" color="primary" disabled={loading}>
+                        { loader ? <CircularProgress size={24} /> : 'Submit' }
+                    </Button>
+                </Box>
             </form>
+            {/* Alert for success */}
+            {alertType === 'success' && (
+                <Alert severity="success">
+                    <AlertTitle>Success</AlertTitle>
+                    <Typography variant="body1">{alertMessage}</Typography>
+                </Alert>
+            )}
+
+            {/* Alert for error */}
+            {alertType === 'error' && (
+                <Alert severity="error">
+                    <AlertTitle>Error</AlertTitle>
+                    <Typography variant="body1">{alertMessage}</Typography>
+                </Alert>
+            )}
         </Box>
     );
 };
