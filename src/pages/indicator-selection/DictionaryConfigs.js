@@ -2,7 +2,16 @@ import { useEffect, useState, useRef } from 'react';
 import { NavLink } from 'react-router-dom';
 
 // material-ui
-import {Grid, Stack, Typography,Button, Divider,Box,IconButton,Tooltip, Fab,Alert } from '@mui/material';
+import {Skeleton,Grid, Stack, Typography,Button, Divider,Box,IconButton,Tooltip, Fab,Alert } from '@mui/material';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import CircularProgress from '@mui/material/CircularProgress';
 import { CheckCircleFilled,EditOutlined,DownCircleFilled,CloseCircleFilled,CloudUploadOutlined,
     FileSyncOutlined,RightCircleFilled } from '@ant-design/icons';
@@ -29,6 +38,7 @@ import {fetchBaseSchemas} from "../../actions";
 // }
 
 
+
 const DictionaryConfigs = () =>{
 
     // const { isLoading, isPending, data, error } = useQuery({
@@ -46,10 +56,15 @@ const DictionaryConfigs = () =>{
     const el = useRef(null)
 
     const [txcurr, settxcurr] = useState({"indicator_value":"-","indicator_date":"-"});
+    const [loadedData, setLoadedData] = useState([]);
+
     const [spinner, setSpinner] = useState(null);
     const [uploadSpinner, setUploadSpinner] = useState(null);
     const [importSpinner, setImportSpinner] = useState(null);
     const [successSpinner, setSuccessSpinner] = useState(null);
+
+    const [datagridcolumns, setColumns] =useState([])
+    const [datagridrows, setRows] =useState([])
 
     const [baseSchemas, setBaseSchemas] = useState([]);
     const [isExpanded,setIsExpanded] = useState(false);
@@ -64,11 +79,21 @@ const DictionaryConfigs = () =>{
         });
     };
 
-    const generateIndicator = async (indicator) =>{
+    const loadData = async (baseRepo) =>{
         setSpinner(true)
-        await axios.get(API_URL+"/indicator_selector/tx_curr_generate-indicator", {
-            params: { indicator }
-        }).then((res)=> {settxcurr(res.data.indicators[0]); setSpinner(false)})
+        await axios.get(API_URL+"/indicator_selector/load_data/"+baselookup).then((res)=> {
+            setLoadedData(res.data);
+            const data = []
+            Object.keys(res.data[0]).map(row => {
+                data.push({ field: row, headerName: row, width: 130 },)
+            })
+            setColumns(data)
+
+            setRows(res.data)
+
+            setSpinner(false);
+            setSuccessSpinner(true)
+        })
     }
 
     const uploadConfig = async (baseSchema) =>{
@@ -103,7 +128,7 @@ const DictionaryConfigs = () =>{
 
                 <Grid item xs={12}>
 
-                    {baseSchemas.map( (base) => (
+                    {baseSchemas.length>0 ? baseSchemas.map( (base) => (
                         <Stack direction="row" justifyContent="space-between" alignItems="baseline" sx={{ mb: { xs: -0.5, sm: 0.5 } }}>
                             <MainCard border={false} boxShadow  sx={{ width: '100%' }}>
                                 <Typography variant="h6">
@@ -118,7 +143,7 @@ const DictionaryConfigs = () =>{
                                     <MainCard sx={{ width: '100%'}} ref={el}>
                                         <Box sx={{ p: 2 }}>
                                             <Typography variant="caption" color="text.secondary">
-                                                <Button variant="contained" color="info" onClick={()=>generateIndicator("tx_curr")}>
+                                                <Button variant="contained" color="info" onClick={()=>loadData(baselookup)}>
                                                     Generate / Load
                                                     {spinner ?
                                                         <CircularProgress style={{"color":"black"}} size="1rem"/>
@@ -132,8 +157,25 @@ const DictionaryConfigs = () =>{
 
                                                 {/*</LoadingButton>*/}
                                             </Typography>
-                                            <Typography variant="h6">{base.schema} : <b  style={{"color":"#13c2c2"}}>{txcurr.indicator_value}</b></Typography>
-                                            <Typography variant="h6">Date: <b style={{"color":"#13c2c2"}}>{txcurr.indicator_date}</b></Typography>
+                                            <Typography variant="h6">{base.schema} Count: <b  style={{"color":"#13c2c2"}}>{loadedData.length}</b></Typography>
+                                            {/*<Typography variant="h6">Date: <b style={{"color":"#13c2c2"}}>{txcurr.indicator_date}</b></Typography>*/}
+                                        </Box>
+                                        <Box>
+
+                                            { loadedData.length >0 &&
+                                                <DataGrid
+                                                    rows={datagridrows}
+                                                    columns={datagridcolumns}
+                                                    initialState={{
+                                                        pagination: {
+                                                            paginationModel: { page: 0, pageSize: 10 },
+                                                        },
+                                                    }}
+                                                    pageSizeOptions={[10, 50]}
+                                                    checkboxSelection
+                                                />
+                                            }
+
                                         </Box>
 
                                         <Divider/>
@@ -183,7 +225,39 @@ const DictionaryConfigs = () =>{
                                     </MainCard>
                             </MainCard>
                         </Stack>
-                    ) )}
+                    ) ) :
+                    (
+                        <div>
+                            <Skeleton variant="text" sx={{ fontSize: '1rem' }} />
+
+                            <Grid container spacing={3}>
+                                <Grid item xs={3}><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></Grid>
+                                <Grid item xs={3}><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></Grid>
+                            </Grid>
+                            <Skeleton variant="text" sx={{ fontSize: '1rem' }} />
+                            <Skeleton variant="rectangular" width={600} height={100} />
+                            <Skeleton variant="text" sx={{ fontSize: '1rem' }} />
+
+                            <Grid container spacing={3}>
+                                <Grid item xs={3}><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></Grid>
+                                <Grid item xs={3}><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></Grid>
+                            </Grid>
+                            <Skeleton variant="text" sx={{ fontSize: '1rem' }} />
+                            <Skeleton variant="rectangular" width={600} height={100} />
+
+                            <Grid container spacing={3}>
+                                <Grid item xs={6}><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></Grid>
+                                <Grid item xs={6}><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></Grid>
+                            </Grid><Grid container spacing={3}>
+                            <Grid item xs={6}><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></Grid>
+                            <Grid item xs={6}><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></Grid>
+                        </Grid><Grid container spacing={3}>
+                            <Grid item xs={6}><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></Grid>
+                            <Grid item xs={6}><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></Grid>
+                        </Grid>
+                        </div>
+                        )
+                    }
                 </Grid>
             </Grid>
         </>
