@@ -1,4 +1,3 @@
-import {useEffect, useState} from "react";
 import {
     Box, IconButton,
     Link,
@@ -11,91 +10,83 @@ import {
     TableRow, Tooltip,
     Typography
 } from "@mui/material";
-import {Link as RouterLink, useNavigate} from "react-router-dom";
-import PropTypes from "prop-types";
 import Dot from "../../components/@extended/Dot";
-import {BookOutlined, DeleteOutlined, EditOutlined} from "@ant-design/icons";
-
+import PropTypes from "prop-types";
+import {useEffect, useState} from "react";
+import {Link as RouterLink, useNavigate} from "react-router-dom";
+import {DeleteOutlined, EditOutlined, UploadOutlined} from "@ant-design/icons";
 
 
 const headCells = [
     {
-        id: 'name',
+        id: 'column',
         align: 'left',
         disablePadding: true,
-        label: 'Name'
+        label: 'Column'
     },
     {
-        id: 'db_type',
+        id: 'data_type',
+        align: 'left',
+        disablePadding: true,
+        label: 'data_type'
+    },
+    {
+        id: 'is_required',
+        align: 'left',
+        disablePadding: true,
+        label: 'is_required'
+    },
+    {
+        id: 'description',
         align: 'left',
         disablePadding: false,
-        label: 'Database Type'
+        label: 'Description'
     },
     {
-        id: 'is_active',
+        id: 'expected_values',
         align: 'left',
         disablePadding: false,
-        label: 'Status'
+        label: 'Expected Values'
     },
-    {
-        id: 'updated_at',
-        align: 'right',
-        disablePadding: false,
-        label: 'Date Updated'
-    },
-    {
-        id: 'actions',
-        align: 'right',
-        disablePadding: false,
-        label: ''
-    }
 ];
 
-const OrderStatus = ({ status }) => {
-    let color;
-    let title;
 
-    switch (status) {
-        case true:
-            color = 'success';
-            title = 'Active';
-            break;
-        case false:
-            color = 'warning';
-            title = 'Inactive';
-            break;
-        default:
-            color = 'error';
-            title = 'Unknown';
+const ViewDataDictionary = () => {
+    const [selected] = useState([]);
+    let [data, setData] = useState([]);
+
+    const navigate = useNavigate()
+
+    const handleClickUpload = (name) => {
+        navigate(`/dictionary/upload/${name}`)
     }
 
-    return (
-        <Stack direction="row" spacing={1} alignItems="center">
-            <Dot color={color} />
-            <Typography>{title}</Typography>
-        </Stack>
-    );
-};
-
-OrderStatus.propTypes = {
-    status: PropTypes.number
-};
-
-const ConfigsList = () =>{
-    const [selected] = useState([]);
-    let [data, setData] = useState([])
-    const navigate = useNavigate()
+    let repos = [
+        {
+            "name": "Client Repository",
+            "id": "client_repository"
+        },
+        {
+            "name": "Events Repository",
+            "id": "events_repository"
+        },
+    ]
 
     useEffect(() => {
         fetchData();
     }, []);
 
-    const fetchData = async () => {
+    let fetchData = async () => {
         try {
-            const response = await  fetch('http://localhost:8000/api/db_access/available_connections')
+            const response = await  fetch('http://localhost:8000/api/data_dictionary/data_dictionaries')
             if (response.ok) {
                 const jsonData = await response.json();
-                setData(jsonData?.credentials ?? []);
+                // let configs = repos.map((repo) => {
+                //     let datadict = jsonData.find(dict => dict.name === repo.id)
+                //
+                //     return { datadict?.dictionary_terms.length ?? 0}
+                // })
+                setData(jsonData[0]?.dictionary_terms);
             } else {
                 throw new Error('Error: ' + response.status);
             }
@@ -104,12 +95,7 @@ const ConfigsList = () =>{
         }
     }
 
-    const handleDictListClick = () => {
-        navigate('/dictionary/list');
-    };
-
-
-    const isSelected = (trackingNo) => selected.indexOf(trackingNo) !== -1;
+    const isSelected = (dict_name) => selected.indexOf(dict_name) !== -1;
 
     return (
         <Box>
@@ -162,28 +148,19 @@ const ConfigsList = () =>{
                                     key={row.name}
                                     selected={isItemSelected}
                                 >
-                                    <TableCell component="th" id={labelId} scope="row" align="left">
-                                        <Link color="secondary" component={RouterLink} to="">
-                                            {row.name}
-                                        </Link>
-                                    </TableCell>
-                                    <TableCell align="left">{row.conn_string.split("://")[0]}</TableCell>
-                                    <TableCell align="left">
-                                        <OrderStatus status={row.is_active} />
-                                    </TableCell>
-                                    <TableCell align="right">{new Date(row.updated_at).toLocaleDateString()}</TableCell>
+                                    <TableCell align="left">{row?.term}</TableCell>
+                                    <TableCell align="left">{row?.data_type}</TableCell>
+                                    <TableCell align="left">{row?.is_required}</TableCell>
+                                    <TableCell align="left">{row?.term_description}</TableCell>
+                                    <TableCell align="left">{row?.expected_values}</TableCell>
                                     <TableCell align="right">
-                                        <Tooltip title={`Data Dictionary`}>
-                                            <IconButton aria-label="Data Dictionary" onClick={handleDictListClick}>
-                                                <BookOutlined />
-                                            </IconButton>
-                                        </Tooltip>
-                                        <Tooltip title={`Edit`}>
+
+                                        <Tooltip  title={`Edit Dictionary Variables`}>
                                             <IconButton aria-label="Edit">
                                                 <EditOutlined />
                                             </IconButton>
                                         </Tooltip>
-                                        <Tooltip title={`Delete`}>
+                                        <Tooltip  title={`Delete All Dictionary Variables`}>
                                             <IconButton aria-label="Delete">
                                                 <DeleteOutlined />
                                             </IconButton>
@@ -196,6 +173,7 @@ const ConfigsList = () =>{
                 </Table>
             </TableContainer>
         </Box>
-    );
+    )
 }
-export default ConfigsList;
+
+export default ViewDataDictionary
