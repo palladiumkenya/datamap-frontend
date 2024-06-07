@@ -61,11 +61,14 @@ const DictionaryConfigs = () =>{
     const [spinner, setSpinner] = useState(null);
     const [uploadSpinner, setUploadSpinner] = useState(null);
     const [importSpinner, setImportSpinner] = useState(null);
-    const [successSpinner, setSuccessSpinner] = useState(null);
+    const [successAlert, setSuccessAlert] = useState(null);
+    const [message, setMessage] = useState(null);
+    const [loadSuccessAlert, setLoadSuccessAlert] = useState(null);
+    const [loadMessage, setLoadMessage] = useState(null);
+
 
     const [datagridcolumns, setColumns] =useState([])
     const [datagridrows, setRows] =useState([])
-
     const [baseSchemas, setBaseSchemas] = useState([]);
     const [isExpanded,setIsExpanded] = useState(false);
     const urlSearchString = window.location.search;
@@ -81,6 +84,8 @@ const DictionaryConfigs = () =>{
 
     const loadData = async (baseRepo) =>{
         setSpinner(true)
+        setLoadSuccessAlert(false);
+
         await axios.get(API_URL+"/indicator_selector/load_data/"+baselookup).then((res)=> {
             setLoadedData(res.data);
             const data = []
@@ -92,22 +97,36 @@ const DictionaryConfigs = () =>{
             setRows(res.data)
 
             setSpinner(false);
-            setSuccessSpinner(true)
+            setLoadSuccessAlert(true);
+            setLoadMessage("Successfully loaded "+baselookup+" data");
         })
     }
 
     const uploadConfig = async (baseSchema) =>{
         setUploadSpinner(true);
+        setSuccessAlert(false);
+
         await axios.get(API_URL+"/indicator_selector/generate_config", {
             params: { baseSchema }
-        }).then((res)=> { setTimeout(setUploadSpinner(false), 300)})
+        }).then((res)=> {
+            setUploadSpinner(false);
+            setSuccessAlert(true);
+
+            setMessage("Successfully uploaded "+baselookup+" config")
+        })
     }
 
     const importConfig = async (baseSchema) =>{
         setImportSpinner(true);
+        setSuccessAlert(false);
         await axios.get(API_URL+"/indicator_selector/import_config", {
             params: { baseSchema }
-        }).then((res)=> {setImportSpinner(false); getBaseSchemas()})
+        }).then((res)=> {
+            setImportSpinner(false);
+            setMessage("Successfully imported "+baselookup+" config from the marketplace");
+            setSuccessAlert(true);
+            getBaseSchemas();
+        })
     }
 
 
@@ -122,7 +141,7 @@ const DictionaryConfigs = () =>{
             <Grid container spacing={3}>
                 <Grid item xs={12}>
                     <Stack direction="row" justifyContent="space-between" alignItems="baseline" sx={{ mb: { xs: 0.5, sm: 0.5 } }}>
-                        <Typography variant="h3">Indicators</Typography>
+                        <Typography variant="h3">{baselookup}</Typography>
                     </Stack>
                 </Grid>
 
@@ -151,6 +170,12 @@ const DictionaryConfigs = () =>{
                                                         <></>
                                                     }
                                                 </Button>
+                                                {loadSuccessAlert &&
+                                                    <Alert color="success" onClose={() => {}}>
+                                                         {loadMessage}
+                                                    </Alert>
+                                                }
+
                                                 {/*<LoadingButton loading color="secondary" variant="outlined" loadingPosition="end" endIcon={<Checkbox />}>*/}
 
                                                 {/*    Edit*/}
@@ -216,9 +241,9 @@ const DictionaryConfigs = () =>{
                                                 }
                                             </Fab>
                                         </Tooltip>
-                                        {successSpinner &&
+                                        {successAlert &&
                                             <Alert color="success" onClose={() => {}}>
-                                                Successfully uploaded {base.schema} config
+                                                 {message}
                                             </Alert>
                                         }
 

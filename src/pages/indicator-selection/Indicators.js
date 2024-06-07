@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { NavLink } from 'react-router-dom';
 
 // material-ui
-import {Grid, Stack, Typography,Button, Divider,Box,IconButton,Tooltip, Fab,Alert } from '@mui/material';
+import {Grid, Stack, Typography, Button, Divider, Box, IconButton, Tooltip, Fab, Alert, Skeleton} from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import { CheckCircleFilled,EditOutlined,DownCircleFilled,CloseCircleFilled,CloudUploadOutlined,
     FileSyncOutlined,RightCircleFilled } from '@ant-design/icons';
@@ -117,7 +117,8 @@ const Indicators = () =>{
 
                 <Grid item xs={12}>
 
-                    {baseSchemas.map( (base) => (
+                    {baseSchemas.length >0  ?
+                        baseSchemas.map( (base) => (
                         <Stack direction="row" justifyContent="space-between" alignItems="baseline" sx={{ mb: { xs: -0.5, sm: 0.5 } }}>
                             <MainCard border={false} boxShadow  sx={{ width: '100%' }}>
                                 <Typography variant="h6">
@@ -202,7 +203,25 @@ const Indicators = () =>{
                                 )}
                             </MainCard>
                         </Stack>
-                    ) )}
+                        ) ) :
+                        (
+                        <div>
+                        <Skeleton variant="rectangular" width={600} height={100} />
+                            <Grid item xs={6}><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></Grid>
+
+                            <Skeleton variant="rectangular" width={600} height={100} />
+                            <Grid item xs={6}><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></Grid>
+
+                            <Skeleton variant="rectangular" width={600} height={100} />
+                            <Grid item xs={6}><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></Grid>
+
+                            <Skeleton variant="rectangular" width={600} height={100} />
+                            <Grid item xs={6}><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></Grid>
+
+
+                        </div>
+                        )
+                    }
                 </Grid>
             </Grid>
         </>

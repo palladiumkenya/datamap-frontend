@@ -17,7 +17,7 @@ import {
     InputLabel,
     OutlinedInput,
     Stack,
-    Typography, Select,MenuItem
+    Typography, Select, MenuItem, Skeleton
 } from '@mui/material';
 
 // project import
@@ -58,7 +58,6 @@ const SelectorForm = () => {
 
 
     const getBaseVariables = async() => {
-        console.log('params.base_lookup', baselookup)
         await axios.get(API_URL+"/indicator_selector/base_variables/"+baselookup).then(res => {
             setBaseIndicators(res.data);
 
@@ -72,8 +71,9 @@ const SelectorForm = () => {
     };
 
     const handleColumnChange = (e, baseVariable, table, column) => {
+        const filteredData = columns.filter(item => item.baseVariable === baseVariable)
 
-        formData.push({"indicator":'TX_CURR',"baseVariableMappedTo":baseVariable, "tablename":table, "columnname":column, "datatype":"string"})
+        formData.push({"indicator":baselookup,"baseVariableMappedTo":baseVariable, "tablename":filteredData[0].tableSelected, "columnname":column, "datatype":"string"})
         setFormData(formData)
 
     };
@@ -91,10 +91,7 @@ const SelectorForm = () => {
         variableObj[tableSelected] = databaseColumns[tableSelected];
         variableObj["baseVariable"] = basevariable;
 
-        console.log("all columns",basevariable, columns);
-
         const updateColumns = columns.filter((item) => item["baseVariable"] === basevariable);
-        console.log("before columns",basevariable, updateColumns);
         updateColumns[0]["matchingTableColumns"] = databaseColumns[tableSelected];
         updateColumns[0]["tableSelected"] = tableSelected;
 
@@ -119,8 +116,10 @@ const SelectorForm = () => {
         event.preventDefault();
 
         console.log(formData);
-        axios.post(API_URL+ "/indicator_selector/add_mapped_variables",  formData);
-        window.location.href = `http://localhost:3000/schema/config?baselookup=`+baselookup;
+        axios.post(API_URL+ "/indicator_selector/add_mapped_variables",  formData).then(res => {
+            window.location.href = `http://localhost:3000/schema/config?baselookup=` + baselookup;
+        })
+        // window.location.href = `http://localhost:3000/schema/config?baselookup=`+baselookup;
 
     };
 
@@ -138,7 +137,7 @@ const SelectorForm = () => {
                         <Typography color="text.info" variant="h4">{baselookup} Mapping</Typography>
                         <Divider sx={{marginBottom:"20px"}}/>
                         <Grid container spacing={1}>
-                            {
+                            { txcurrBaseIndicators.length>0 ?
                                 txcurrBaseIndicators.map(baseVariable => (
                                     <Grid container spacing={1} sx={{marginBottom:"20px"}}>
                                         <Grid item xs={3} md={3}>
@@ -203,7 +202,24 @@ const SelectorForm = () => {
                                             </IconButton>
                                         </Grid>
                                     </Grid>
-                                )
+                                ) )
+                                :
+                                (
+                                    <div>
+                                        <Skeleton variant="rectangular" width={600} height={100} />
+                                        <Grid item xs={6}><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></Grid>
+
+                                        <Skeleton variant="rectangular" width={600} height={100} />
+                                        <Grid item xs={6}><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></Grid>
+
+                                        <Skeleton variant="rectangular" width={600} height={100} />
+                                        <Grid item xs={6}><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></Grid>
+
+                                        <Skeleton variant="rectangular" width={600} height={100} />
+                                        <Grid item xs={6}><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></Grid>
+
+
+                                    </div>
                                 )}
 
 
