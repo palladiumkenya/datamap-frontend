@@ -7,6 +7,8 @@ import { FileCopy as FileCopyIcon } from '@mui/icons-material';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { materialLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
+const default_url = "http://localhost:8000/api/text2sql";
+
 const Text2SQL = () => {
   const [query, setQuery] = useState('');
   const [sqlQuery, setSqlQuery] = useState('');
@@ -35,10 +37,11 @@ const Text2SQL = () => {
     setError('');     // Clear previous error
     setQueryGenerated(false);
     try {
-      const response = await fetch('/query_from_natural_language', {
+      const response = await fetch(default_url + '/query_from_natural_language', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': '*/*'
         },
         body: JSON.stringify({ question: query }),
       });
@@ -46,47 +49,24 @@ const Text2SQL = () => {
       if (response.ok) {
         setSqlQuery(result.sql_query || '');  // Set SQL query or empty if not available
         setQueryGenerated(true);
-      } else {
-        setError(result.message || 'Failed to generate SQL.');
+        if (result.sql_query) {
+          // await handleRunSQL(result.sql_query);  // Run the SQL query
+          const resultData = result.data || [];
+          setData(resultData);
+          if (resultData.length > 0) {
+            setColumns(Object.keys(resultData[0]));
+          } else {
+            setError('No data available for the given SQL query.');
+          }
+        } else {
+          setError(result.message || 'Failed to execute SQL.');
+        }
       }
     } catch (error) {
       console.error("Error generating SQL:", error);
       setError('An unexpected error occurred while generating the SQL.');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleRunSQL = async () => {
-    setRunning(true);
-    setData([]); // Clear previous data
-    setColumns([]); // Clear previous columns
-    setError('');   // Clear previous error
-    try {
-      const response = await fetch('/run_sql_query', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ sql_query: sqlQuery }),
-      });
-      const result = await response.json();
-      if (response.ok) {
-        const resultData = result.data || [];
-        setData(resultData);
-        if (resultData.length > 0) {
-          setColumns(Object.keys(resultData[0]));
-        } else {
-          setError('No data available for the given SQL query.');
-        }
-      } else {
-        setError(result.message || 'Failed to execute SQL.');
-      }
-    } catch (error) {
-      console.error("Error running SQL:", error);
-      setError('An unexpected error occurred while executing the SQL.');
-    } finally {
-      setRunning(false);
     }
   };
 
@@ -146,18 +126,6 @@ const Text2SQL = () => {
               </Tooltip>
             </Box>
 
-            <Box sx={{ display: 'flex', justifyContent: 'left' }}>
-              <Button
-                variant="contained"
-                size="large"
-                sx={{ textTransform: 'none' }}
-                onClick={handleRunSQL}
-                disabled={running || !sqlQuery}
-              >
-                {running ? <CircularProgress size={24} /> : "Run"}
-              </Button>
-            </Box>
-
             <Typography variant="body1" component="p">
               Query Results:
             </Typography>
@@ -190,7 +158,7 @@ const Text2SQL = () => {
                 </Table>
               </TableContainer>
             ) : (
-              !queryGenerated && (
+              queryGenerated && (
                 <Box sx={{ position: 'relative', p: 2, borderRadius: 1, overflow: 'hidden', bgcolor: '#f5f5f5', border: '1px solid #ddd' }}>
                   <Typography variant="body2" component="p">
                     No results to display. Please generate and run a query.
@@ -198,12 +166,11 @@ const Text2SQL = () => {
                 </Box>
               )
             )}
-
           </Stack>
         </CardContent>
       </Card>
     </Box>
-  );
+  )
 };
 
 export default Text2SQL;
