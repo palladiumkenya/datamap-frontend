@@ -2,7 +2,7 @@ import * as React from 'react';
 import {useState} from "react";
 
 // material-ui
-import {Box, Button, Typography} from '@mui/material';
+import { Box, Button } from '@mui/material';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
@@ -11,7 +11,6 @@ import ConnectionDetails from "./ConnectionDetails";
 import MainCard from "components/MainCard";
 import SaveConfig from "./SaveConfig";
 import FinalStepPage from "./FinalStepPage";
-
 
 
 const steps = ['Connection Details', 'Save Configuration'];

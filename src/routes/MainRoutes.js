@@ -3,8 +3,6 @@ import { lazy } from 'react';
 // project import
 import Loadable from 'components/Loadable';
 import MainLayout from 'layout/MainLayout';
-import AddConfig from '../pages/configs/AddConfig';
-import DictionaryConfigs from "../pages/indicator-selection/DictionaryConfigs";
 
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
