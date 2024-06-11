@@ -20,6 +20,7 @@ const AntIcons = Loadable(lazy(() => import('pages/components-overview/AntIcons'
 const Configs = Loadable(lazy(() => import('pages/configs/Configs')));
 const Selector = Loadable(lazy(() => import('pages/indicator-selection/Selector')));
 const Indicators = Loadable(lazy(() => import('pages/indicator-selection/Indicators')));
+const Text2Sql = Loadable(lazy(() => import('pages/text2sql')));
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -62,9 +63,13 @@ const MainRoutes = {
         {
           path: 'Config',
           element: <DictionaryConfigs />
-        }
-        ]
+        },
+      ]
     },
+      {
+          path: 'Text2SQL',
+          element: <Text2Sql />
+        },
     {
       path: 'configs',
       children: [
