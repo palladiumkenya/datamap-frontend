@@ -75,7 +75,7 @@ const Text2SQL = () => {
   };
 
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', p: 2 }}>
+    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center',  p: 2 }}>
       <Card sx={{ width: '100%', maxWidth: 800, p: 2 }}>
         <CardContent>
           <Stack spacing={3}>
