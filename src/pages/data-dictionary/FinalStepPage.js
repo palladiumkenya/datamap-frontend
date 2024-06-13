@@ -8,17 +8,17 @@ const FinalStepPage = () => {
     const navigate = useNavigate();
 
     const handleFinish = () => {
-        navigate('/configs/list');
+        navigate('/dictionary/list');
     };
 
-    const handleDictUpload = () => {
-        navigate('/configs/list');
+    const handlePublish = () => {
+        navigate('/dictionary/list');
     };
     return (
         <React.Fragment>
             <MainCard sx={{ mt: 2 }} content={true} title={`Done`}>
                 <Typography sx={{mt: 2, mb: 1}}>
-                    Database Configs Added - You&apos;re now finished
+                    Database Data Dictionary Added
                 </Typography>
                 <Typography sx={{mt: 2, mb: 1}}>
                     Next steps
@@ -27,7 +27,7 @@ const FinalStepPage = () => {
                     <Box sx={{flex: '1 1 auto'}}/>
                     <Stack direction="row" spacing={2}>
                         <Button variant={`contained`} color={`success`} onClick={handleFinish}>Finish</Button>
-                        <Button variant={`contained`} color={`info`} onClick={handleDictUpload}>Upload Dictionary</Button>
+                        <Button variant={`contained`} color={`info`} onClick={handlePublish}>Publish To MarketPlace</Button>
                     </Stack>
                 </Box>
             </MainCard>

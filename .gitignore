@@ -108,3 +108,7 @@ dist
 
 #output
 build
+
+
+.env
+.env.production
