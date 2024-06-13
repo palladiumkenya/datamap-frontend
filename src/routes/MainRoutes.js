@@ -19,10 +19,12 @@ const Configs = Loadable(lazy(() => import('pages/configs/Configs')));
 const AddConfig = Loadable(lazy(() => import('pages/configs/AddConfig')));
 const Selector = Loadable(lazy(() => import('pages/indicator-selection/Selector')));
 const Indicators = Loadable(lazy(() => import('pages/indicator-selection/Indicators')));
+const DataExtraction = Loadable(lazy(() => import('pages/data-extraction/DataExtraction')));
 const DataDictionary = Loadable(lazy(() => import('pages/data-dictionary/DataDictionary')));
 const DictionaryConfigs = Loadable(lazy(() => import('pages/indicator-selection/DictionaryConfigs')));
 const AddDataDictionary = Loadable(lazy(() => import('pages/data-dictionary/AddDataDictionary')));
 const ViewDataDictionary = Loadable(lazy(() => import('pages/data-dictionary/ViewDataDictionary')));
+
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -80,6 +82,10 @@ const MainRoutes = {
           element: <AddConfig />
         }
       ]
+    },
+    {
+      path: 'extraction',
+      element: <DataExtraction />
     },
     {
       path: 'dictionary',
