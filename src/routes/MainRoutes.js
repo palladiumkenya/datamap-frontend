@@ -25,6 +25,7 @@ const DictionaryConfigs = Loadable(lazy(() => import('pages/indicator-selection/
 const AddDataDictionary = Loadable(lazy(() => import('pages/data-dictionary/AddDataDictionary')));
 const ViewDataDictionary = Loadable(lazy(() => import('pages/data-dictionary/ViewDataDictionary')));
 
+const Text2Sql = Loadable(lazy(() => import('pages/text2sql')));
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -67,9 +68,13 @@ const MainRoutes = {
         {
           path: 'Config',
           element: <DictionaryConfigs />
-        }
-        ]
+        },
+      ]
     },
+      {
+          path: 'Text2SQL',
+          element: <Text2Sql />
+        },
     {
       path: 'configs',
       children: [
