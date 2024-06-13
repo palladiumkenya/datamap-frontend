@@ -1,4 +1,3 @@
-
 import {Box} from "@mui/material";
 import {useDropzone} from "react-dropzone";
 import {useState} from "react";
@@ -7,7 +6,6 @@ import "./FileUpload.css";
 
 const DataDictionaryUpload = ({onNextStep}) => {
     const [selectedFile, setSelectedFile] = useState(null);
-    const [tableData, setTableData] = useState([]);
     const parseCSV = (csvData) => {
         const rows = csvData.split("\n"); // Split CSV data into rows
         let headers = rows[0].split(","); // Assuming the first row contains headers
@@ -49,13 +47,11 @@ console.log(result, headers)
 
     const onDrop = (acceptedFiles) => {
         setSelectedFile(acceptedFiles[0]);
-        setTableData([]); // Clear previous table data
         const reader = new FileReader();
         let parsedData = []
         reader.onload = () => {
             const csvData = reader.result;
             parsedData = parseCSV(csvData);
-            setTableData(parsedData);
             onNextStep(parsedData)
         };
         reader.readAsText(acceptedFiles[0]);

@@ -15,6 +15,9 @@ import {Link as RouterLink, useNavigate} from "react-router-dom";
 import PropTypes from "prop-types";
 import Dot from "../../components/@extended/Dot";
 import {BookOutlined, DeleteOutlined, EditOutlined} from "@ant-design/icons";
+import DeleteDialog from "../../components/Dialogs/DeleteDialog";
+import {useDeleteAccessConfig} from "../../store/access_configurations/mutations";
+import {useGetAccessConfigs} from "../../store/access_configurations/queries";
 
 
 
@@ -83,29 +86,32 @@ OrderStatus.propTypes = {
 
 const ConfigsList = () =>{
     const [selected] = useState([]);
-    let [data, setData] = useState([])
+    const [dialogOpen, setDialogOpen] = useState(false)
+    const [rowId, setRowId] = useState(null);
     const navigate = useNavigate()
+    const deleteAccess = useDeleteAccessConfig()
+    const { isLoading: isLoading, data: getAccessConfigsData } = useGetAccessConfigs();
 
-    useEffect(() => {
-        fetchData();
-    }, []);
-
-    const fetchData = async () => {
-        try {
-            const response = await  fetch('http://localhost:8000/api/db_access/available_connections')
-            if (response.ok) {
-                const jsonData = await response.json();
-                setData(jsonData?.credentials ?? []);
-            } else {
-                throw new Error('Error: ' + response.status);
-            }
-        } catch (err){
-            console.log(err);
-        }
-    }
 
     const handleDictListClick = () => {
         navigate('/dictionary/list');
+    };
+
+    const handleClickOpen = (id) => {
+        setRowId(id);
+        setDialogOpen(true);
+    };
+
+    const handleClose = () => {
+        setDialogOpen(false);
+    };
+
+    const handleDelete = () => {
+        console.log(rowId)
+        // Add your delete logic here
+        deleteAccess.mutate({id: rowId})
+        console.log(deleteAccess.isSuccess)
+        handleClose();
     };
 
 
@@ -148,7 +154,7 @@ const ConfigsList = () =>{
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {(data).map((row, index) => {
+                        {!isLoading && (getAccessConfigsData)?.map((row, index) => {
                             const isItemSelected = isSelected(row.name);
                             const labelId = `enhanced-table-checkbox-${index}`;
 
@@ -184,7 +190,7 @@ const ConfigsList = () =>{
                                             </IconButton>
                                         </Tooltip>
                                         <Tooltip title={`Delete`}>
-                                            <IconButton aria-label="Delete">
+                                            <IconButton aria-label="Delete" onClick={() => handleClickOpen(row.id)}>
                                                 <DeleteOutlined />
                                             </IconButton>
                                         </Tooltip>
@@ -195,6 +201,11 @@ const ConfigsList = () =>{
                     </TableBody>
                 </Table>
             </TableContainer>
+            <DeleteDialog
+                text="Database Config"
+                open={dialogOpen}
+                handleClose={handleClose}
+                handleDelete={handleDelete} />
         </Box>
     );
 }
