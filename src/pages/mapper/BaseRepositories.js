@@ -23,17 +23,17 @@ import {fetchBaseSchemas} from "../../actions";
 // export default function IndicatorsSection() {
 //     return (
 //         <QueryClientProvider client={queryClient}>
-//             <Indicators />
+//             <BaseRepositories />
 //         </QueryClientProvider>
 //     )
 // }
 
 
-const Indicators = () =>{
+const BaseRepositories = () =>{
 
     // const { isLoading, isPending, data, error } = useQuery({
     //     queryKey: ['base_schemas'],
-    //     queryFn: ()=> fetch(API_URL+"/indicator_selector/base-schemas").then((res) =>
+    //     queryFn: ()=> fetch(API_URL+"/dictionary_mapper/base-schemas").then((res) =>
     //         res.json(),
     //     ),
     // })
@@ -56,7 +56,7 @@ const Indicators = () =>{
 
     const getBaseSchemas = async() => {
         console.log()
-        await axios.get(API_URL+"/indicator_selector/base_schemas").then(res => {
+        await axios.get(API_URL+"/dictionary_mapper/base_schemas").then(res => {
             setBaseSchemas(res.data);
             console.log(res.data)
 
@@ -65,21 +65,21 @@ const Indicators = () =>{
 
     const generateIndicator = async (indicator) =>{
         setSpinner(true)
-        await axios.get(API_URL+"/indicator_selector/tx_curr_generate_indicator", {
+        await axios.get(API_URL+"/dictionary_mapper/tx_curr_generate_indicator", {
             params: { indicator }
         }).then((res)=> {settxcurr(res.data.indicators[0]); setSpinner(false)})
     }
 
     const uploadConfig = async (baseSchema) =>{
         setSpinner(true);
-        await axios.get(API_URL+"/indicator_selector/generate_config", {
+        await axios.get(API_URL+"/dictionary_mapper/generate_config", {
             params: { baseSchema }
         }).then((res)=> {setSpinner(false)})
     }
 
     const importConfig = async (baseSchema) =>{
         setSpinner(true);
-        await axios.get(API_URL+"/indicator_selector/import_config", {
+        await axios.get(API_URL+"/dictionary_mapper/import_config", {
             params: { baseSchema }
         }).then((res)=> {setSpinner(false); getBaseSchemas()})
     }
@@ -144,11 +144,7 @@ const Indicators = () =>{
                                                         <></>
                                                     }
                                                 </Button>
-                                                {/*<LoadingButton loading color="secondary" variant="outlined" loadingPosition="end" endIcon={<Checkbox />}>*/}
 
-                                                {/*    Edit*/}
-
-                                                {/*</LoadingButton>*/}
                                             </Typography>
                                             <Typography variant="h6">{base.schema} : <b  style={{"color":"#13c2c2"}}>{txcurr.indicator_value}</b></Typography>
                                             <Typography variant="h6">Date: <b style={{"color":"#13c2c2"}}>{txcurr.indicator_date}</b></Typography>
@@ -228,4 +224,4 @@ const Indicators = () =>{
     );
 };
 
-export default Indicators;
+export default BaseRepositories;

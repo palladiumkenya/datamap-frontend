@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { NavLink } from 'react-router-dom';
 
 // material-ui
-import {Skeleton,Grid, Stack, Typography,Button, Divider,Box,IconButton,Tooltip, Fab,Alert } from '@mui/material';
+import {Skeleton,Grid, Stack, Typography,Button, Divider,Box,IconButton,Tooltip, Fab,Alert,LinearProgress } from '@mui/material';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -32,18 +32,18 @@ import {fetchBaseSchemas} from "../../actions";
 // export default function IndicatorsSection() {
 //     return (
 //         <QueryClientProvider client={queryClient}>
-//             <Indicators />
+//             <BaseRepositories />
 //         </QueryClientProvider>
 //     )
 // }
 
 
 
-const DictionaryConfigs = () =>{
+const RepoConfigs = () =>{
 
     // const { isLoading, isPending, data, error } = useQuery({
     //     queryKey: ['base_schemas'],
-    //     queryFn: ()=> fetch(API_URL+"/indicator_selector/base-schemas").then((res) =>
+    //     queryFn: ()=> fetch(API_URL+"/dictionary_mapper/base-schemas").then((res) =>
     //         res.json(),
     //     ),
     // })
@@ -65,7 +65,9 @@ const DictionaryConfigs = () =>{
     const [message, setMessage] = useState(null);
     const [loadSuccessAlert, setLoadSuccessAlert] = useState(null);
     const [loadMessage, setLoadMessage] = useState(null);
+    const [alertType, setAlertType] = useState(null);
 
+    const [progress, setProgress] = useState(0);
 
     const [datagridcolumns, setColumns] =useState([])
     const [datagridrows, setRows] =useState([])
@@ -77,7 +79,7 @@ const DictionaryConfigs = () =>{
 
 
     const getBaseSchemas = async() => {
-        await axios.get(API_URL+"/indicator_selector/base_schema_variables/"+baselookup).then(res => {
+        await axios.get(API_URL+"/dictionary_mapper/base_schema_variables/"+baselookup).then(res => {
             setBaseSchemas(res.data);
         });
     };
@@ -86,7 +88,7 @@ const DictionaryConfigs = () =>{
         setSpinner(true)
         setLoadSuccessAlert(false);
 
-        await axios.get(API_URL+"/indicator_selector/load_data/"+baselookup).then((res)=> {
+        await axios.get(API_URL+"/dictionary_mapper/load_data/"+baselookup).then((res)=> {
             setLoadedData(res.data);
             const data = []
             Object.keys(res.data[0]).map(row => {
@@ -97,16 +99,37 @@ const DictionaryConfigs = () =>{
             setRows(res.data)
 
             setSpinner(false);
+            setAlertType("success");
             setLoadSuccessAlert(true);
             setLoadMessage("Successfully loaded "+baselookup+" data");
+        }).catch( (error) => {
+            setSpinner(false);
+            setLoadSuccessAlert(true);
+            setAlertType("error");
+            setLoadMessage("Error loading ==> "+error);
         })
+    }
+
+    const sendData = async (baseRepo) =>{
+        setLoadSuccessAlert(false);
+
+        for(var i=0; i<=100; i=i+0.1){
+            // setTimeout(() => {
+            //     setProgress(progress+i);
+            // }, 5000);
+            setProgress(progress+i);
+        }
+        // clearTimeout(timer);
+        setLoadSuccessAlert(true);
+        setLoadMessage("Successfully sent "+baselookup+" to the warehouse");
+
     }
 
     const uploadConfig = async (baseSchema) =>{
         setUploadSpinner(true);
         setSuccessAlert(false);
 
-        await axios.get(API_URL+"/indicator_selector/generate_config", {
+        await axios.get(API_URL+"/dictionary_mapper/generate_config", {
             params: { baseSchema }
         }).then((res)=> {
             setUploadSpinner(false);
@@ -119,7 +142,7 @@ const DictionaryConfigs = () =>{
     const importConfig = async (baseSchema) =>{
         setImportSpinner(true);
         setSuccessAlert(false);
-        await axios.get(API_URL+"/indicator_selector/import_config", {
+        await axios.get(API_URL+"/dictionary_mapper/import_config", {
             params: { baseSchema }
         }).then((res)=> {
             setImportSpinner(false);
@@ -171,7 +194,7 @@ const DictionaryConfigs = () =>{
                                                     }
                                                 </Button>
                                                 {loadSuccessAlert &&
-                                                    <Alert color="success" onClose={() => {}}>
+                                                    <Alert color={alertType} onClose={() => {}}>
                                                          {loadMessage}
                                                     </Alert>
                                                 }
@@ -182,23 +205,34 @@ const DictionaryConfigs = () =>{
 
                                                 {/*</LoadingButton>*/}
                                             </Typography>
-                                            <Typography variant="h6">{base.schema} Count: <b  style={{"color":"#13c2c2"}}>{loadedData.length}</b></Typography>
+                                            <Typography variant="h6">
+                                                {base.schema} Count: <b  style={{"color":"#13c2c2"}}>{loadedData.length}</b>
+                                                {loadSuccessAlert &&
+                                                    <Button variant="outlined" color="success" size="extraSmall" onClick={()=>sendData(baselookup)} style={{"marginLeft":"50px"}}>
+                                                        Send To WareHouse
+                                                    </Button>
+                                                }
+                                            </Typography>
                                             {/*<Typography variant="h6">Date: <b style={{"color":"#13c2c2"}}>{txcurr.indicator_date}</b></Typography>*/}
                                         </Box>
                                         <Box>
-
+                                            { progress >0 &&
+                                                <LinearProgress variant="determinate" value={progress} />
+                                            }
                                             { loadedData.length >0 &&
-                                                <DataGrid
-                                                    rows={datagridrows}
-                                                    columns={datagridcolumns}
-                                                    initialState={{
-                                                        pagination: {
-                                                            paginationModel: { page: 0, pageSize: 10 },
-                                                        },
-                                                    }}
-                                                    pageSizeOptions={[10, 50]}
-                                                    checkboxSelection
-                                                />
+                                                <div>
+                                                    <DataGrid
+                                                        rows={datagridrows}
+                                                        columns={datagridcolumns}
+                                                        initialState={{
+                                                            pagination: {
+                                                                paginationModel: { page: 0, pageSize: 10 },
+                                                            },
+                                                        }}
+                                                        pageSizeOptions={[10, 50]}
+                                                        checkboxSelection
+                                                    />
+                                                </div>
                                             }
 
                                         </Box>
@@ -289,4 +323,4 @@ const DictionaryConfigs = () =>{
     );
 };
 
-export default DictionaryConfigs;
+export default RepoConfigs;

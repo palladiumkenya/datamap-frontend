@@ -4,7 +4,7 @@ import { lazy } from 'react';
 import Loadable from 'components/Loadable';
 import MainLayout from 'layout/MainLayout';
 import AddConfig from '../pages/configs/AddConfig';
-import DictionaryConfigs from "../pages/indicator-selection/DictionaryConfigs";
+import RepoConfigs from "../pages/mapper/RepoConfigs";
 
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
@@ -18,8 +18,8 @@ const Color = Loadable(lazy(() => import('pages/components-overview/Color')));
 const Shadow = Loadable(lazy(() => import('pages/components-overview/Shadow')));
 const AntIcons = Loadable(lazy(() => import('pages/components-overview/AntIcons')));
 const Configs = Loadable(lazy(() => import('pages/configs/Configs')));
-const Selector = Loadable(lazy(() => import('pages/indicator-selection/Selector')));
-const Indicators = Loadable(lazy(() => import('pages/indicator-selection/Indicators')));
+const Selector = Loadable(lazy(() => import('pages/mapper/Mapper')));
+const Indicators = Loadable(lazy(() => import('pages/mapper/BaseRepositories')));
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -45,8 +45,8 @@ const MainRoutes = {
       ]
     },
     // {
-    //   path: 'Selector',
-    //   element: <Selector />
+    //   path: 'Mapper',
+    //   element: <Mapper />
     // },
     {
       path: 'Schema',
@@ -61,7 +61,7 @@ const MainRoutes = {
         },
         {
           path: 'Config',
-          element: <DictionaryConfigs />
+          element: <RepoConfigs />
         }
         ]
     },
