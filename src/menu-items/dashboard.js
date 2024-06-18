@@ -1,9 +1,9 @@
 // assets
-import { DashboardOutlined, SettingOutlined,BarChartOutlined,AppstoreAddOutlined } from '@ant-design/icons';
+import { DashboardOutlined, SettingOutlined,BarChartOutlined,AppstoreAddOutlined, ExperimentOutlined } from '@ant-design/icons';
 
 // icons
 const icons = {
-  DashboardOutlined, SettingOutlined,BarChartOutlined, AppstoreAddOutlined
+  DashboardOutlined, SettingOutlined,BarChartOutlined, AppstoreAddOutlined, ExperimentOutlined
 };
 
 // ==============================|| MENU ITEMS - DASHBOARD ||============================== //
@@ -43,6 +43,14 @@ const dashboard = {
       type: 'item',
       url: '/Schema/Configs',
       icon: icons.BarChartOutlined,
+      breadcrumbs: true
+    },
+    {
+      id: 'text2SQL',
+      title: 'Text2SQL',
+      type: 'item',
+      url: '/text2sql',
+      icon: icons.ExperimentOutlined,
       breadcrumbs: true
     }
   ]

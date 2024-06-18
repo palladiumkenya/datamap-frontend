@@ -11,7 +11,7 @@ import MainCard from '../MainCard';
 
 // ==============================|| BREADCRUMBS ||============================== //
 
-const Breadcrumbs = ({ navigation, title, ...others }) => {
+const   Breadcrumbs = ({ navigation, title, ...others }) => {
   const location = useLocation();
   const [main, setMain] = useState();
   const [item, setItem] = useState();
@@ -47,7 +47,7 @@ const Breadcrumbs = ({ navigation, title, ...others }) => {
     location.pathname = '/dashboard/analytics';
   }
 
-  let mainContent;
+  let mainContent;``
   let itemContent;
   let breadcrumbContent = <Typography />;
   let itemTitle = '';
