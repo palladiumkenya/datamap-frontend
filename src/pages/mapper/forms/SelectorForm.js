@@ -17,8 +17,9 @@ import {
     InputLabel,
     OutlinedInput,
     Stack,
-    Typography, Select, MenuItem, Skeleton
+    Typography, Select, MenuItem, Skeleton,TextField
 } from '@mui/material';
+import MainCard from 'components/MainCard';
 
 // project import
 import AnimateButton from 'components/@extended/AnimateButton';
@@ -51,6 +52,7 @@ const SelectorForm = () => {
     });
 
     const [columns, setColumns] = useState([]);
+    const [primaryTableColumns, setPrimaryTableColumns] = useState([]);
 
     const [formData, setFormData] = useState([]);
 
@@ -70,11 +72,14 @@ const SelectorForm = () => {
         });
     };
 
-    const handleColumnChange = (e, baseVariable, table, column) => {
-        const filteredData = columns.filter(item => item.baseVariable === baseVariable)
-
-        formData.push({"base_repository":baselookup,"base_variable_mapped_to":baseVariable, "tablename":filteredData[0].tableSelected, "columnname":column, "datatype":"string"})
+    const handleColumnChange = (e, baseVariable, table, join_by) => {
+        const filteredData = columns.filter(item => item.baseVariable === baseVariable);
+        const selectIdentifier = baseVariable+"column";
+        const column = document.getElementsByName(selectIdentifier)[0].value;
+        formData.push({"base_repository":baselookup,"base_variable_mapped_to":baseVariable, "tablename":filteredData[0].tableSelected,
+            "columnname":column, "join_by":join_by, "datatype":"string"})
         setFormData(formData)
+        console.log(formData)
 
     };
 
@@ -107,6 +112,8 @@ const SelectorForm = () => {
 
     };
 
+
+
     const handleMouseDownPassword = (event) => {
         event.preventDefault();
     };
@@ -137,71 +144,143 @@ const SelectorForm = () => {
                         <Typography color="text.info" variant="h4">{baselookup} Mapping</Typography>
                         <Divider sx={{marginBottom:"20px"}}/>
                         <Grid container spacing={1}>
+                            <Grid container spacing={1} sx={{marginBottom:"20px"}}>
+                                <Grid item xs={3} md={3}>
+                                    <Stack spacing={1}>
+                                        <InputLabel htmlFor="base-variable">Primary Table</InputLabel>
+                                        <Select
+                                            id={"PrimaryTable"}
+                                            fullWidth
+                                            size="small"
+                                            onChange={(e)=>{ setPrimaryTableColumns(databaseColumns[e.target.value])}}
+                                        >
+                                            {
+                                                tablenames.map(table => (
+                                                        <MenuItem value={table}>{table}</MenuItem>
+                                                    )
+                                                )}
+                                        </Select>
+                                    </Stack>
+                                </Grid>
+                                <Grid item xs={3} md={3}>
+                                    <Stack spacing={1}>
+                                        <InputLabel htmlFor="base-variable">Unique Identifier</InputLabel>
+                                        <Select
+                                            name={"UniqueIdentifier"}
+                                            id={"UniqueIdentifier"}
+                                            placeholder="variable"
+                                            fullWidth
+                                            size="small"
+                                            onChange={(e)=>{}}
+                                        >
+                                            { primaryTableColumns.map(variable => ( <MenuItem value={variable}>{variable}</MenuItem>))
+                                            }
+                                        </Select>
+
+                                    </Stack>
+                                </Grid>
+                            </Grid>
+                            <Typography>Secondary Tables</Typography>
+                            <Grid container spacing={1} sx={{marginBottom:"20px"}}>
+                                <Grid item xs={2} md={2}>Baseline Variable</Grid>
+                                <Grid item xs={1} md={1}></Grid>
+                                <Grid item xs={3} md={3}>Source Table</Grid>
+                                <Grid item xs={3} md={3}>Variable Mapped</Grid>
+                                <Grid item xs={3} md={3}>JOIN Primary table By</Grid>
+                            </Grid>
+
                             { baseIndicators.length>0 ?
                                 baseIndicators.map(baseVariable => (
-                                    <Grid container spacing={1} sx={{marginBottom:"20px"}}>
-                                        <Grid item xs={3} md={3}>
-                                            <Stack spacing={1}>
-                                                <InputLabel htmlFor="base-variable">Baseline Variable</InputLabel>
-                                                {/*{*/}
-                                                {/*    baseIndicators.map(baseVariable => (*/}
-                                                <OutlinedInput
-                                                    id="base-indicators-{{baseVariable}}"
-                                                    value={baseVariable}
-                                                    readonly
-                                                    placeholder="John"
-                                                    fullWidth
-                                                />
-                                                    {/*    )*/}
-                                                    {/*)}*/}
-                                            </Stack>
-                                        </Grid>
+                                    <MainCard border={true} boxShadow   sx={{ width: '100%', marginBottom:'10px' }}>
 
-                                        <Grid item xs={1} md={1}>
-                                            <Stack spacing={1}>
-                                                <ArrowRightOutlined style={{"marginTop": "45px"}}/>
-                                            </Stack>
-                                        </Grid>
+                                        <Grid container spacing={1} sx={{marginBottom:"20px"}}>
+                                            <Grid item xs={2} md={2}>
+                                                <Stack spacing={1}>
+                                                    {/*<InputLabel htmlFor="base-variable">Baseline Variable</InputLabel>*/}
+                                                    {/*<Typography>{baseVariable}</Typography>*/}
+                                                    <TextField
+                                                        id="base-indicators-{{baseVariable}}"
+                                                        value={baseVariable}
+                                                        readonly
+                                                        placeholder="BaseVariable"
+                                                        fullWidth
+                                                        // helperText="Variable Description and expected value"
+                                                        size="small"
+                                                        sx={{ backgroundColor:'white' }}
+                                                    />
 
-                                        <Grid item xs={4} md={4}>
-                                            <Stack spacing={1}>
-                                                <InputLabel htmlFor="tables">Source Table</InputLabel>
-                                                <Select
-                                                    id={baseVariable+"table"}
-                                                    fullWidth
-                                                    onChange={(e)=>{handleTableSelect(e.target.value, baseVariable)}}
-                                                >
-                                                    {
-                                                        tablenames.map(table => (
-                                                        <MenuItem value={table}>{table}</MenuItem>
-                                                            )
-                                                        )}
-                                                </Select>
-                                            </Stack>
-                                        </Grid>
+                                                </Stack>
+                                            </Grid>
 
-                                        <Grid item xs={3} md={3}>
-                                            <Stack spacing={1}>
-                                                <InputLabel htmlFor="columns">Variable</InputLabel>
-                                                <Select
-                                                    name={baseVariable+"column"}
-                                                    id={baseVariable+"column"}
-                                                    placeholder="variable"
-                                                    fullWidth
-                                                    onChange={(e)=>{handleColumnChange(e, baseVariable,Object.keys(columns)[0], e.target.value)}}
-                                                >
-                                                    { columns.filter(item => item.baseVariable === baseVariable)
-                                                        .map(columnList => ( columnList.matchingTableColumns.map(variable => ( <MenuItem value={variable}>{variable}</MenuItem>))))
-                                                    }
-                                                </Select>
-                                            </Stack>
+                                            <Grid item xs={1} md={1}>
+                                                <Stack spacing={1} style={{"alignItems": "center"}}>
+                                                    <ArrowRightOutlined style={{"alignItems": "center"}}/>
+                                                </Stack>
+                                            </Grid>
+
+                                            <Grid item xs={3} md={3}>
+                                                <Stack spacing={1}>
+                                                    {/*<InputLabel htmlFor="tables">Source Table</InputLabel>*/}
+                                                    <Select
+                                                        id={baseVariable+"table"}
+                                                        fullWidth
+                                                        size="small"
+                                                        sx={{ backgroundColor:'#e6f7ff', borderRadius: '20px', border:'1px #40a9ff solid' }}
+                                                        onChange={(e)=>{handleTableSelect(e.target.value, baseVariable)}}
+                                                    >
+                                                        {
+                                                            tablenames.map(table => (
+                                                            <MenuItem value={table}>{table}</MenuItem>
+                                                                )
+                                                            )}
+                                                    </Select>
+                                                </Stack>
+                                            </Grid>
+
+                                            <Grid item xs={3} md={3}>
+                                                <Stack spacing={1}>
+                                                    {/*<InputLabel htmlFor="columns">Variable</InputLabel>*/}
+                                                    <Select
+                                                        name={baseVariable+"column"}
+                                                        id={baseVariable+"column"}
+                                                        placeholder="variable"
+                                                        fullWidth
+                                                        size="small"
+                                                        sx={{ backgroundColor:'#e6f7ff', borderRadius: '20px', border:'1px #40a9ff solid' }}
+                                                        // onChange={(e)=>{handleColumnChange(e, baseVariable,Object.keys(columns)[0], e.target.value)}}
+                                                    >
+                                                        { columns.filter(item => item.baseVariable === baseVariable)
+                                                            .map(columnList => ( columnList.matchingTableColumns.map(variable => ( <MenuItem value={variable}>{variable}</MenuItem>))))
+                                                        }
+                                                    </Select>
+                                                </Stack>
+                                            </Grid>
+
+                                            <Grid item xs={2} md={2}>
+                                                <Stack spacing={1}>
+                                                    {/*<InputLabel htmlFor="JoinColumn">Join Primary Table By</InputLabel>*/}
+                                                    <Select
+                                                        name={baseVariable+"JoinColumn"}
+                                                        id={baseVariable+"JoinColumn"}
+                                                        placeholder="JOIN"
+                                                        fullWidth
+                                                        size="small"
+                                                        sx={{ backgroundColor:'#e6f7ff', borderRadius: '20px', border:'1px #40a9ff solid' }}
+                                                        onChange={(e)=>{handleColumnChange(e, baseVariable,Object.keys(columns)[0], e.target.value)}}
+                                                    >
+                                                        { columns.filter(item => item.baseVariable === baseVariable)
+                                                            .map(columnList => ( columnList.matchingTableColumns.map(variable => ( <MenuItem value={variable}>{variable}</MenuItem>))))
+                                                        }
+                                                    </Select>
+                                                </Stack>
+                                            </Grid>
+                                            {/*<Grid item xs={1} md={1}>*/}
+                                            {/*    <IconButton variant="outlined" color="success" style={{"marginTop": "35px"}} id={baseVariable+"Mapped"}>*/}
+                                            {/*        <CheckCircleFilled />*/}
+                                            {/*    </IconButton>*/}
+                                            {/*</Grid>*/}
                                         </Grid>
-                                        <Grid item xs={1} md={1}>
-                                            <IconButton variant="outlined" color="success" style={{"marginTop": "35px"}} id={baseVariable+"Mapped"}>
-                                                <CheckCircleFilled />
-                                            </IconButton>
-                                        </Grid>
-                                    </Grid>
+                                    </MainCard>
                                 ) )
                                 :
                                 (

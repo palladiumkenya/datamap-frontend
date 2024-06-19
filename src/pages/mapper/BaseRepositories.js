@@ -39,7 +39,7 @@ const BaseRepositories = () =>{
 
     if (isPending) return 'Loading...'
 
-    if (error) return 'An error has occurred: ' + error.message + " Check your source DB/API connection"
+    if (error) return 'An error has occurred: ' + error.message + " Check your source DB/API source connection configuration"
 
 
     return(
