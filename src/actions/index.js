@@ -6,11 +6,17 @@ import axios from "axios";
 import {API_URL} from "../constants";
 
 
-export const fetchBaseSchemas = async() => {
-  const data =  await fetch(API_URL+"/dictionary_mapper/base-schemas").then((res) =>
+export const fetchBaseRepositories = async() => {
+  const data =  fetch(API_URL+"/dictionary_mapper/base_schemas").then((res) =>
           res.json(),
       );
-
-  console.log("data ==>",data);
   return data;
+};
+
+
+export const fetchRepoMappings = async(baselookup) => {
+    const data =  fetch(API_URL+"/dictionary_mapper/base_schema_variables/"+baselookup).then((res) =>
+        res.json(),
+    );
+    return data;
 };
