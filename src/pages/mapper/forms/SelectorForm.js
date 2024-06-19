@@ -17,7 +17,7 @@ import {
     InputLabel,
     OutlinedInput,
     Stack,
-    Typography, Select,MenuItem
+    Typography, Select, MenuItem, Skeleton
 } from '@mui/material';
 
 // project import
@@ -43,10 +43,10 @@ const SelectorForm = () => {
 
     const [databaseColumns, setdatabaseColumns] = useState({});
     const [tablenames, setTablenames] = useState(Object.keys(databaseColumns));
-    const [txcurrBaseIndicators, setBaseIndicators] = useState([])
+    const [baseIndicators, setBaseIndicators] = useState([])
 
     const allColumns = []
-    txcurrBaseIndicators.map(o =>{
+    baseIndicators.map(o =>{
         allColumns.push({"baseVariable":o,"tableSelected":"", "matchingTableColumns":[]});
     });
 
@@ -58,8 +58,7 @@ const SelectorForm = () => {
 
 
     const getBaseVariables = async() => {
-        console.log('params.base_lookup', baselookup)
-        await axios.get(API_URL+"/indicator_selector/base_variables/"+baselookup).then(res => {
+        await axios.get(API_URL+"/dictionary_mapper/base_variables/"+baselookup).then(res => {
             setBaseIndicators(res.data);
 
             const allColumns = []
@@ -72,14 +71,15 @@ const SelectorForm = () => {
     };
 
     const handleColumnChange = (e, baseVariable, table, column) => {
+        const filteredData = columns.filter(item => item.baseVariable === baseVariable)
 
-        formData.push({"indicator":'TX_CURR',"baseVariableMappedTo":baseVariable, "tablename":table, "columnname":column, "datatype":"string"})
+        formData.push({"base_repository":baselookup,"base_variable_mapped_to":baseVariable, "tablename":filteredData[0].tableSelected, "columnname":column, "datatype":"string"})
         setFormData(formData)
 
     };
 
     const getDatabaseColumns = async() => {
-        await axios.get(API_URL+"/indicator_selector/getDatabaseColumns").then(res => {
+        await axios.get(API_URL+"/dictionary_mapper/getDatabaseColumns").then(res => {
             setdatabaseColumns(res.data);
             setTablenames(Object.keys(res.data));
 
@@ -91,10 +91,7 @@ const SelectorForm = () => {
         variableObj[tableSelected] = databaseColumns[tableSelected];
         variableObj["baseVariable"] = basevariable;
 
-        console.log("all columns",basevariable, columns);
-
         const updateColumns = columns.filter((item) => item["baseVariable"] === basevariable);
-        console.log("before columns",basevariable, updateColumns);
         updateColumns[0]["matchingTableColumns"] = databaseColumns[tableSelected];
         updateColumns[0]["tableSelected"] = tableSelected;
 
@@ -119,8 +116,10 @@ const SelectorForm = () => {
         event.preventDefault();
 
         console.log(formData);
-        axios.post(API_URL+ "/indicator_selector/add_mapped_variables",  formData);
-        window.location.href = `http://localhost:3000/schema/config?baselookup=`+baselookup;
+        axios.post(API_URL+ "/dictionary_mapper/add_mapped_variables",  formData).then(res => {
+            window.location.href = `http://localhost:3000/schema/config?baselookup=` + baselookup;
+        })
+        // window.location.href = `http://localhost:3000/schema/config?baselookup=`+baselookup;
 
     };
 
@@ -138,14 +137,14 @@ const SelectorForm = () => {
                         <Typography color="text.info" variant="h4">{baselookup} Mapping</Typography>
                         <Divider sx={{marginBottom:"20px"}}/>
                         <Grid container spacing={1}>
-                            {
-                                txcurrBaseIndicators.map(baseVariable => (
+                            { baseIndicators.length>0 ?
+                                baseIndicators.map(baseVariable => (
                                     <Grid container spacing={1} sx={{marginBottom:"20px"}}>
                                         <Grid item xs={3} md={3}>
                                             <Stack spacing={1}>
                                                 <InputLabel htmlFor="base-variable">Baseline Variable</InputLabel>
                                                 {/*{*/}
-                                                {/*    txcurrBaseIndicators.map(baseVariable => (*/}
+                                                {/*    baseIndicators.map(baseVariable => (*/}
                                                 <OutlinedInput
                                                     id="base-indicators-{{baseVariable}}"
                                                     value={baseVariable}
@@ -203,7 +202,24 @@ const SelectorForm = () => {
                                             </IconButton>
                                         </Grid>
                                     </Grid>
-                                )
+                                ) )
+                                :
+                                (
+                                    <div>
+                                        <Skeleton variant="rectangular" width={600} height={100} />
+                                        <Grid item xs={6}><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></Grid>
+
+                                        <Skeleton variant="rectangular" width={600} height={100} />
+                                        <Grid item xs={6}><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></Grid>
+
+                                        <Skeleton variant="rectangular" width={600} height={100} />
+                                        <Grid item xs={6}><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></Grid>
+
+                                        <Skeleton variant="rectangular" width={600} height={100} />
+                                        <Grid item xs={6}><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></Grid>
+
+
+                                    </div>
                                 )}
 
 
