@@ -57,8 +57,6 @@ const RepoConfigs = () =>{
     if (isPending) return 'Loading...'
 
     if (error) return 'An error has occurred: ' + error.message + " Check your source DB/API connection"
-    console.log("found ==>",data);
-
 
 
     const getBaseSchemas = async() => {
@@ -71,8 +69,8 @@ const RepoConfigs = () =>{
         setSpinner(true)
         setLoadSuccessAlert(false);
 
-        await fetch(API_URL+"/dictionary_mapper/load_data/"+baselookup).then((res)=> {
-            setLoadedData(res.data);
+        await axios.get(API_URL+"/dictionary_mapper/load_data/"+baselookup).then((res)=> {
+            // setLoadedData(res.data);
             const data = []
             Object.keys(res.data[0]).map(row => {
                 data.push({ field: row, headerName: row, width: 130 },)
@@ -109,7 +107,7 @@ const RepoConfigs = () =>{
         setUploadSpinner(true);
         setSuccessAlert(false);
 
-        await fetch(API_URL+"/dictionary_mapper/generate_config", {
+        await axios.get(API_URL+"/dictionary_mapper/generate_config", {
             params: { baseSchema }
         }).then((res)=> {
             setUploadSpinner(false);
@@ -175,7 +173,7 @@ const RepoConfigs = () =>{
 
                                             </Typography>
                                             <Typography variant="h6">
-                                                {base.schema} Count: <b  style={{"color":"#13c2c2"}}>{loadedData.length}</b>
+                                                {base.schema} Count: <b  style={{"color":"#13c2c2"}}>{datagridrows.length}</b>
                                                 {loadSuccessAlert &&
                                                     <Button variant="outlined" color="success" size="extraSmall" onClick={()=>sendData(baselookup)} style={{"marginLeft":"50px"}}>
                                                         Send To WareHouse
@@ -184,11 +182,11 @@ const RepoConfigs = () =>{
                                             </Typography>
                                             {/*<Typography variant="h6">Date: <b style={{"color":"#13c2c2"}}>{txcurr.indicator_date}</b></Typography>*/}
                                         </Box>
-                                        <Box>
+                                        <Box sx={{ width: '80%' }}>
                                             { progress >0 &&
                                                 <LinearProgress variant="determinate" value={progress} />
                                             }
-                                            { loadedData.length >0 &&
+                                            { datagridrows.length >0 &&
                                                 <div>
                                                     <DataGrid
                                                         rows={datagridrows}

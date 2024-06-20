@@ -100,7 +100,6 @@ const SelectorForm = () => {
         updateColumns[0]["matchingTableColumns"] = databaseColumns[tableSelected];
         updateColumns[0]["tableSelected"] = tableSelected;
 
-
         const updatedList = columns.map(item => {
             if (item["baseVariable"] === basevariable) {
 
@@ -112,21 +111,29 @@ const SelectorForm = () => {
 
     };
 
+    const handlePrimaryTableIdSelect = (uniqueId) => {
+        // const filteredData = columns.filter(item => item.baseVariable === baseVariable);
 
+        const table = document.getElementsByName('PrimaryTable')[0].value;
 
-    const handleMouseDownPassword = (event) => {
-        event.preventDefault();
+        formData.push({"base_repository":baselookup,"base_variable_mapped_to":'PrimaryTableId', "tablename":table,
+            "columnname":uniqueId, "join_by":"-", "datatype":"string"})
+        setFormData(formData)
+        console.log(formData)
+
     };
+
+    // const handleMouseDownPassword = (event) => {
+    //     event.preventDefault();
+    // };
 
     const handleSubmit = async (event) => {
 
         event.preventDefault();
 
-        console.log(formData);
         axios.post(API_URL+ "/dictionary_mapper/add_mapped_variables",  formData).then(res => {
             window.location.href = `http://localhost:3000/schema/config?baselookup=` + baselookup;
         })
-        // window.location.href = `http://localhost:3000/schema/config?baselookup=`+baselookup;
 
     };
 
@@ -150,6 +157,7 @@ const SelectorForm = () => {
                                         <InputLabel htmlFor="base-variable">Primary Table</InputLabel>
                                         <Select
                                             id={"PrimaryTable"}
+                                            name={"PrimaryTable"}
                                             fullWidth
                                             size="small"
                                             onChange={(e)=>{ setPrimaryTableColumns(databaseColumns[e.target.value])}}
@@ -171,7 +179,7 @@ const SelectorForm = () => {
                                             placeholder="variable"
                                             fullWidth
                                             size="small"
-                                            onChange={(e)=>{}}
+                                            onChange={(e)=>{handlePrimaryTableIdSelect(e.target.value)}}
                                         >
                                             { primaryTableColumns.map(variable => ( <MenuItem value={variable}>{variable}</MenuItem>))
                                             }
