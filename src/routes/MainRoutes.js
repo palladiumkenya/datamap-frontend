@@ -24,6 +24,8 @@ const Indicators = Loadable(lazy(() => import('pages/indicator-selection/Indicat
 const DataExtraction = Loadable(lazy(() => import('pages/data-extraction/DataExtraction')));
 const DataDictionary = Loadable(lazy(() => import('pages/data-dictionary/DataDictionary')));
 const DictionaryConfigs = Loadable(lazy(() => import('pages/indicator-selection/DictionaryConfigs')));
+const DataDictionaryUSL = Loadable(lazy(() => import('pages/data-dictionary/DataDictionaryUSL')));
+const ViewDataDictionaryUSL = Loadable(lazy(() => import('pages/data-dictionary/ViewDataDictionaryUSL')));
 const AddDataDictionary = Loadable(lazy(() => import('pages/data-dictionary/AddDataDictionary')));
 const ViewDataDictionary = Loadable(lazy(() => import('pages/data-dictionary/ViewDataDictionary')));
 const Text2Sql = Loadable(lazy(() => import('pages/text2sql')));
@@ -95,7 +97,6 @@ const MainRoutes = {
       path: 'dictionary',
       children: [
         {
-          path: `list`,
           element: <DataDictionary />
         },
         {
@@ -113,6 +114,27 @@ const MainRoutes = {
         
       ]
     },
+    {
+      path: 'usl_dictionary',
+      children: [
+        {
+          path: `list`,
+          element: <DataDictionaryUSL />
+        },
+        {
+          path: `add`,
+          element: <AddDataDictionary />
+        },
+        {
+          path: `upload/:dictionaryName`,
+          element: <AddDataDictionary />
+        },
+        {
+          path: `view/:dictionaryName`,
+          element: <ViewDataDictionaryUSL />
+        }
+
+      ]
     {
       path: 'sample-page',
       element: <SamplePage />

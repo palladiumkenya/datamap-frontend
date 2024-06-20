@@ -50,7 +50,7 @@ const headCells = [
 ];
 
 
-const ViewDataDictionary = () => {
+const ViewDataDictionaryUSL = () => {
     const [selected] = useState([]);
     let [data, setData] = useState([]);
     const {dictionaryName} = useParams()
@@ -66,20 +66,6 @@ const ViewDataDictionary = () => {
         }
     }, []);
 
-    let fetchData = async () => {
-        try {
-            const response = await  fetch('http://localhost:8000/api/data_dictionary/data_dictionary_terms')
-            if (response.ok) {
-                const jsonData = await response.json();
-
-                setData(jsonData[0]?.dictionary_terms);
-            } else {
-                throw new Error('Error: ' + response.status);
-            }
-        } catch (err){
-            console.log(err);
-        }
-    }
 
     const isSelected = (dict_name) => selected.indexOf(dict_name) !== -1;
 
@@ -166,4 +152,4 @@ const ViewDataDictionary = () => {
     )
 }
 
-export default ViewDataDictionary
+export default ViewDataDictionaryUSL

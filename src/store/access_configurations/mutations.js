@@ -12,7 +12,7 @@ const deleteAccessConfig = async (id) => {
 };
 
 export const useDeleteAccessConfig = () => {
-    const queryClient = useQueryClient(); // Move useQueryClient inside the hook
+    const queryClient = useQueryClient();
 
     return useMutation({
         mutationFn: deleteAccessConfig,
