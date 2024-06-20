@@ -110,6 +110,7 @@ const MainRoutes = {
           path: `view/:dictionaryName`,
           element: <ViewDataDictionary />
         }
+        
       ]
     },
     {
