@@ -56,7 +56,7 @@ const utilities = {
     // },
     {
       id: 'ind-selector',
-      title: 'Indicator Selector',
+      title: 'Indicator Mapper',
       type: 'item',
       url: '/selector',
       icon: icons.AntDesignOutlined,
