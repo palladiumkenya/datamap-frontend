@@ -8,11 +8,11 @@ const FinalStepPage = () => {
     const navigate = useNavigate();
 
     const handleFinish = () => {
-        navigate('/dictionary/list');
+        navigate('/usl_dictionary/list');
     };
 
     const handlePublish = () => {
-        navigate('/dictionary/list');
+        navigate('/usl_dictionary/list');
     };
     return (
         <React.Fragment>
@@ -27,7 +27,7 @@ const FinalStepPage = () => {
                     <Box sx={{flex: '1 1 auto'}}/>
                     <Stack direction="row" spacing={2}>
                         <Button variant={`contained`} color={`success`} onClick={handleFinish}>Finish</Button>
-                        <Button variant={`contained`} color={`info`} onClick={handlePublish}>Publish To MarketPlace</Button>
+                        {/*<Button variant={`contained`} color={`info`} onClick={handlePublish}>Publish To MarketPlace</Button>*/}
                     </Stack>
                 </Box>
             </MainCard>

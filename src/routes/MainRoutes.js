@@ -3,7 +3,6 @@ import { lazy } from 'react';
 // project import
 import Loadable from 'components/Loadable';
 import MainLayout from 'layout/MainLayout';
-import AddConfig from '../pages/configs/AddConfig';
 import RepoConfigs from "../pages/mapper/RepoConfigs";
 
 // render - dashboard
@@ -97,6 +96,7 @@ const MainRoutes = {
       path: 'dictionary',
       children: [
         {
+          path: `list/:dataSource`,
           element: <DataDictionary />
         },
         {
@@ -135,6 +135,7 @@ const MainRoutes = {
         }
 
       ]
+    },
     {
       path: 'sample-page',
       element: <SamplePage />

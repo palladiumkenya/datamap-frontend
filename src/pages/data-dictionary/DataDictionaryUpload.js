@@ -9,7 +9,7 @@ const DataDictionaryUpload = ({onNextStep}) => {
     const parseCSV = (csvData) => {
         const rows = csvData.split("\n"); // Split CSV data into rows
         let headers = rows[0].split(","); // Assuming the first row contains headers
-        headers = headers.map(h => h.replace(/\r/g, ""))
+        headers = headers.map(h => h.replace(/\r/g, ""));
 
         const result = [];
         for (let i = 1; i < rows.length; i++) {
@@ -30,7 +30,6 @@ const DataDictionaryUpload = ({onNextStep}) => {
                         insideQuotes = !insideQuotes;
                     }
                 } else if (char === ',' && !insideQuotes) {
-                    console.log(obj[headers[Object.keys(obj).length]])
                     obj[headers[Object.keys(obj).length]] = currentField.trim();
                     currentField = '';
                 } else {
@@ -38,10 +37,11 @@ const DataDictionaryUpload = ({onNextStep}) => {
                 }
             }
 
+            // Add the last field to the object
             obj[headers[Object.keys(obj).length]] = currentField.trim();
             result.push(obj);
         }
-console.log(result, headers)
+
         return result;
     };
 
