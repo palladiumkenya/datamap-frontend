@@ -10,7 +10,6 @@ const getDataDictionariesUSL = async () => {
 const getDataDictionaryTermsUSL = async () => {
     const res = await fetch('http://localhost:8000/api/data_dictionary/data_dictionary_terms_usl');
     const jsonData = await res.json();
-    console.log(jsonData)
     return jsonData ?? [];
 };
 const getDataDictionaries = async () => {
@@ -28,6 +27,13 @@ const getDataDictionaryTerms = async () => {
 const getDataDictionaryTerm = async ({queryKey}) => {
     const [, id] = queryKey;
     const res = await fetch(`http://localhost:8000/api/data_dictionary/data_dictionary_terms/${id}`)
+    const jsonData = await res.json();
+    return jsonData ?? [];
+};
+
+const getDataDictionaryTermUSL = async ({queryKey}) => {
+    const [, id] = queryKey;
+    const res = await fetch(`http://localhost:8000/api/data_dictionary/data_dictionary_terms_usl/${id}`)
     const jsonData = await res.json();
     return jsonData ?? [];
 };
@@ -55,5 +61,11 @@ export const useGetDataDictionaryTerms = () => useQuery({
 export const useGetDataDictionaryTerm = (id) => useQuery({
     queryKey: ['data_dictionary_term', id],
     queryFn: getDataDictionaryTerm,
+    enabled: !!id
+});
+
+export const useGetDataDictionaryTermUSL = (id) => useQuery({
+    queryKey: ['data_dictionary_term_usl', id],
+    queryFn: getDataDictionaryTermUSL,
     enabled: !!id
 });
