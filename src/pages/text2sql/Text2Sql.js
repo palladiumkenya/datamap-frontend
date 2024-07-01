@@ -1,13 +1,36 @@
 import { useState } from 'react';
 import {
-  Stack, Typography, TextField, Button, Box, Card, CardContent, IconButton, Tooltip,
-  CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
-  Snackbar, Fab, Modal, Rating
+  Stack,
+  Typography,
+  TextField,
+  Button,
+  Box,
+  Card,
+  CardContent,
+  IconButton,
+  Tooltip,
+  CircularProgress,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Snackbar,
+  Fab,
+  Modal,
+  Rating,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl
 } from '@mui/material';
 import { FileCopy as FileCopyIcon } from '@mui/icons-material';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { materialLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import RateReviewIcon from '@mui/icons-material/RateReview';
+import { width } from '../../../../../../AppData/Local/Microsoft/TypeScript/5.4/node_modules/@mui/system/index';
 
 const default_url = process.env.REACT_APP_TEXT2SQL;
 
@@ -23,6 +46,10 @@ const Text2SQL = () => {
   const [feedback, setFeedback] = useState('');
   const [feedbackSent, setFeedbackSent] = useState(false);
   const [feedbackError, setFeedbackError] = useState('');
+  const [vizType, setVizType] = useState('table');
+  const handleChange = (event) => {
+    setVizType(event.target.value);
+  };
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -35,37 +62,40 @@ const Text2SQL = () => {
     width: 400,
     bgcolor: 'background.paper',
     boxShadow: 24,
-    p: 4,
+    p: 4
   };
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(sqlQuery).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }).catch(err => {
-      console.error("Failed to copy text: ", err);
-    });
+    navigator.clipboard
+      .writeText(sqlQuery)
+      .then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      })
+      .catch((err) => {
+        console.error('Failed to copy text: ', err);
+      });
   };
 
   const handleGenerateSQL = async () => {
     setLoading(true);
-    setSqlQuery('');  // Clear previous SQL query
-    setData([]);      // Clear previous data
-    setColumns([]);   // Clear previous columns
-    setError('');     // Clear previous error
+    setSqlQuery(''); // Clear previous SQL query
+    setData([]); // Clear previous data
+    setColumns([]); // Clear previous columns
+    setError(''); // Clear previous error
     setQueryGenerated(false);
     try {
       const response = await fetch(default_url + '/query_from_natural_language', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': '*/*'
+          Accept: '*/*'
         },
-        body: JSON.stringify({ question: query }),
+        body: JSON.stringify({ question: query })
       });
       const result = await response.json();
       if (response.ok) {
-        setSqlQuery(result.sql_query || '');  // Set SQL query or empty if not available
+        setSqlQuery(result.sql_query || ''); // Set SQL query or empty if not available
         setQueryGenerated(true);
         if (result.sql_query) {
           const resultData = result.data || [];
@@ -80,7 +110,7 @@ const Text2SQL = () => {
         }
       }
     } catch (error) {
-      console.error("Error generating SQL:", error);
+      console.error('Error generating SQL:', error);
       setError('An unexpected error occurred while generating the SQL.');
     } finally {
       setLoading(false);
@@ -106,9 +136,9 @@ const Text2SQL = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': '*/*'
+          Accept: '*/*'
         },
-        body: JSON.stringify({ feedback }),
+        body: JSON.stringify({ feedback })
       });
       if (response.ok) {
         setFeedbackSent(true);
@@ -118,13 +148,13 @@ const Text2SQL = () => {
         setFeedbackError('Failed to send feedback. Please try again later.');
       }
     } catch (error) {
-      console.error("Error sending feedback:", error);
+      console.error('Error sending feedback:', error);
       setFeedbackError('An unexpected error occurred while sending feedback.');
     }
   };
 
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center',  p: 2 }}>
+    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', p: 2 }}>
       <Card sx={{ width: '100%', maxWidth: 800, p: 2 }}>
         <CardContent>
           <Stack spacing={3}>
@@ -144,14 +174,8 @@ const Text2SQL = () => {
             />
 
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-              <Button
-                variant="contained"
-                size="large"
-                sx={{ textTransform: 'none' }}
-                onClick={handleGenerateSQL}
-                disabled={loading}
-              >
-                {loading ? <CircularProgress size={24} /> : "Generate SQL"}
+              <Button variant="contained" size="large" sx={{ textTransform: 'none' }} onClick={handleGenerateSQL} disabled={loading}>
+                {loading ? <CircularProgress size={24} /> : 'Generate SQL'}
               </Button>
             </Box>
 
@@ -163,7 +187,7 @@ const Text2SQL = () => {
               <SyntaxHighlighter language="sql" style={materialLight}>
                 {sqlQuery || 'SQL query will be shown here.'}
               </SyntaxHighlighter>
-              <Tooltip title={copied ? "Copied!" : "Copy"}>
+              <Tooltip title={copied ? 'Copied!' : 'Copy'}>
                 <IconButton
                   onClick={handleCopy}
                   size="small"
@@ -175,9 +199,22 @@ const Text2SQL = () => {
               </Tooltip>
             </Box>
 
-            <Typography variant="body1" component="p">
-              Query Results:
-            </Typography>
+            {data.length > 0 ? (
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Typography variant="body1" component="p">
+                  Query Results:
+                </Typography>
+
+                <FormControl sx={{ width: 320 }}>
+                  <InputLabel id="labelVizType">Select Visualization</InputLabel>
+                  <Select labelId="labelVizType" id="vizType" value={vizType} onChange={handleChange} label="Select Visualization">
+                    <MenuItem value="table">Table</MenuItem>
+                    <MenuItem value="pie-chart">Pie Chart</MenuItem>
+                    <MenuItem value="bar-chart">Bar Chart</MenuItem>
+                  </Select>
+                </FormControl>
+              </div>
+            ) : null}
 
             {error && (
               <Typography variant="body2" color="error" component="p">
@@ -230,70 +267,57 @@ const Text2SQL = () => {
               bgcolor: '#1976d2',
               color: 'white',
               '&:hover': {
-                bgcolor: '#1565c0',
-              },
+                bgcolor: '#1565c0'
+              }
             }}
           >
             <RateReviewIcon />
           </Fab>
 
-           <Modal
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-          >
+          <Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
             <Box sx={style}>
-                <Typography variant="body1" component="h3">
-                  How was your experience using Text2SQL?
+              <Typography variant="body1" component="h3">
+                How was your experience using Text2SQL?
+              </Typography>
+              <Rating
+                name="simple-controlled"
+                value={ratingValue}
+                onChange={(event, newValue) => {
+                  setRatingValue(newValue);
+                }}
+              />
+              <TextField
+                id="outlined-feedback"
+                label="Your feedback"
+                placeholder="Let us know what you think..."
+                multiline
+                fullWidth
+                variant="outlined"
+                value={feedback}
+                onChange={handleFeedbackChange}
+              />
+              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                <Button variant="contained" size="large" sx={{ textTransform: 'none' }} onClick={handleSendFeedback}>
+                  Send Feedback
+                </Button>
+              </Box>
+              {feedbackError && (
+                <Typography variant="body2" color="error" component="p">
+                  {feedbackError}
                 </Typography>
-                <Rating
-                  name="simple-controlled"
-                  value={ratingValue}
-                  onChange={(event, newValue) => {
-                    setRatingValue(newValue);
-                  }}
-                />
-                <TextField
-                  id="outlined-feedback"
-                  label="Your feedback"
-                  placeholder="Let us know what you think..."
-                  multiline
-                  fullWidth
-                  variant="outlined"
-                  value={feedback}
-                  onChange={handleFeedbackChange}
-                />
-                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                  <Button
-                    variant="contained"
-                    size="large"
-                    sx={{ textTransform: 'none' }}
-                    onClick={handleSendFeedback}
-                  >
-                    Send Feedback
-                  </Button>
-                </Box>
-                {feedbackError && (
-                  <Typography variant="body2" color="error" component="p">
-                    {feedbackError}
-                  </Typography>
-                )}
-                <Snackbar
-                  open={feedbackSent}
-                  autoHideDuration={6000}
-                  onClose={() => setFeedbackSent(false)}
-                  message="Feedback sent successfully!"
-                />
-
+              )}
+              <Snackbar
+                open={feedbackSent}
+                autoHideDuration={6000}
+                onClose={() => setFeedbackSent(false)}
+                message="Feedback sent successfully!"
+              />
             </Box>
           </Modal>
         </div>
-      ) : null
-      }
-
+      ) : null}
     </Box>
-  )
+  );
 };
 
 export default Text2SQL;
