@@ -18,16 +18,16 @@ const Shadow = Loadable(lazy(() => import('pages/components-overview/Shadow')));
 const AntIcons = Loadable(lazy(() => import('pages/components-overview/AntIcons')));
 const Configs = Loadable(lazy(() => import('pages/configs/Configs')));
 const AddConfig = Loadable(lazy(() => import('pages/configs/AddConfig')));
-const Selector = Loadable(lazy(() => import('pages/indicator-selection/Selector')));
-const Indicators = Loadable(lazy(() => import('pages/indicator-selection/Indicators')));
+// const Selector = Loadable(lazy(() => import('pages/indicator-selection/Selector')));
+// const Indicators = Loadable(lazy(() => import('pages/indicator-selection/Indicators')));
 const DataExtraction = Loadable(lazy(() => import('pages/data-extraction/DataExtraction')));
 const DataDictionary = Loadable(lazy(() => import('pages/data-dictionary/DataDictionary')));
-const DictionaryConfigs = Loadable(lazy(() => import('pages/indicator-selection/DictionaryConfigs')));
+// const DictionaryConfigs = Loadable(lazy(() => import('pages/indicator-selection/DictionaryConfigs')));
 const DataDictionaryUSL = Loadable(lazy(() => import('pages/data-dictionary/DataDictionaryUSL')));
 const ViewDataDictionaryUSL = Loadable(lazy(() => import('pages/data-dictionary/ViewDataDictionaryUSL')));
 const AddDataDictionary = Loadable(lazy(() => import('pages/data-dictionary/AddDataDictionary')));
 const ViewDataDictionary = Loadable(lazy(() => import('pages/data-dictionary/ViewDataDictionary')));
-const Text2Sql = Loadable(lazy(() => import('pages/text2sql')));
+const Text2Sql = Loadable(lazy(() => import('pages/text2sql/Text2Sql')));
 const Selector = Loadable(lazy(() => import('pages/mapper/Mapper')));
 const Indicators = Loadable(lazy(() => import('pages/mapper/BaseRepositories')));
 const Text2SQL = Loadable(lazy(() => import('pages/text2sql/Text2Sql')));
@@ -116,7 +116,7 @@ const MainRoutes = {
           path: `view/:dictionaryName`,
           element: <ViewDataDictionary />
         }
-        
+
       ]
     },
     {

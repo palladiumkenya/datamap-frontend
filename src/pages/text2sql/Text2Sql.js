@@ -8,9 +8,8 @@ import { FileCopy as FileCopyIcon } from '@mui/icons-material';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { materialLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import RateReviewIcon from '@mui/icons-material/RateReview';
-import { borderRadius } from '@mui/system';
 
-const default_url = "http://localhost:8000/api/text2sql";
+const default_url = process.env.REACT_APP_TEXT2SQL;
 
 const Text2SQL = () => {
   const [query, setQuery] = useState('');
