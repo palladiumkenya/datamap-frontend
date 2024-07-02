@@ -30,7 +30,6 @@ import { FileCopy as FileCopyIcon } from '@mui/icons-material';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { materialLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import RateReviewIcon from '@mui/icons-material/RateReview';
-import { width } from '../../../../../../AppData/Local/Microsoft/TypeScript/5.4/node_modules/@mui/system/index';
 
 const default_url = process.env.REACT_APP_TEXT2SQL;
 
