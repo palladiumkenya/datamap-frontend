@@ -6,7 +6,7 @@ import {
     TableContainer,
     TableHead,
     TableRow, Typography,
-    CircularProgress, Button, Grid, Stack
+    CircularProgress, Button, Grid
 } from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
@@ -50,13 +50,6 @@ const headCells = [
     },
 ];
 
-const columnSchema = {
-    column: "string",
-    data_type: "string",
-    is_required: "string",
-    description: "string",
-    expected_values: "string",
-};
 const ValidateDataDictionaryFile = ({file, onFinish, dictionary}) => {
     const [loading, setLoading] = useState(true);
     const [errors, setErrors] = useState([]);
@@ -68,12 +61,12 @@ const ValidateDataDictionaryFile = ({file, onFinish, dictionary}) => {
         validateFile(file);
     }, [file]);
 
-    const validateFile = (file) => {
+    const validateFile = (data) => {
         setLoading(true);
         // Validate each row in the file
-        const errors = file.map(row => checkErrors(row));
+        const errors = data.map(row => checkErrors(row));
         setErrors(errors);
-        const validRows = file.filter((_, index) => errors[index].length === 0);
+        const validRows = data.filter((_, index) => errors[index].length === 0);
         setValidRows(validRows);
         setLoading(false);
     };
@@ -206,7 +199,7 @@ const ValidateDataDictionaryFile = ({file, onFinish, dictionary}) => {
                                     role="checkbox"
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                     tabIndex={-1}
-                                    key={row.name}
+                                    key={row.name || index}
                                 >
                                     <TableCell component="th" align="left" style={{ wordWrap: 'break-word' }}>{renderStatusCell(row)}</TableCell>
                                     <TableCell align="left">{row?.column}</TableCell>

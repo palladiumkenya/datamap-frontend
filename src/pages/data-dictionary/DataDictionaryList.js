@@ -1,20 +1,23 @@
 import {
-    Box, IconButton,
+    Box,
+    CircularProgress,
+    IconButton,
     Link,
-    Stack,
     Table,
     TableBody,
     TableCell,
     TableContainer,
     TableHead,
-    TableRow, Tooltip,
-    Typography
+    TableRow,
+    Tooltip,
 } from "@mui/material";
-import Dot from "../../components/@extended/Dot";
-import PropTypes from "prop-types";
 import {useEffect, useState} from "react";
 import {Link as RouterLink, useNavigate} from "react-router-dom";
-import {DeleteOutlined, EditOutlined, UploadOutlined} from "@ant-design/icons";
+import {EyeOutlined} from "@ant-design/icons";
+import {
+    useGetDataDictionaries,
+    useGetDataDictionaryTerms
+} from "../../store/data-dictionary/queries";
 
 
 const headCells = [
@@ -42,51 +45,30 @@ const headCells = [
 const DataDictionaryList = () => {
     const [selected] = useState([]);
     let [data, setData] = useState([]);
-
-    const navigate = useNavigate()
-
-    const handleClickUpload = (name) => {
-        navigate(`/dictionary/upload/${name}`)
-    }
-    const handleClickView = (name) => {
-        navigate(`/dictionary/view/${name}`)
-    }
-
-    let repos = [
-        {
-            "name": "Client Repository",
-            "id": "client_repository"
-        },
-        {
-            "name": "Events Repository",
-            "id": "events_repository"
-        },
-    ]
+    const {isLoading: isLoadingDict, data: repos} = useGetDataDictionaries();
+    const {isLoading: isLoadingTerms, data: terms} = useGetDataDictionaryTerms();
+    const navigate = useNavigate();
 
     useEffect(() => {
-        fetchData();
-    }, []);
-
-    let fetchData = async () => {
-        try {
-            const response = await  fetch('http://localhost:8000/api/data_dictionary/data_dictionaries')
-            if (response.ok) {
-                const jsonData = await response.json();
-                let configs = repos.map((repo) => {
-                    let datadict = jsonData.find(dict => dict.name === repo.id)
-
-                    return {...repo, ...datadict, "terms": datadict?.dictionary_terms.length ?? 0}
-                })
-                setData(configs);
-            } else {
-                throw new Error('Error: ' + response.status);
-            }
-        } catch (err){
-            console.log(err);
+        if (!isLoadingDict && !isLoadingTerms && repos && terms) {
+            let configs = repos.map((repo) => {
+                let datadict = terms.find(dict => dict.name === repo.name);
+                return {...repo, ...datadict, "terms": datadict?.dictionary_terms.length ?? 0};
+            });
+            setData(configs);
         }
+    }, [isLoadingDict, isLoadingTerms, repos, terms]);
+
+
+    const handleClickView = (id) => {
+        navigate(`/dictionary/view/${id}`)
     }
 
     const isSelected = (dict_name) => selected.indexOf(dict_name) !== -1;
+
+    if (isLoadingDict || isLoadingTerms) {
+        return (<CircularProgress />);
+    }
 
     return (
         <Box>
@@ -146,19 +128,9 @@ const DataDictionaryList = () => {
                                     </TableCell>
                                     <TableCell align="left">{row?.terms}</TableCell>
                                     <TableCell align="right">
-                                        <Tooltip  title={`Upload Dictionary`}>
-                                            <IconButton aria-label="Upload" onClick={() => handleClickUpload(row.id)}>
-                                                <UploadOutlined />
-                                            </IconButton>
-                                        </Tooltip>
-                                        <Tooltip  title={`Edit Dictionary Variables`}>
-                                            <IconButton aria-label="Edit"  onClick={() => handleClickView(row.id)}>
-                                                <EditOutlined />
-                                            </IconButton>
-                                        </Tooltip>
-                                        <Tooltip  title={`Delete All Dictionary Variables`}>
-                                            <IconButton aria-label="Delete">
-                                                <DeleteOutlined />
+                                        <Tooltip  title={`View Dictionary Variables`}>
+                                            <IconButton aria-label="View"  onClick={() => handleClickView(row.id)}>
+                                                <EyeOutlined />
                                             </IconButton>
                                         </Tooltip>
                                     </TableCell>
