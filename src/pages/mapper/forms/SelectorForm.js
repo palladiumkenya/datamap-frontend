@@ -84,7 +84,7 @@ const SelectorForm = () => {
     };
 
     const getDatabaseColumns = async() => {
-        await axios.get(API_URL+"/dictionary_mapper/getDatabaseColumns").then(res => {
+        await axios.get(API_URL+"/dictionary_mapper/get_database_columns").then(res => {
             setdatabaseColumns(res.data);
             setTablenames(Object.keys(res.data));
 
@@ -131,7 +131,7 @@ const SelectorForm = () => {
 
         event.preventDefault();
 
-        axios.post(API_URL+ "/dictionary_mapper/add_mapped_variables",  formData).then(res => {
+        axios.post(API_URL+ "/dictionary_mapper/add_mapped_variables/"+baselookup,  formData).then(res => {
             window.location.href = `http://localhost:3000/schema/config?baselookup=` + baselookup;
         })
 
