@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { NavLink } from 'react-router-dom';
 
 // material-ui
-import {Skeleton,Grid, Stack, Typography,Button, Divider,Box,IconButton,Tooltip, Fab,Alert } from '@mui/material';
+import {Skeleton,Grid, Stack, Typography,Button, Divider,Box,IconButton,Tooltip, Fab,Alert,LinearProgress } from '@mui/material';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -21,40 +21,11 @@ import MainCard from 'components/MainCard';
 import {API_URL} from "../../constants"
 import axios from "axios";
 import { useQuery, QueryClient, QueryClientProvider  } from '@tanstack/react-query'
-import {fetchBaseSchemas} from "../../actions";
-// ==============================|| SAMPLE PAGE ||============================== //
+import {fetchRepoMappings} from "../../actions";
 
 
 
-//
-// const queryClient = new QueryClient()
-//
-// export default function IndicatorsSection() {
-//     return (
-//         <QueryClientProvider client={queryClient}>
-//             <Indicators />
-//         </QueryClientProvider>
-//     )
-// }
-
-
-
-const DictionaryConfigs = () =>{
-
-    // const { isLoading, isPending, data, error } = useQuery({
-    //     queryKey: ['base_schemas'],
-    //     queryFn: ()=> fetch(API_URL+"/indicator_selector/base-schemas").then((res) =>
-    //         res.json(),
-    //     ),
-    // })
-    //
-    // if (isLoading) return 'Loading...'
-    // if (isPending) return 'Pending...'
-    //
-    // if (error) return 'An error has occurred: ' + error.message
-
-    const el = useRef(null)
-
+const RepoConfigs = () =>{
     const [txcurr, settxcurr] = useState({"indicator_value":"-","indicator_date":"-"});
     const [loadedData, setLoadedData] = useState([]);
 
@@ -65,19 +36,31 @@ const DictionaryConfigs = () =>{
     const [message, setMessage] = useState(null);
     const [loadSuccessAlert, setLoadSuccessAlert] = useState(null);
     const [loadMessage, setLoadMessage] = useState(null);
+    const [alertType, setAlertType] = useState(null);
 
+    const [progress, setProgress] = useState(0);
 
     const [datagridcolumns, setColumns] =useState([])
     const [datagridrows, setRows] =useState([])
     const [baseSchemas, setBaseSchemas] = useState([]);
     const [isExpanded,setIsExpanded] = useState(false);
+
     const urlSearchString = window.location.search;
     const params = new URLSearchParams(urlSearchString);
     const baselookup=params.get('baselookup')
 
+    const {isPending, error, data } = useQuery({
+        queryKey: ['base_schemas', baselookup],
+        queryFn: ()=> fetchRepoMappings(baselookup),
+    })
+
+    if (isPending) return 'Loading...'
+
+    if (error) return 'An error has occurred: ' + error.message + " Check your source DB/API connection"
+
 
     const getBaseSchemas = async() => {
-        await axios.get(API_URL+"/indicator_selector/base_schema_variables/"+baselookup).then(res => {
+        await fetch(API_URL+"/dictionary_mapper/base_schema_variables/"+baselookup).then(res => {
             setBaseSchemas(res.data);
         });
     };
@@ -86,8 +69,8 @@ const DictionaryConfigs = () =>{
         setSpinner(true)
         setLoadSuccessAlert(false);
 
-        await axios.get(API_URL+"/indicator_selector/load_data/"+baselookup).then((res)=> {
-            setLoadedData(res.data);
+        await axios.get(API_URL+"/dictionary_mapper/load_data/"+baselookup).then((res)=> {
+            // setLoadedData(res.data);
             const data = []
             Object.keys(res.data[0]).map(row => {
                 data.push({ field: row, headerName: row, width: 130 },)
@@ -97,16 +80,34 @@ const DictionaryConfigs = () =>{
             setRows(res.data)
 
             setSpinner(false);
+            setAlertType("success");
             setLoadSuccessAlert(true);
             setLoadMessage("Successfully loaded "+baselookup+" data");
+        }).catch( (error) => {
+            setSpinner(false);
+            setLoadSuccessAlert(true);
+            setAlertType("error");
+            setLoadMessage("Error loading ==> "+error);
         })
+    }
+
+    const sendData = async (baseRepo) =>{
+        setLoadSuccessAlert(false);
+
+        for(var i=0; i<=100; i=i+0.1){
+
+            setProgress(progress+i);
+        }
+        setLoadSuccessAlert(true);
+        setLoadMessage("Successfully sent "+baselookup+" to the warehouse");
+
     }
 
     const uploadConfig = async (baseSchema) =>{
         setUploadSpinner(true);
         setSuccessAlert(false);
 
-        await axios.get(API_URL+"/indicator_selector/generate_config", {
+        await axios.get(API_URL+"/dictionary_mapper/generate_config", {
             params: { baseSchema }
         }).then((res)=> {
             setUploadSpinner(false);
@@ -119,7 +120,7 @@ const DictionaryConfigs = () =>{
     const importConfig = async (baseSchema) =>{
         setImportSpinner(true);
         setSuccessAlert(false);
-        await axios.get(API_URL+"/indicator_selector/import_config", {
+        await axios.get(API_URL+"/dictionary_mapper/import_config", {
             params: { baseSchema }
         }).then((res)=> {
             setImportSpinner(false);
@@ -129,12 +130,6 @@ const DictionaryConfigs = () =>{
         })
     }
 
-
-
-    useEffect(() => {
-        // getDatabaseColumns()
-        getBaseSchemas()
-    }, []);
 
     return(
         < >
@@ -147,7 +142,7 @@ const DictionaryConfigs = () =>{
 
                 <Grid item xs={12}>
 
-                    {baseSchemas.length>0 ? baseSchemas.map( (base) => (
+                    {data.length>0 ? data.map( (base) => (
                         <Stack direction="row" justifyContent="space-between" alignItems="baseline" sx={{ mb: { xs: -0.5, sm: 0.5 } }}>
                             <MainCard border={false} boxShadow  sx={{ width: '100%' }}>
                                 <Typography variant="h6">
@@ -159,7 +154,7 @@ const DictionaryConfigs = () =>{
                                     </Tooltip>
                                 </Typography>
 
-                                    <MainCard sx={{ width: '100%'}} ref={el}>
+                                    <MainCard sx={{ width: '100%'}} >
                                         <Box sx={{ p: 2 }}>
                                             <Typography variant="caption" color="text.secondary">
                                                 <Button variant="contained" color="info" onClick={()=>loadData(baselookup)}>
@@ -171,34 +166,40 @@ const DictionaryConfigs = () =>{
                                                     }
                                                 </Button>
                                                 {loadSuccessAlert &&
-                                                    <Alert color="success" onClose={() => {}}>
+                                                    <Alert color={alertType} onClose={() => {}}>
                                                          {loadMessage}
                                                     </Alert>
                                                 }
 
-                                                {/*<LoadingButton loading color="secondary" variant="outlined" loadingPosition="end" endIcon={<Checkbox />}>*/}
-
-                                                {/*    Edit*/}
-
-                                                {/*</LoadingButton>*/}
                                             </Typography>
-                                            <Typography variant="h6">{base.schema} Count: <b  style={{"color":"#13c2c2"}}>{loadedData.length}</b></Typography>
+                                            <Typography variant="h6">
+                                                {base.schema} Count: <b  style={{"color":"#13c2c2"}}>{datagridrows.length}</b>
+                                                {loadSuccessAlert &&
+                                                    <Button variant="outlined" color="success" size="extraSmall" onClick={()=>sendData(baselookup)} style={{"marginLeft":"50px"}}>
+                                                        Send To WareHouse
+                                                    </Button>
+                                                }
+                                            </Typography>
                                             {/*<Typography variant="h6">Date: <b style={{"color":"#13c2c2"}}>{txcurr.indicator_date}</b></Typography>*/}
                                         </Box>
-                                        <Box>
-
-                                            { loadedData.length >0 &&
-                                                <DataGrid
-                                                    rows={datagridrows}
-                                                    columns={datagridcolumns}
-                                                    initialState={{
-                                                        pagination: {
-                                                            paginationModel: { page: 0, pageSize: 10 },
-                                                        },
-                                                    }}
-                                                    pageSizeOptions={[10, 50]}
-                                                    checkboxSelection
-                                                />
+                                        <Box sx={{ width: '80%' }}>
+                                            { progress >0 &&
+                                                <LinearProgress variant="determinate" value={progress} />
+                                            }
+                                            { datagridrows.length >0 &&
+                                                <div>
+                                                    <DataGrid
+                                                        rows={datagridrows}
+                                                        columns={datagridcolumns}
+                                                        initialState={{
+                                                            pagination: {
+                                                                paginationModel: { page: 0, pageSize: 10 },
+                                                            },
+                                                        }}
+                                                        pageSizeOptions={[10, 50]}
+                                                        checkboxSelection
+                                                    />
+                                                </div>
                                             }
 
                                         </Box>
@@ -208,20 +209,20 @@ const DictionaryConfigs = () =>{
                                         <Box sx={{ p: 2 }}>
                                             <Typography variant="h4">Base Variables
                                                 <NavLink to={`/schema/selector?baselookup=${base.schema}`} exact activeClassName="active-link">
-                                                    <Tooltip title="Manually map/update Variables">
+                                                    <Tooltip title="Manually map/update Variable Mappings">
                                                         <IconButton variant="outlined" color="success">
-                                                            <EditOutlined />
+                                                             <EditOutlined />
                                                         </IconButton>
                                                     </Tooltip>
                                                 </NavLink>
-                                                <Tooltip title="Import Config from the MarketPlace">
+                                                <Tooltip title="Import Mappings Config from the MarketPlace">
                                                     <Button  color="info"
                                                              onClick={()=>importConfig(base.schema)}
                                                              endIcon={importSpinner ?
                                                         <CircularProgress style={{"color":"black"}} size="1rem"/>
                                                         :
                                                         <FileSyncOutlined sx={{ marginLeft: "20px" }}/>
-                                                    }>Import Config</Button>
+                                                    }>Import Mappings</Button>
                                                 </Tooltip>
                                             </Typography>
 
@@ -231,9 +232,9 @@ const DictionaryConfigs = () =>{
                                             )}
 
                                         </Box>
-                                        <Tooltip title="Upload Config to the MarketPlace">
+                                        <Tooltip title="Upload Mappings Config to the MarketPlace">
                                             <Fab color="error" variant="extended" onClick={()=>uploadConfig(base.schema)}>
-                                                Upload to Marketplace
+                                                Upload Mappings
                                                 {uploadSpinner ?
                                                     <CircularProgress style={{"color":"black", "marginLeft":"10px"}} size="1rem"/>
                                                     :
@@ -289,4 +290,4 @@ const DictionaryConfigs = () =>{
     );
 };
 
-export default DictionaryConfigs;
+export default RepoConfigs;

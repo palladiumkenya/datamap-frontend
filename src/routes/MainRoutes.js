@@ -3,8 +3,7 @@ import { lazy } from 'react';
 // project import
 import Loadable from 'components/Loadable';
 import MainLayout from 'layout/MainLayout';
-import AddConfig from '../pages/configs/AddConfig';
-import DictionaryConfigs from "../pages/indicator-selection/DictionaryConfigs";
+import RepoConfigs from "../pages/mapper/RepoConfigs";
 
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
@@ -18,8 +17,15 @@ const Color = Loadable(lazy(() => import('pages/components-overview/Color')));
 const Shadow = Loadable(lazy(() => import('pages/components-overview/Shadow')));
 const AntIcons = Loadable(lazy(() => import('pages/components-overview/AntIcons')));
 const Configs = Loadable(lazy(() => import('pages/configs/Configs')));
-const Selector = Loadable(lazy(() => import('pages/indicator-selection/Selector')));
-const Indicators = Loadable(lazy(() => import('pages/indicator-selection/Indicators')));
+const AddConfig = Loadable(lazy(() => import('pages/configs/AddConfig')));
+const Selector = Loadable(lazy(() => import('pages/mapper/Mapper')));
+const Indicators = Loadable(lazy(() => import('pages/mapper/BaseRepositories')));
+const DataExtraction = Loadable(lazy(() => import('pages/data-extraction/DataExtraction')));
+const DataDictionary = Loadable(lazy(() => import('pages/data-dictionary/DataDictionary')));
+const AddDataDictionary = Loadable(lazy(() => import('pages/data-dictionary/AddDataDictionary')));
+const ViewDataDictionary = Loadable(lazy(() => import('pages/data-dictionary/ViewDataDictionary')));
+const Text2Sql = Loadable(lazy(() => import('pages/text2sql')));
+
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -45,8 +51,8 @@ const MainRoutes = {
       ]
     },
     // {
-    //   path: 'Selector',
-    //   element: <Selector />
+    //   path: 'Mapper',
+    //   element: <Mapper />
     // },
     {
       path: 'Schema',
@@ -61,7 +67,7 @@ const MainRoutes = {
         },
         {
           path: 'Config',
-          element: <DictionaryConfigs />
+          element: <RepoConfigs />
         }
         ]
     },
@@ -76,6 +82,32 @@ const MainRoutes = {
           path: 'add',
           element: <AddConfig />
         }
+      ]
+    },
+    {
+      path: 'extraction',
+      element: <DataExtraction />
+    },
+    {
+      path: 'dictionary',
+      children: [
+        {
+          path: `list`,
+          element: <DataDictionary />
+        },
+        {
+          path: `add`,
+          element: <AddDataDictionary />
+        },
+        {
+          path: `upload/:dictionaryName`,
+          element: <AddDataDictionary />
+        },
+        {
+          path: `view/:dictionaryName`,
+          element: <ViewDataDictionary />
+        }
+        
       ]
     },
     {

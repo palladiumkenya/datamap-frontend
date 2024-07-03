@@ -1,4 +1,3 @@
-import {useEffect, useState} from "react";
 import {
     Box, IconButton,
     Link,
@@ -11,14 +10,11 @@ import {
     TableRow, Tooltip,
     Typography
 } from "@mui/material";
-import {Link as RouterLink, useNavigate} from "react-router-dom";
-import PropTypes from "prop-types";
 import Dot from "../../components/@extended/Dot";
-import {BookOutlined, DeleteOutlined, EditOutlined} from "@ant-design/icons";
-import DeleteDialog from "../../components/Dialogs/DeleteDialog";
-import {useDeleteAccessConfig} from "../../store/access_configurations/mutations";
-import {useGetAccessConfigs} from "../../store/access_configurations/queries";
-
+import PropTypes from "prop-types";
+import {useEffect, useState} from "react";
+import {Link as RouterLink, useNavigate} from "react-router-dom";
+import {DeleteOutlined, EditOutlined, UploadOutlined} from "@ant-design/icons";
 
 
 const headCells = [
@@ -29,22 +25,10 @@ const headCells = [
         label: 'Name'
     },
     {
-        id: 'db_type',
+        id: 'terms',
         align: 'left',
         disablePadding: false,
-        label: 'Database Type'
-    },
-    {
-        id: 'is_active',
-        align: 'left',
-        disablePadding: false,
-        label: 'Status'
-    },
-    {
-        id: 'updated_at',
-        align: 'right',
-        disablePadding: false,
-        label: 'Date Updated'
+        label: 'No. of Terms/Variables'
     },
     {
         id: 'actions',
@@ -54,68 +38,55 @@ const headCells = [
     }
 ];
 
-const OrderStatus = ({ status }) => {
-    let color;
-    let title;
 
-    switch (status) {
-        case true:
-            color = 'success';
-            title = 'Active';
-            break;
-        case false:
-            color = 'warning';
-            title = 'Inactive';
-            break;
-        default:
-            color = 'error';
-            title = 'Unknown';
+const DataDictionaryList = () => {
+    const [selected] = useState([]);
+    let [data, setData] = useState([]);
+
+    const navigate = useNavigate()
+
+    const handleClickUpload = (name) => {
+        navigate(`/dictionary/upload/${name}`)
+    }
+    const handleClickView = (name) => {
+        navigate(`/dictionary/view/${name}`)
     }
 
-    return (
-        <Stack direction="row" spacing={1} alignItems="center">
-            <Dot color={color} />
-            <Typography>{title}</Typography>
-        </Stack>
-    );
-};
+    let repos = [
+        {
+            "name": "Client Repository",
+            "id": "client_repository"
+        },
+        {
+            "name": "Events Repository",
+            "id": "events_repository"
+        },
+    ]
 
-OrderStatus.propTypes = {
-    status: PropTypes.number
-};
+    useEffect(() => {
+        fetchData();
+    }, []);
 
-const ConfigsList = () =>{
-    const [selected] = useState([]);
-    const [dialogOpen, setDialogOpen] = useState(false)
-    const [rowId, setRowId] = useState(null);
-    const navigate = useNavigate()
-    const deleteAccess = useDeleteAccessConfig()
-    const { isLoading: isLoading, data: getAccessConfigsData } = useGetAccessConfigs();
+    let fetchData = async () => {
+        try {
+            const response = await  fetch('http://localhost:8000/api/data_dictionary/data_dictionaries')
+            if (response.ok) {
+                const jsonData = await response.json();
+                let configs = repos.map((repo) => {
+                    let datadict = jsonData.find(dict => dict.name === repo.id)
 
+                    return {...repo, ...datadict, "terms": datadict?.dictionary_terms.length ?? 0}
+                })
+                setData(configs);
+            } else {
+                throw new Error('Error: ' + response.status);
+            }
+        } catch (err){
+            console.log(err);
+        }
+    }
 
-    const handleDictListClick = () => {
-        navigate('/dictionary/list');
-    };
-
-    const handleClickOpen = (id) => {
-        setRowId(id);
-        setDialogOpen(true);
-    };
-
-    const handleClose = () => {
-        setDialogOpen(false);
-    };
-
-    const handleDelete = () => {
-        console.log(rowId)
-        // Add your delete logic here
-        deleteAccess.mutate({id: rowId})
-        console.log(deleteAccess.isSuccess)
-        handleClose();
-    };
-
-
-    const isSelected = (trackingNo) => selected.indexOf(trackingNo) !== -1;
+    const isSelected = (dict_name) => selected.indexOf(dict_name) !== -1;
 
     return (
         <Box>
@@ -154,7 +125,7 @@ const ConfigsList = () =>{
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {!isLoading && (getAccessConfigsData)?.map((row, index) => {
+                        {(data).map((row, index) => {
                             const isItemSelected = isSelected(row.name);
                             const labelId = `enhanced-table-checkbox-${index}`;
 
@@ -173,24 +144,20 @@ const ConfigsList = () =>{
                                             {row.name}
                                         </Link>
                                     </TableCell>
-                                    <TableCell align="left">{row.conn_string.split("://")[0]}</TableCell>
-                                    <TableCell align="left">
-                                        <OrderStatus status={row.is_active} />
-                                    </TableCell>
-                                    <TableCell align="right">{new Date(row.updated_at).toLocaleDateString()}</TableCell>
+                                    <TableCell align="left">{row?.terms}</TableCell>
                                     <TableCell align="right">
-                                        <Tooltip title={`Data Dictionary`}>
-                                            <IconButton aria-label="Data Dictionary" onClick={handleDictListClick}>
-                                                <BookOutlined />
+                                        <Tooltip  title={`Upload Dictionary`}>
+                                            <IconButton aria-label="Upload" onClick={() => handleClickUpload(row.id)}>
+                                                <UploadOutlined />
                                             </IconButton>
                                         </Tooltip>
-                                        <Tooltip title={`Edit`}>
-                                            <IconButton aria-label="Edit">
+                                        <Tooltip  title={`Edit Dictionary Variables`}>
+                                            <IconButton aria-label="Edit"  onClick={() => handleClickView(row.id)}>
                                                 <EditOutlined />
                                             </IconButton>
                                         </Tooltip>
-                                        <Tooltip title={`Delete`}>
-                                            <IconButton aria-label="Delete" onClick={() => handleClickOpen(row.id)}>
+                                        <Tooltip  title={`Delete All Dictionary Variables`}>
+                                            <IconButton aria-label="Delete">
                                                 <DeleteOutlined />
                                             </IconButton>
                                         </Tooltip>
@@ -201,12 +168,8 @@ const ConfigsList = () =>{
                     </TableBody>
                 </Table>
             </TableContainer>
-            <DeleteDialog
-                text="Database Config"
-                open={dialogOpen}
-                handleClose={handleClose}
-                handleDelete={handleDelete} />
         </Box>
-    );
+    )
 }
-export default ConfigsList;
+
+export default DataDictionaryList

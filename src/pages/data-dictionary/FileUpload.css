@@ -1,0 +1,19 @@
+/* FileUpload.css */
+
+.dropzone-container {
+    text-align: center;
+}
+
+.dropzone {
+    border: 2px dashed #cccccc;
+    background-color: #f8f8f8;
+    color: #cccccc;
+    padding: 20px;
+    cursor: pointer;
+}
+
+.dropzone p {
+    margin: 0;
+    font-size: 18px;
+    font-weight: bold;
+}

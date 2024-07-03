@@ -12,11 +12,11 @@ const queryClient = new QueryClient()
 
 const App = () => (
     <QueryClientProvider client={queryClient} contextSharing={true}>
-  <ThemeCustomization>
-    <ScrollTop>
-      <Routes />
-    </ScrollTop>
-  </ThemeCustomization>
+      <ThemeCustomization>
+        <ScrollTop>
+          <Routes />
+        </ScrollTop>
+      </ThemeCustomization>
     </QueryClientProvider>
 );
 

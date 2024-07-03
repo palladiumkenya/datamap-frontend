@@ -8,11 +8,11 @@ import SelectorForm from "./forms/SelectorForm";
 
 // ==============================|| SAMPLE PAGE ||============================== //
 
-const Selector = () => (
+const Mapper = () => (
     <Grid container spacing={3}>
         <Grid item xs={12}>
             <Stack direction="row" justifyContent="space-between" alignItems="baseline" sx={{ mb: { xs: -0.5, sm: 0.5 } }}>
-                {/*<Typography variant="h3">Indicator Selector</Typography>*/}
+                {/*<Typography variant="h3">Indicator Mapper</Typography>*/}
 
             </Stack>
         </Grid>
@@ -22,4 +22,4 @@ const Selector = () => (
     </Grid>
 );
 
-export default Selector;
+export default Mapper;
