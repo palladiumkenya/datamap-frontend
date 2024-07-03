@@ -1,15 +1,16 @@
 import {Box, Button, Grid, Typography} from "@mui/material";
 import MainCard from "../../components/MainCard";
 import * as React from "react";
+import {useParams} from "react-router-dom";
 import DataDictionaryList from "./DataDictionaryList";
-import {useNavigate} from "react-router-dom";
-
+import {useDataDictionarySync} from "../../store/data-dictionary/mutations";
 
 const DataDictionary = () => {
-    const navigate = useNavigate()
-    // const handleNewDictClick = () => {
-    //     navigate('/dictionary/add');
-    // };
+    const { dataSource } = useParams();
+    const syncDataDict = useDataDictionarySync();
+    const handleSyncDictClick = () => {
+        syncDataDict.mutate(dataSource)
+    };
     return (
         <Box sx={{ width: '100%' }}>
             <Grid container rowSpacing={4.5} columnSpacing={2.75} alignItems="center" justifyContent="space-between">
@@ -19,12 +20,8 @@ const DataDictionary = () => {
                             <Typography  variant="h5">Data Dictionaries</Typography>
                         </Grid>
                         <Grid item>
-                            <Button size="small" variant="contained" sx={{ textTransform: 'capitalize' }} >
-                                Download Configurations From MarketPlace
-                            </Button>
-                            {'\t'}
-                            <Button size="small" variant="contained" sx={{ textTransform: 'capitalize' }} disabled={true} color={`success`}>
-                                Upload Configurations From MarketPlace
+                            <Button size="small" variant="contained" sx={{ textTransform: 'capitalize' }} onClick={handleSyncDictClick}>
+                                Sync Dictionary From USL
                             </Button>
                         </Grid>
                     </Grid>

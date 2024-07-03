@@ -182,7 +182,7 @@ const RepoConfigs = () =>{
                                             </Typography>
                                             {/*<Typography variant="h6">Date: <b style={{"color":"#13c2c2"}}>{txcurr.indicator_date}</b></Typography>*/}
                                         </Box>
-                                        <Box sx={{ width: '80%' }}>
+                                        <Box sx={{ width: '100%' }}>
                                             { progress >0 &&
                                                 <LinearProgress variant="determinate" value={progress} />
                                             }
