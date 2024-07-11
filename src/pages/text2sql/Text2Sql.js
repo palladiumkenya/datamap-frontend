@@ -32,6 +32,9 @@ import { materialLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import RateReviewIcon from '@mui/icons-material/RateReview';
 
 const default_url = process.env.REACT_APP_TEXT2SQL;
+const SUPERSET_URL = process.env.REACT_APP_SUPERSET_URL;
+const SUPERSET_USERNAME = process.env.REACT_APP_SUPERSET_USERNAME;
+const SUPERSET_PASSWORD = process.env.REACT_APP_SUPERSET_PASSWORD;
 
 const Text2SQL = () => {
   const [query, setQuery] = useState('');
@@ -151,7 +154,57 @@ const Text2SQL = () => {
       setFeedbackError('An unexpected error occurred while sending feedback.');
     }
   };
-
+  // Handles running the query on Apache Superset
+  const handleSuperset = async () => {
+    setLoading(true);
+    try {
+      // Get Access token from Superset
+      const response = await fetch(SUPERSET_URL + '/api/v1/security/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: '*/*'
+        },
+        body: JSON.stringify({ password: SUPERSET_PASSWORD, provider: 'db', refresh: true, username: SUPERSET_USERNAME })
+      });
+      if (response.ok) {
+        const result = await response.json();
+        console.log('Logged in to Superset:', result);
+        const accessToken = result.access_token;
+        const date = new Date().toISOString().replace(/[-:.]/g, '').replace('T', '_').split('.')[0];
+        // Save Query on Superset
+        const response2 = await fetch(SUPERSET_URL + '/api/v1/saved_query/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: '*/*',
+            Authorization: `Bearer ${accessToken}`
+          },
+          body: JSON.stringify({
+            db_id: 2,
+            description: '',
+            label: 'tafsiriquery' + date,
+            sql: sqlQuery,
+            schema: 'dbo'
+          })
+        });
+        // Open Superset on New tab with the saved query
+        if (response2.ok) {
+          const result2 = await response2.json();
+          console.log('Saved query on Superset:', result2);
+          window.open(SUPERSET_URL + '/sqllab?savedQueryId=' + result2.id, '_blank').focus();
+        } else {
+          console.error('Failed to save query on Superset.');
+        }
+      } else {
+        console.error('Failed to save query on Superset.');
+      }
+    } catch (error) {
+      console.error('Error logging in to Superset:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', p: 2 }}>
       <Card sx={{ width: '100%', maxWidth: 800, p: 2 }}>
@@ -212,7 +265,7 @@ const Text2SQL = () => {
                   Query Results:
                 </Typography>
                 <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                  <Button variant="contained" size="large" sx={{ textTransform: 'none' }} disabled={loading}>
+                  <Button variant="contained" size="large" sx={{ textTransform: 'none' }} onClick={handleSuperset} disabled={loading}>
                     {loading ? <CircularProgress size={24} /> : 'Run on Superset'}
                   </Button>
                 </Box>
