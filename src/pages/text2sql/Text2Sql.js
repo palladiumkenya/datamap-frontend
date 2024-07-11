@@ -157,10 +157,15 @@ const Text2SQL = () => {
       <Card sx={{ width: '100%', maxWidth: 800, p: 2 }}>
         <CardContent>
           <Stack spacing={3}>
-            <Typography variant="h1" component="h2" gutterBottom sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', p: 2}}>
+            <Typography
+              variant="h1"
+              component="h2"
+              gutterBottom
+              sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', p: 2 }}
+            >
               TAFSIRI
             </Typography>
-            <Typography variant="h5" component="h5" gutterBottom sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+            <Typography variant="h5" component="h5" gutterBottom sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
               <em>Trasformational AI For SQL Inferences and Reporting Integration</em>
             </Typography>
 
@@ -206,15 +211,20 @@ const Text2SQL = () => {
                 <Typography variant="body1" component="p">
                   Query Results:
                 </Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                  <Button variant="contained" size="large" sx={{ textTransform: 'none' }} disabled={loading}>
+                    {loading ? <CircularProgress size={24} /> : 'Run on Superset'}
+                  </Button>
+                </Box>
 
-                <FormControl sx={{ width: 320 }}>
+                {/* <FormControl sx={{ width: 320 }}>
                   <InputLabel id="labelVizType">Select Visualization</InputLabel>
                   <Select labelId="labelVizType" id="vizType" value={vizType} onChange={handleChange} label="Select Visualization">
                     <MenuItem value="table">Table</MenuItem>
                     <MenuItem value="pie-chart">Pie Chart</MenuItem>
                     <MenuItem value="bar-chart">Bar Chart</MenuItem>
                   </Select>
-                </FormControl>
+                </FormControl> */}
               </div>
             ) : null}
 
