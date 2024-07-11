@@ -157,13 +157,16 @@ const Text2SQL = () => {
       <Card sx={{ width: '100%', maxWidth: 800, p: 2 }}>
         <CardContent>
           <Stack spacing={3}>
-            <Typography variant="h5" component="h2" gutterBottom>
-              Text2SQL Generator
+            <Typography variant="h1" component="h2" gutterBottom sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', p: 2}}>
+              TAFSIRI
+            </Typography>
+            <Typography variant="h5" component="h5" gutterBottom sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+              <em>Trasformational AI For SQL Inferences and Reporting Integration</em>
             </Typography>
 
             <TextField
               id="outlined-textarea"
-              label="Enter your query"
+              label="Enter your question"
               placeholder="What would you like to ask today..."
               multiline
               fullWidth
@@ -174,7 +177,7 @@ const Text2SQL = () => {
 
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
               <Button variant="contained" size="large" sx={{ textTransform: 'none' }} onClick={handleGenerateSQL} disabled={loading}>
-                {loading ? <CircularProgress size={24} /> : 'Generate SQL'}
+                {loading ? <CircularProgress size={24} /> : 'Generate'}
               </Button>
             </Box>
 
@@ -276,7 +279,7 @@ const Text2SQL = () => {
           <Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
             <Box sx={style}>
               <Typography variant="body1" component="h3">
-                How was your experience using Text2SQL?
+                How was your experience using TAFSIRI?
               </Typography>
               <Rating
                 name="simple-controlled"
