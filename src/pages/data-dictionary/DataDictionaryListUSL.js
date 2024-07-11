@@ -13,6 +13,8 @@ import {useState, useEffect} from "react";
 import {Link as RouterLink, useNavigate} from "react-router-dom";
 import {DeleteOutlined, EditOutlined, UploadOutlined} from "@ant-design/icons";
 import {useGetDataDictionariesUSL, useGetDataDictionaryTermsUSL} from "../../store/data-dictionary/queries";
+import DeleteDialog from "../../components/Dialogs/DeleteDialog";
+import {useDeleteDictionaryUSL} from "../../store/data-dictionary/mutations";
 
 const headCells = [
     {
@@ -38,10 +40,13 @@ const headCells = [
 const DataDictionaryListUSL = () => {
     const [selected] = useState([]);
     const [data, setData] = useState([]);
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [rowId, setRowId] = useState(null);
 
     const navigate = useNavigate();
     const {isLoading: isLoadingDict, data: repos} = useGetDataDictionariesUSL();
     const {isLoading: isLoadingTerms, data: terms} = useGetDataDictionaryTermsUSL();
+    const deleteDictionary = useDeleteDictionaryUSL();
 
     useEffect(() => {
         if (!isLoadingDict && !isLoadingTerms && repos && terms) {
@@ -55,6 +60,27 @@ const DataDictionaryListUSL = () => {
 
     const handleClickUpload = (name) => {
         navigate(`/usl_dictionary/upload/${name}`);
+    };
+
+    const handleClickOpen = (id) => {
+        setRowId(id);
+        setDialogOpen(true);
+    };
+
+    const handleClose = () => {
+        setDialogOpen(false);
+    };
+
+    const handleDelete = () => {
+        console.log(rowId)
+        // Add your delete logic here
+        deleteDictionary.mutate(rowId, {
+            onSuccess: () => {
+                handleClose();
+            },
+        });
+        console.log(deleteDictionary.isSuccess)
+        handleClose();
     };
 
     const handleClickView = (name) => {
@@ -136,7 +162,7 @@ const DataDictionaryListUSL = () => {
                                             </IconButton>
                                         </Tooltip>
                                         <Tooltip title={`Delete All Dictionary Variables`}>
-                                            <IconButton aria-label="Delete">
+                                            <IconButton aria-label="Delete" onClick={() => handleClickOpen(row?.id)}>
                                                 <DeleteOutlined />
                                             </IconButton>
                                         </Tooltip>
@@ -147,6 +173,11 @@ const DataDictionaryListUSL = () => {
                     </TableBody>
                 </Table>
             </TableContainer>
+            <DeleteDialog
+                text="Data dictionary"
+                open={dialogOpen}
+                handleClose={handleClose}
+                handleDelete={handleDelete} />
         </Box>
     );
 };
