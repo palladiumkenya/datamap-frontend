@@ -47,7 +47,7 @@ const dashboard = {
     },
     {
       id: 'text2SQL',
-      title: 'Text2SQL',
+      title: 'TAFSIRI',
       type: 'item',
       url: '/text2sql',
       icon: icons.ExperimentOutlined,
