@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
+import {API_URL} from "../../constants";
 
 const headCells = [
     {
@@ -124,7 +125,7 @@ const ValidateDataDictionaryFile = ({file, onFinish, dictionary}) => {
     const handlePostValidRows = async () => {
         try {
             setLoading(true)
-            const response = await fetch(`http://localhost:8000/api/data_dictionary/add_data_dictionary_terms`, {
+            const response = await fetch(`${API_URL}/data_dictionary/add_data_dictionary_terms`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

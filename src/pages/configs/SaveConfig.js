@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {Box, TextField, Typography, Button, CircularProgress, Alert, AlertTitle} from "@mui/material";
+import {API_URL} from "../../constants";
 
 const SaveConfig = ({ connString, onFinish }) => {
     const [formData, setFormData] = useState({
@@ -33,7 +34,7 @@ const SaveConfig = ({ connString, onFinish }) => {
         };
 
         try {
-            const response = await fetch('http://localhost:8000/api/db_access/add_connection', {
+            const response = await fetch(`${API_URL}/db_access/add_connection`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

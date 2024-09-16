@@ -2,7 +2,6 @@ import {Box, Button, Grid, Typography} from "@mui/material";
 import MainCard from "../../components/MainCard";
 import * as React from "react";
 import DataDictionaryNew from "./DataDictionaryNew";
-import {useNavigate} from "react-router-dom";
 import DataDictionaryListUSL from "./DataDictionaryListUSL";
 
 
@@ -15,15 +14,6 @@ const DataDictionary = () => {
                     <Grid container alignItems="center" justifyContent="space-between">
                         <Grid item>
                             <Typography  variant="h5">USL Data Dictionaries</Typography>
-                        </Grid>
-                        <Grid item>
-                            {/*<Button size="small" variant="contained" sx={{ textTransform: 'capitalize' }} >*/}
-                            {/*    Download Configurations From MarketPlace*/}
-                            {/*</Button>*/}
-                            {/*{'\t'}*/}
-                            {/*<Button size="small" variant="contained" sx={{ textTransform: 'capitalize' }} disabled={true} color={`success`}>*/}
-                            {/*    Upload Configurations From MarketPlace*/}
-                            {/*</Button>*/}
                         </Grid>
                     </Grid>
                 </Grid>

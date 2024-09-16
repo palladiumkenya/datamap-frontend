@@ -119,28 +119,6 @@ const MainRoutes = {
       ]
     },
     {
-      path: 'usl_dictionary',
-      children: [
-        {
-          path: `list`,
-          element: <DataDictionaryUSL />
-        },
-        {
-          path: `add`,
-          element: <AddDataDictionary />
-        },
-        {
-          path: `upload/:dictionaryName`,
-          element: <AddDataDictionary />
-        },
-        {
-          path: `view/:dictionaryName`,
-          element: <ViewDataDictionaryUSL />
-        }
-
-      ]
-    },
-    {
       path: 'sample-page',
       element: <SamplePage />
     },
