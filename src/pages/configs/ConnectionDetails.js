@@ -10,6 +10,7 @@ import {
     Typography
 } from "@mui/material";
 import {LoadingButton} from "@mui/lab";
+import {API_URL} from "../../constants";
 
 
 
@@ -100,7 +101,7 @@ const ConnectionDetails = ({ onNextStep }) => {
 
             // Call your API to test the connection
             try {
-                const response = await fetch('http://localhost:8000/api/db_access/test_db_connection', {
+                const response = await fetch(`${API_URL}/db_access/test_db_connection`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

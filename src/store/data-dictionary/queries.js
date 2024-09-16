@@ -1,39 +1,40 @@
 import {useQuery} from "@tanstack/react-query";
+import {API_URL} from "../../constants";
 
 
 const getDataDictionariesUSL = async () => {
-    const res = await fetch('http://localhost:8000/api/data_dictionary/data_dictionaries_usl');
+    const res = await fetch(`${API_URL}/data_dictionary/data_dictionaries_usl`);
     const jsonData = await res.json();
     return jsonData ?? [];
 };
 
 const getDataDictionaryTermsUSL = async () => {
-    const res = await fetch('http://localhost:8000/api/data_dictionary/data_dictionary_terms_usl');
+    const res = await fetch(`${API_URL}/data_dictionary/data_dictionary_terms_usl`);
     const jsonData = await res.json();
     return jsonData ?? [];
 };
 const getDataDictionaries = async () => {
-    const res = await fetch('http://localhost:8000/api/data_dictionary/data_dictionaries');
+    const res = await fetch(`${API_URL}/data_dictionary/data_dictionaries`);
     const jsonData = await res.json();
     return jsonData ?? [];
 };
 
 const getDataDictionaryTerms = async () => {
-    const res = await fetch('http://localhost:8000/api/data_dictionary/data_dictionary_terms');
+    const res = await fetch(`${API_URL}/data_dictionary/data_dictionary_terms`);
     const jsonData = await res.json();
     return jsonData ?? [];
 };
 
 const getDataDictionaryTerm = async ({queryKey}) => {
     const [, id] = queryKey;
-    const res = await fetch(`http://localhost:8000/api/data_dictionary/data_dictionary_terms/${id}`)
+    const res = await fetch(`${API_URL}/data_dictionary/data_dictionary_terms/${id}`)
     const jsonData = await res.json();
     return jsonData ?? [];
 };
 
 const getDataDictionaryTermUSL = async ({queryKey}) => {
     const [, id] = queryKey;
-    const res = await fetch(`http://localhost:8000/api/data_dictionary/data_dictionary_terms_usl/${id}`)
+    const res = await fetch(`${API_URL}/data_dictionary/data_dictionary_terms_usl/${id}`)
     const jsonData = await res.json();
     return jsonData ?? [];
 };
