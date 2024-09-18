@@ -72,12 +72,15 @@ const RepoConfigs = () =>{
         await axios.get(API_URL+"/dictionary_mapper/load_data/"+baselookup).then((res)=> {
             // setLoadedData(res.data);
             const data = []
+            data.push({ field: "id", headerName: "id", width: 130 },)
             Object.keys(res.data[0]).map(row => {
                 data.push({ field: row, headerName: row, width: 130 },)
             })
             setColumns(data)
 
-            setRows(res.data)
+            const rowsWithIds = res.data.map((row, index) => ({ id: index, ...row }));
+            setRows(rowsWithIds)
+            // setRows(res.data)
 
             setSpinner(false);
             setAlertType("success");
@@ -197,7 +200,7 @@ const RepoConfigs = () =>{
                                                             },
                                                         }}
                                                         pageSizeOptions={[10, 50]}
-                                                        checkboxSelection
+
                                                     />
                                                 </div>
                                             }
