@@ -46,6 +46,8 @@ const SelectorForm = () => {
     const [tablenames, setTablenames] = useState(Object.keys(databaseColumns));
     const [baseIndicators, setBaseIndicators] = useState([])
 
+    const [warning, setWarning] = useState("")
+
     const allColumns = []
     baseIndicators.map(o =>{
         allColumns.push({"baseVariable":o,"tableSelected":"", "matchingTableColumns":[]});
@@ -65,7 +67,7 @@ const SelectorForm = () => {
 
             const allColumns = []
             res.data.map(o =>{
-                allColumns.push({"baseVariable":o,"tableSelected":"", "matchingTableColumns":[]});
+                allColumns.push({"baseVariable":o.term,"tableSelected":"", "matchingTableColumns":[]});
             });
 
             setColumns(allColumns);
@@ -79,7 +81,6 @@ const SelectorForm = () => {
         formData.push({"base_repository":baselookup,"base_variable_mapped_to":baseVariable, "tablename":filteredData[0].tableSelected,
             "columnname":column, "join_by":join_by, "datatype":"string"})
         setFormData(formData)
-        console.log(formData)
 
     };
 
@@ -97,6 +98,7 @@ const SelectorForm = () => {
         variableObj["baseVariable"] = basevariable;
 
         const updateColumns = columns.filter((item) => item["baseVariable"] === basevariable);
+
         updateColumns[0]["matchingTableColumns"] = databaseColumns[tableSelected];
         updateColumns[0]["tableSelected"] = tableSelected;
 
@@ -119,13 +121,38 @@ const SelectorForm = () => {
         formData.push({"base_repository":baselookup,"base_variable_mapped_to":'PrimaryTableId', "tablename":table,
             "columnname":uniqueId, "join_by":"-", "datatype":"string"})
         setFormData(formData)
-        console.log(formData)
 
     };
 
-    // const handleMouseDownPassword = (event) => {
-    //     event.preventDefault();
-    // };
+    const columnMappedQualityCheck = (baseVariable, columnSelected, columnSelectedDatatype)=> {
+        const myElement = document.getElementById(baseVariable.term+"columnWarning");
+
+        const stringTypes = ["VARCHAR","NVARCHAR","CHAR", "TEXT"]
+        const numberTypes = ["INT","INTEGER","BIGINT","SMALLINT", "FLOAT"]
+
+        if(stringTypes.some(substring => baseVariable.datatype.toLowerCase().includes(substring.toLowerCase())) &&
+            stringTypes.some(substring => columnSelectedDatatype.toLowerCase().includes(substring.toLowerCase()))) {
+            myElement.textContent  ="";
+        }
+        else if( numberTypes.some(substring => baseVariable.datatype.toLowerCase().includes(substring.toLowerCase())) &&
+            numberTypes.some(substring => columnSelectedDatatype.toLowerCase().includes(substring.toLowerCase()))) {
+            myElement.textContent  ="";
+        }
+        else{
+            if (myElement) {
+                // Perform DOM manipulations or actions
+                myElement.textContent  = "* Expected Datatype for variable mapped to "+baseVariable.term+" should be "+
+                    baseVariable.datatype+" or similar to it";
+            }
+        }
+        // const table = document.getElementsByName('PrimaryTable')[0].value;
+        //
+        // formData.push({"base_repository":baselookup,"base_variable_mapped_to":'PrimaryTableId', "tablename":table,
+        //     "columnname":uniqueId, "join_by":"-", "datatype":"string"})
+        // setFormData(formData)
+        // console.log(formData)
+
+    };
 
     const handleSubmit = async (event) => {
 
@@ -181,7 +208,7 @@ const SelectorForm = () => {
                                             size="small"
                                             onChange={(e)=>{handlePrimaryTableIdSelect(e.target.value)}}
                                         >
-                                            { primaryTableColumns.map(variable => ( <MenuItem value={variable}>{variable}</MenuItem>))
+                                            { primaryTableColumns.map(variable => ( <MenuItem value={variable.name}>{variable.name} : {variable.type}</MenuItem>))
                                             }
                                         </Select>
 
@@ -207,8 +234,8 @@ const SelectorForm = () => {
                                                     {/*<InputLabel htmlFor="base-variable">Baseline Variable</InputLabel>*/}
                                                     {/*<Typography>{baseVariable}</Typography>*/}
                                                     <TextField
-                                                        id="base-indicators-{{baseVariable}}"
-                                                        value={baseVariable}
+                                                        id="base-indicators-{{baseVariable.term}}"
+                                                        value={baseVariable.term}
                                                         readonly
                                                         placeholder="BaseVariable"
                                                         fullWidth
@@ -230,11 +257,11 @@ const SelectorForm = () => {
                                                 <Stack spacing={1}>
                                                     {/*<InputLabel htmlFor="tables">Source Table</InputLabel>*/}
                                                     <Select
-                                                        id={baseVariable+"table"}
+                                                        id={baseVariable.term+"table"}
                                                         fullWidth
                                                         size="small"
                                                         sx={{ backgroundColor:'#e6f7ff', borderRadius: '20px', border:'1px #40a9ff solid' }}
-                                                        onChange={(e)=>{handleTableSelect(e.target.value, baseVariable)}}
+                                                        onChange={(e)=>{handleTableSelect(e.target.value, baseVariable.term)}}
                                                     >
                                                         {
                                                             tablenames.map(table => (
@@ -247,20 +274,23 @@ const SelectorForm = () => {
 
                                             <Grid item xs={3} md={3}>
                                                 <Stack spacing={1}>
-                                                    {/*<InputLabel htmlFor="columns">Variable</InputLabel>*/}
+
                                                     <Select
-                                                        name={baseVariable+"column"}
-                                                        id={baseVariable+"column"}
+                                                        name={baseVariable.term+"column"}
+                                                        id={baseVariable.term+"column"}
                                                         placeholder="variable"
                                                         fullWidth
                                                         size="small"
                                                         sx={{ backgroundColor:'#e6f7ff', borderRadius: '20px', border:'1px #40a9ff solid' }}
-                                                        // onChange={(e)=>{handleColumnChange(e, baseVariable,Object.keys(columns)[0], e.target.value)}}
+                                                        // onChange={(e)=>{columnMappedQualityCheck(e, baseVariable, e.target.value)}}
                                                     >
-                                                        { columns.filter(item => item.baseVariable === baseVariable)
-                                                            .map(columnList => ( columnList.matchingTableColumns.map(variable => ( <MenuItem value={variable}>{variable}</MenuItem>))))
+                                                        { columns.filter(item => item.baseVariable === baseVariable.term)
+                                                            .map(columnList => ( columnList.matchingTableColumns.map(variable => (
+                                                                <MenuItem value={variable.name} onClick={() => columnMappedQualityCheck(baseVariable, variable.name, variable.type)}>{variable.name}</MenuItem>))
+                                                            ))
                                                         }
                                                     </Select>
+                                                    <p  style={{"color":"red"}} id={baseVariable.term+"columnWarning"}></p>
                                                 </Stack>
                                             </Grid>
 
@@ -268,16 +298,16 @@ const SelectorForm = () => {
                                                 <Stack spacing={1}>
                                                     {/*<InputLabel htmlFor="JoinColumn">Join Primary Table By</InputLabel>*/}
                                                     <Select
-                                                        name={baseVariable+"JoinColumn"}
-                                                        id={baseVariable+"JoinColumn"}
+                                                        name={baseVariable.term+"JoinColumn"}
+                                                        id={baseVariable.term+"JoinColumn"}
                                                         placeholder="JOIN"
                                                         fullWidth
                                                         size="small"
                                                         sx={{ backgroundColor:'#e6f7ff', borderRadius: '20px', border:'1px #40a9ff solid' }}
-                                                        onChange={(e)=>{handleColumnChange(e, baseVariable,Object.keys(columns)[0], e.target.value)}}
+                                                        onChange={(e)=>{handleColumnChange(e, baseVariable.term,Object.keys(columns)[0], e.target.value)}}
                                                     >
-                                                        { columns.filter(item => item.baseVariable === baseVariable)
-                                                            .map(columnList => ( columnList.matchingTableColumns.map(variable => ( <MenuItem value={variable}>{variable}</MenuItem>))))
+                                                        { columns.filter(item => item.baseVariable === baseVariable.term)
+                                                            .map(columnList => ( columnList.matchingTableColumns.map(variable => ( <MenuItem value={variable.name}>{variable.name}</MenuItem>))))
                                                         }
                                                     </Select>
                                                 </Stack>
