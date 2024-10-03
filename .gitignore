@@ -109,6 +109,8 @@ dist
 #output
 build
 
+.idea/
+.idea
 
 .env
 .env.production
