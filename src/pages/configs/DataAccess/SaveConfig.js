@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {Box, TextField, Typography, Button, CircularProgress, Alert, AlertTitle} from "@mui/material";
-import {API_URL} from "../../constants";
+import {API_URL} from "../../../constants";
 
 const SaveConfig = ({ connString, onFinish }) => {
     const [formData, setFormData] = useState({

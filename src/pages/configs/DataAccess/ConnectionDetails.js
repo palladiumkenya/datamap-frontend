@@ -10,7 +10,7 @@ import {
     Typography
 } from "@mui/material";
 import {LoadingButton} from "@mui/lab";
-import {API_URL} from "../../constants";
+import {API_URL} from "../../../constants";
 
 
 
