@@ -3,34 +3,47 @@ import { useNavigate } from 'react-router-dom';
 
 // material-ui
 import { Box, Button, Grid, Typography } from '@mui/material';
-import ConfigsList from "./ConfigsList";
+import CorporateFareRoundedIcon from '@mui/icons-material/CorporateFareRounded';
+import ManageHistoryRoundedIcon from '@mui/icons-material/ManageHistoryRounded';
+import KeyRoundedIcon from '@mui/icons-material/KeyRounded';
+import DatasetRoundedIcon from '@mui/icons-material/DatasetRounded';
+
 import MainCard from 'components/MainCard';
+import ConfigCard from "../../components/cards/ConfigCard";
+
 
 const Configs = () => {
     const navigate = useNavigate();
 
-    const handleNewConnectionClick = () => {
-        navigate('/configs/add');
+    const handleClick = (route) => {
+        navigate(route);
     };
 
     return (
         <Box sx={{ width: '100%' }}>
             <Grid container rowSpacing={4.5} columnSpacing={2.75} alignItems="center" justifyContent="space-between">
                 <Grid item xs={12}>
-                    <Grid container alignItems="center" justifyContent="space-between">
-                        <Grid item>
-                            <Typography  variant="h5">Database Configurations</Typography>
+                    <MainCard sx={{ mt: 2 }} content={true}>
+                        <Grid container rowSpacing={2.5} columnSpacing={2.75} alignItems="center" justifyContent="space-between" direction={'row'}>
+                            <Grid item xs={4}>
+                                <ConfigCard title={'Database Configurations'} icon={<KeyRoundedIcon sx={{ fontSize: 40 }}/>} action={'/configs/db/list'}/>
+                            </Grid>
+                            <Grid item xs={4}>
+                                <ConfigCard title={'USL Configurations'} icon={<DatasetRoundedIcon sx={{ fontSize: 40 }}/>} action={'/configs/usl'}/>
+                            </Grid>
+                            <Grid item xs={4}>
+                                <ConfigCard title={'Scheduling Configurations'} icon={<ManageHistoryRoundedIcon sx={{ fontSize: 40 }}/>} action={'/configs/scheduling'}/>
+                            </Grid>
+                            <Grid item xs={4}>
+                                {/*<ConfigCard title={'Site Configurations'}/>*/}
+                            </Grid>
+                            <Grid item xs={4}>
+                                <ConfigCard title={'Site Configurations'} icon={<CorporateFareRoundedIcon sx={{ fontSize: 40 }}/>} action={'/configs/site'}/>
+                            </Grid>
+                            <Grid item xs={4}>
+                                {/*<ConfigCard title={'Site Configurations'}/>*/}
+                            </Grid>
                         </Grid>
-                        <Grid item>
-                            <Button size="small" variant="contained" sx={{ textTransform: 'capitalize' }} onClick={handleNewConnectionClick}>
-                                Add Database Configuration
-                            </Button>
-                        </Grid>
-                    </Grid>
-                </Grid>
-                <Grid item xs={12}>
-                    <MainCard sx={{ mt: 2 }} content={false}>
-                        <ConfigsList />
                     </MainCard>
                 </Grid>
             </Grid>

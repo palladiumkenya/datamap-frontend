@@ -13,11 +13,11 @@ import {
 } from "@mui/material";
 import {Link as RouterLink, useNavigate} from "react-router-dom";
 import PropTypes from "prop-types";
-import Dot from "../../components/@extended/Dot";
+import Dot from "../../../components/@extended/Dot";
 import {BookOutlined, DeleteOutlined, EditOutlined} from "@ant-design/icons";
-import DeleteDialog from "../../components/Dialogs/DeleteDialog";
-import {useDeleteAccessConfig} from "../../store/access_configurations/mutations";
-import {useGetAccessConfigs} from "../../store/access_configurations/queries";
+import DeleteDialog from "../../../components/Dialogs/DeleteDialog";
+import {useDeleteAccessConfig} from "../../../store/access_configurations/mutations";
+import {useGetAccessConfigs} from "../../../store/access_configurations/queries";
 
 
 

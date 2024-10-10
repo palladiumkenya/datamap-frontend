@@ -1,18 +1,18 @@
 import {Box, Button, Stack, Typography} from "@mui/material";
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
-import MainCard from "../../components/MainCard";
+import MainCard from "../../../components/MainCard";
 
 
 const FinalStepPage = () => {
     const navigate = useNavigate();
 
     const handleFinish = () => {
-        navigate('/configs/list');
+        navigate('/configs/db/list');
     };
 
-    const handleDictUpload = () => {
-        navigate('/configs/list');
+    const handleDictSync = () => {
+        navigate('/configs/db/list');
     };
     return (
         <React.Fragment>
@@ -27,7 +27,7 @@ const FinalStepPage = () => {
                     <Box sx={{flex: '1 1 auto'}}/>
                     <Stack direction="row" spacing={2}>
                         <Button variant={`contained`} color={`success`} onClick={handleFinish}>Finish</Button>
-                        <Button variant={`contained`} color={`info`} onClick={handleDictUpload}>Upload Dictionary</Button>
+                        <Button variant={`contained`} color={`info`} onClick={handleDictSync}>Sync Dictionary</Button>
                     </Stack>
                 </Box>
             </MainCard>
