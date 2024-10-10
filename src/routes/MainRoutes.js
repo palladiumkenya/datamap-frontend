@@ -25,7 +25,6 @@ const DataDictionaryUSL = Loadable(lazy(() => import('pages/data-dictionary/Data
 const ViewDataDictionaryUSL = Loadable(lazy(() => import('pages/data-dictionary/ViewDataDictionaryUSL')));
 const AddDataDictionary = Loadable(lazy(() => import('pages/data-dictionary/AddDataDictionary')));
 const ViewDataDictionary = Loadable(lazy(() => import('pages/data-dictionary/ViewDataDictionary')));
-const Text2Sql = Loadable(lazy(() => import('pages/text2sql/Text2Sql')));
 const Selector = Loadable(lazy(() => import('pages/mapper/Mapper')));
 const Indicators = Loadable(lazy(() => import('pages/mapper/BaseRepositories')));
 const Text2SQL = Loadable(lazy(() => import('pages/text2sql/Text2Sql')));
@@ -113,28 +112,6 @@ const MainRoutes = {
         {
           path: `view/:dictionaryName`,
           element: <ViewDataDictionary />
-        }
-
-      ]
-    },
-    {
-      path: 'usl_dictionary',
-      children: [
-        {
-          path: `list`,
-          element: <DataDictionaryUSL />
-        },
-        {
-          path: `add`,
-          element: <AddDataDictionary />
-        },
-        {
-          path: `upload/:dictionaryName`,
-          element: <AddDataDictionary />
-        },
-        {
-          path: `view/:dictionaryName`,
-          element: <ViewDataDictionaryUSL />
         }
 
       ]

@@ -1,8 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {API_URL} from "../../constants";
 
 const deleteAccessConfig = async (id) => {
     console.log(id)
-    const res = await fetch(`http://localhost:8000/api/db_access/delete_connection/${id.id}`, {
+    const res = await fetch(`${API_URL}/db_access/delete_connection/${id.id}`, {
         method: "DELETE",
         headers: {
             "Content-Type": "application/json"
