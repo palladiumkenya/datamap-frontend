@@ -17,14 +17,13 @@ const Color = Loadable(lazy(() => import('pages/components-overview/Color')));
 const Shadow = Loadable(lazy(() => import('pages/components-overview/Shadow')));
 const AntIcons = Loadable(lazy(() => import('pages/components-overview/AntIcons')));
 const Configs = Loadable(lazy(() => import('pages/configs/Configs')));
-const AddConfig = Loadable(lazy(() => import('pages/configs/AddConfig')));
+const DataAccessConfigs = Loadable(lazy(() => import('pages/configs/DataAccess/DataAccessConfigs')));
+const AddConfig = Loadable(lazy(() => import('pages/configs/DataAccess/AddConfig')));
 // const Selector = Loadable(lazy(() => import('pages/indicator-selection/Selector')));
 // const Indicators = Loadable(lazy(() => import('pages/indicator-selection/Indicators')));
 const DataExtraction = Loadable(lazy(() => import('pages/data-extraction/DataExtraction')));
 const DataDictionary = Loadable(lazy(() => import('pages/data-dictionary/DataDictionary')));
 // const DictionaryConfigs = Loadable(lazy(() => import('pages/indicator-selection/DictionaryConfigs')));
-const DataDictionaryUSL = Loadable(lazy(() => import('pages/data-dictionary/DataDictionaryUSL')));
-const ViewDataDictionaryUSL = Loadable(lazy(() => import('pages/data-dictionary/ViewDataDictionaryUSL')));
 const AddDataDictionary = Loadable(lazy(() => import('pages/data-dictionary/AddDataDictionary')));
 const ViewDataDictionary = Loadable(lazy(() => import('pages/data-dictionary/ViewDataDictionary')));
 const Selector = Loadable(lazy(() => import('pages/mapper/Mapper')));
@@ -83,13 +82,29 @@ const MainRoutes = {
       path: 'configs',
       children: [
         {
-          path: 'list',
+          path: '',
           element: <Configs />
         },
         {
-          path: 'add',
+          path: 'db/list',
+          element: <DataAccessConfigs />
+        },
+        {
+          path: 'db/add',
           element: <AddConfig />
-        }
+        },
+        {
+          path: 'usl',
+          element: <AddConfig />
+        },
+        {
+          path: 'scheduling',
+          element: <AddConfig />
+        },
+        {
+          path: 'site',
+          element: <AddConfig />
+        },
       ]
     },
     {

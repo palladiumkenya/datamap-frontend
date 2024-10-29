@@ -14,20 +14,8 @@ import axios from "axios";
 import { useQuery, QueryClient, QueryClientProvider  } from '@tanstack/react-query'
 import {fetchBaseRepositories} from "../../actions";
 // import {fetchBaseRepositories} from "../../actions";
-// ==============================|| SAMPLE PAGE ||============================== //
 
 
-
-
-// const queryClient = new QueryClient()
-
-// export default function IndicatorsSection() {
-//     return (
-//         <QueryClientProvider client={queryClient}>
-//             <BaseRepositories />
-//         </QueryClientProvider>
-//     )
-// }
 
 
 const BaseRepositories = () =>{
@@ -37,9 +25,23 @@ const BaseRepositories = () =>{
         queryFn: ()=> fetchBaseRepositories(),
     })
 
-    if (isPending) return 'Loading...'
+    if (isPending) return (<div>
+            <Typography variant="caption" color="text.secondary">Loading ...</Typography>
+            <Skeleton variant="rectangular" width={600} height={100} />
+            <Grid item xs={6}><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></Grid>
 
-    if (error) return 'An error has occurred: ' + error.message + " Check your source DB/API connection"
+            <Skeleton variant="rectangular" width={600} height={100} />
+            <Grid item xs={6}><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></Grid>
+
+            <Skeleton variant="rectangular" width={600} height={100} />
+            <Grid item xs={6}><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></Grid>
+
+            <Skeleton variant="rectangular" width={600} height={100} />
+            <Grid item xs={6}><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></Grid>
+        </div>)
+
+    if (error) return (<Typography variant="caption" color="text.error">'An error has occurred: ' + error.message + "
+        Check your source DB/API source connection configuration"</Typography>)
 
 
     return(
@@ -58,9 +60,9 @@ const BaseRepositories = () =>{
                         <Stack direction="row" justifyContent="space-between" alignItems="baseline" sx={{ mb: { xs: -0.5, sm: 0.5 } }}>
                             <MainCard border={false} boxShadow  sx={{ width: '100%' }}>
                                 <Typography variant="h6">
-                                    {base.schema}
+                                    {base.name}
                                     <Tooltip title="Expand/Hide">
-                                        <NavLink to={`/schema/config?baselookup=${base.schema}`} exact activeClassName="active-link">
+                                        <NavLink to={`/schema/config?baselookup=${base.name}`} exact activeClassName="active-link">
                                             <RightCircleFilled
                                                 // onClick={(e)=>{setIsExpanded(!isExpanded)}}
                                             />
