@@ -18,7 +18,7 @@ import { CheckCircleFilled,EditOutlined,DownCircleFilled,CloseCircleFilled,Cloud
 
 import MainCard from 'components/MainCard';
 
-import {API_URL} from "../../constants"
+import {API_URL, STAGING_API} from "../../constants"
 import axios from "axios";
 import { useQuery, QueryClient, QueryClientProvider  } from '@tanstack/react-query'
 import {fetchRepoMappings} from "../../actions";
@@ -57,8 +57,6 @@ const RepoConfigs = () =>{
     if (isPending) return 'Loading...'
 
     if (error) return 'An error has occurred: ' + error.message + " Check your source DB/API connection"
-    console.log("found ==>",data);
-
 
 
     const getBaseSchemas = async() => {
@@ -71,15 +69,18 @@ const RepoConfigs = () =>{
         setSpinner(true)
         setLoadSuccessAlert(false);
 
-        await fetch(API_URL+"/dictionary_mapper/load_data/"+baselookup).then((res)=> {
-            setLoadedData(res.data);
+        await axios.get(API_URL+"/dictionary_mapper/load_data/"+baselookup).then((res)=> {
+            // setLoadedData(res.data);
             const data = []
+            data.push({ field: "id", headerName: "id", width: 130 },)
             Object.keys(res.data[0]).map(row => {
                 data.push({ field: row, headerName: row, width: 130 },)
             })
             setColumns(data)
 
-            setRows(res.data)
+            const rowsWithIds = res.data.map((row, index) => ({ id: index, ...row }));
+            setRows(rowsWithIds)
+            // setRows(res.data)
 
             setSpinner(false);
             setAlertType("success");
@@ -93,23 +94,94 @@ const RepoConfigs = () =>{
         })
     }
 
-    const sendData = async (baseRepo) =>{
+
+    const verifyManifest = async (baseRepo) =>{
         setLoadSuccessAlert(false);
+        setProgress(0);
 
-        for(var i=0; i<=100; i=i+0.1){
-
-            setProgress(progress+i);
+        const data = {
+            "base_repository": baseRepo,
+            "count": "100",
+            "columns": ["ClientID","Gender","MaritalStatus","DOB", "FacilityID"],
+            "sessionID": "jjjnjjcncccj",
+            "source_system_name": "kenyaemr source system",
+            "source_system_version": "19.1.1",
+            "opendive_version": "1.0.0"
         }
-        setLoadSuccessAlert(true);
-        setLoadMessage("Successfully sent "+baselookup+" to the warehouse");
+        try {
+            const response = await fetch(`https://4459-165-90-30-222.ngrok-free.app/api/staging/verify`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            });
 
+            if (!response.ok) {
+                const errorData = await response.json(); // Parse JSON error response
+                setSpinner(false);
+                setLoadSuccessAlert(true);
+                setAlertType("error");
+                setLoadMessage("Error loading ==> "+errorData.detail);
+
+            }
+            for(var i=0; i<=100; i=i+0.1){
+
+                setProgress(progress+i);
+            }
+            const result = await response.json(); // Process successful response
+            setLoadSuccessAlert(true);
+            setAlertType("success");
+            setLoadMessage("Successfully verified "+baselookup+" endpoint. We are now starting to send");
+            sendData(baseRepo)
+
+        } catch (error) {
+
+            console.log("Error loading ==> "+error)
+        }
+
+        // setLoadSuccessAlert(false);
+        //
+        // for(var i=0; i<=100; i=i+0.1){
+        //
+        //     setProgress(progress+i);
+        // }
+        // setLoadSuccessAlert(true);
+        // setLoadMessage("Successfully sent "+baselookup+" to the warehouse");
+
+    }
+
+    const sendData = async (baseRepo) =>{
+        const data={}
+        try {
+            // const res = await fetch(`https://4459-165-90-30-222.ngrok-free.app/api/staging/usl/${baseRepo}`, {
+            const response = await fetch(`${API_URL}/dictionary_mapper/send/usl/${baseRepo}`);
+            console.log("response -->", response)
+            if (!response.ok) {
+                const errorData = await response.json(); // Parse JSON error response
+                setSpinner(false);
+                setLoadSuccessAlert(true);
+                setAlertType("error");
+                setLoadMessage("Error sending ==> "+errorData.detail);
+
+            }
+            const result = await response.json(); // Process successful response
+            setLoadSuccessAlert(true);
+            setAlertType("success");
+            setLoadMessage("Sending completed");
+            sendData(baseRepo)
+
+        } catch (error) {
+
+            console.log("Error sending ==> "+error)
+        }
     }
 
     const uploadConfig = async (baseSchema) =>{
         setUploadSpinner(true);
         setSuccessAlert(false);
 
-        await fetch(API_URL+"/dictionary_mapper/generate_config", {
+        await axios.get(API_URL+"/dictionary_mapper/generate_config", {
             params: { baseSchema }
         }).then((res)=> {
             setUploadSpinner(false);
@@ -175,20 +247,20 @@ const RepoConfigs = () =>{
 
                                             </Typography>
                                             <Typography variant="h6">
-                                                {base.schema} Count: <b  style={{"color":"#13c2c2"}}>{loadedData.length}</b>
+                                                {base.schema} Count: <b  style={{"color":"#13c2c2"}}>{datagridrows.length}</b>
                                                 {loadSuccessAlert &&
-                                                    <Button variant="outlined" color="success" size="extraSmall" onClick={()=>sendData(baselookup)} style={{"marginLeft":"50px"}}>
+                                                    <Button variant="outlined" color="success" size="extraSmall" onClick={()=>verifyManifest(baselookup)} style={{"marginLeft":"50px"}}>
                                                         Send To WareHouse
                                                     </Button>
                                                 }
                                             </Typography>
                                             {/*<Typography variant="h6">Date: <b style={{"color":"#13c2c2"}}>{txcurr.indicator_date}</b></Typography>*/}
                                         </Box>
-                                        <Box>
+                                        <Box sx={{ width: '100%' }}>
                                             { progress >0 &&
                                                 <LinearProgress variant="determinate" value={progress} />
                                             }
-                                            { loadedData.length >0 &&
+                                            { datagridrows.length >0 &&
                                                 <div>
                                                     <DataGrid
                                                         rows={datagridrows}
@@ -199,7 +271,7 @@ const RepoConfigs = () =>{
                                                             },
                                                         }}
                                                         pageSizeOptions={[10, 50]}
-                                                        checkboxSelection
+
                                                     />
                                                 </div>
                                             }
