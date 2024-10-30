@@ -3,13 +3,13 @@ import {API_URL} from "../../constants";
 
 
 const getDataDictionariesUSL = async () => {
-    const res = await fetch(`${API_URL}/data_dictionary/data_dictionaries_usl`);
+    const res = await fetch(`${API_URL}/usl/data_dictionary/data_dictionaries_usl`);
     const jsonData = await res.json();
     return jsonData ?? [];
 };
 
 const getDataDictionaryTermsUSL = async () => {
-    const res = await fetch(`${API_URL}/data_dictionary/data_dictionary_terms_usl`);
+    const res = await fetch(`${API_URL}/usl/data_dictionary/data_dictionary_terms_usl`);
     const jsonData = await res.json();
     return jsonData ?? [];
 };
@@ -34,7 +34,7 @@ const getDataDictionaryTerm = async ({queryKey}) => {
 
 const getDataDictionaryTermUSL = async ({queryKey}) => {
     const [, id] = queryKey;
-    const res = await fetch(`${API_URL}/data_dictionary/data_dictionary_terms_usl/${id}`)
+    const res = await fetch(`${API_URL}/usl/data_dictionary/data_dictionary_terms_usl/${id}`)
     const jsonData = await res.json();
     return jsonData ?? [];
 };
