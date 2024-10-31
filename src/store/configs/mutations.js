@@ -3,7 +3,6 @@ import {API_URL} from "../../constants";
 
 
 const addUniversalDictionaryConfig = async (data) => {
-    console.log(data)
     return await fetch(`${API_URL}/config/add_dictionary_config`,
             {
                 method: "POST",
@@ -16,18 +15,18 @@ const addUniversalDictionaryConfig = async (data) => {
 
 }
 
-const updateUniversalDictionaryConfig = async (data) => {
+const testUniversalDictionaryConfig = async (data) => {
 
-    const response = await fetch(`${API_URL}/config/update_dictionary_config`,
+    const response = await fetch(`${API_URL}/config/test_dictionary_config`,
         {
-            method: "PUT",
+            method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify(data)
         }
     )
-
+    const responseData = await response.json();
 }
 
 
@@ -41,10 +40,10 @@ export const useAddUniversalDictionaryConfig = () => {
     })
 }
 
-export const useUpdateUniversalDictionaryConfig = () => {
+export const useTestUniversalDictionaryConfig = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: updateUniversalDictionaryConfig,
+        mutationFn: testUniversalDictionaryConfig,
         onSuccess: () => {
             queryClient.invalidateQueries({queryKey: ['universal_dictionary_config']})
         }

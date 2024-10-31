@@ -1,9 +1,26 @@
-import React, {useState} from "react";
-import {Autocomplete, Box, Button, Stack, TextField, Typography} from "@mui/material";
+import React, {useEffect, useState} from "react";
+import {
+    Alert,
+    AlertTitle,
+    Autocomplete,
+    Box,
+    Button,
+    IconButton,
+    Stack,
+    TextField,
+    Tooltip,
+    Typography
+} from "@mui/material";
 import {LoadingButton} from "@mui/lab";
 import {API_URL} from "../../../constants";
-import {useAddUniversalDictionaryConfig, useUpdateUniversalDictionaryConfig} from "../../../store/configs/mutations";
+import {
+    useAddUniversalDictionaryConfig,
+    useTestUniversalDictionaryConfig,
+    useUpdateUniversalDictionaryConfig
+} from "../../../store/configs/mutations";
 import {useGetUniversalDictionaryConfig} from "../../../store/configs/queries";
+import Loader from "../../../components/Loader";
+import {EditOutlined} from "@ant-design/icons";
 
 
 const UniversalDictionaryConfig = () => {
@@ -17,78 +34,97 @@ const UniversalDictionaryConfig = () => {
         universal_dictionary_jwt: false,
         universal_dictionary_update_frequency: false
     });
+    const [disabled, setDisabled] = useState(false)
     const [alertType, setAlertType] = useState(null);
     const [alertMessage, setAlertMessage] = useState('');
     const [testLoader, setTestLoader] = useState(false);
     const addUniversalDictConf = useAddUniversalDictionaryConfig()
-    const updateUniversalDictConf = useUpdateUniversalDictionaryConfig()
-    const getUniversalDictConf = useGetUniversalDictionaryConfig()
+    const testUniversalDictConf = useTestUniversalDictionaryConfig()
+    const {isLoading, data: universalDictConf} = useGetUniversalDictionaryConfig()
+
+    useEffect(() => {
+        if (universalDictConf && !isLoading) {
+            setDisabled(true);
+            setFormData(universalDictConf);
+        }
+    }, [universalDictConf, isLoading]);
 
     const handleClick = (event) => {
         event.preventDefault();
         if (handleValidation()) {
             addUniversalDictConf.mutate(formData)
         }
+
         if (addUniversalDictConf.isSuccess){
-            setFormData({
-                universal_dictionary_url: '',
-                universal_dictionary_jwt: '',
-                universal_dictionary_update_frequency: ''
-            })
+            setDisabled(true)
         }
 
     }
-
-    const handleChange = (event) => {
-        const { name, value } = event.target;
-        setFormData((prevData) => ({
-            ...prevData,
-            [name]: value,
-        }));
-    };
 
     const handleConnectionTest = async (event) => {
         if (handleValidation()) {
             setTestLoader(true)
             event.preventDefault();
-            // Construct the API request with the driver and form data
+
             const apiRequest = {
-                ...formData,
+                universal_dictionary_url: formData.universal_dictionary_url,
+                universal_dictionary_jwt: formData.universal_dictionary_jwt
             };
 
             // Call your API to test the connection
             try {
-                const response = await fetch(`${API_URL}/db_access/test_db_connection`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
+                await testUniversalDictConf.mutate(apiRequest, {
+                    onSuccess: (data) => {
+                        const {responseData, response} = data;
+
+                        if (!response.ok) {
+                            setAlertType('error')
+                            setAlertMessage(`Connection failed! ${responseData.detail}`)
+                        } else {
+                            setAlertType('success')
+                            setAlertMessage(responseData.detail)
+                        }
                     },
-                    body: JSON.stringify(apiRequest),
-                });
-                const responseData = await response.json();
-                if (!response.ok) {
-                    setAlertType('error')
-                    setAlertMessage(`Database connection failed! ${responseData.detail}`)
-                    setTestLoader(false)
-                } else {
-                    setAlertType('success')
-                    setAlertMessage(responseData.status)
-                    setTestLoader(false)
-                }
+                    // onError: (error) => {
+                    //     setAlertType('error')
+                    //     setAlertMessage(error.detail || "An error occurred")
+                    // },
+                    onSettled: () => {
+                        setTestLoader(false)
+                    }
+                })
+
             } catch (error) {
                 setAlertType('error')
-                console.error('Error testing connection:', JSON.stringify(error));
                 setAlertMessage(error.detail)
                 setTestLoader(false)
             }
         }
     };
 
+    const handleEditClick = async () => {
+        setDisabled(false)
+    }
+    const handleChange = (event) => {
+        const { name, value } = event.target;
+        setFormData((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+        setFormErrors((prevData) => ({
+            ...prevData,
+            [name]: false
+        }))
+    };
     const handleAutocompleteChange = (event, newValue) => {
         if (newValue) {
             setFormData((prevData) => ({
                 ...prevData,
                 universal_dictionary_update_frequency: newValue
+            }))
+            setFormErrors((prevData) => ({
+                ...prevData,
+                universal_dictionary_update_frequency: false
             }))
         } else {
             setFormData({
@@ -101,24 +137,20 @@ const UniversalDictionaryConfig = () => {
     const handleValidation = () => {
         let valid = true;
         const newErrors = { ...formErrors };
-        console.log(formData)
 
         // Check if any required fields are empty
         if (!formData.universal_dictionary_update_frequency.trim()) {
             newErrors.universal_dictionary_update_frequency = true;
             valid = false;
         }
-        console.log(formData.universal_dictionary_update_frequency.trim())
         if (!formData.universal_dictionary_jwt.trim()) {
             newErrors.universal_dictionary_jwt = true;
             valid = false;
         }
-        console.log(formData.universal_dictionary_jwt.trim())
         if (!formData.universal_dictionary_url.trim()) {
             newErrors.universal_dictionary_url = true;
             valid = false;
         }
-        console.log(formData.universal_dictionary_url.trim())
 
         setFormErrors(newErrors);
         return valid;
@@ -132,9 +164,27 @@ const UniversalDictionaryConfig = () => {
         'Monthly'
     ];
 
+    if (isLoading) {
+      return (
+          <Loader />
+      )
+    }
+
+
     return(
         <>
-            <Typography variant="h5" mb={2.5}>Connection Details</Typography>
+            <Box sx={{width:'100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', pt: 2}}>
+                {/*<Box sx={{flex: 'auto'}}/>*/}
+                <Stack direction="row" spacing={2}>
+                    <Typography variant="h5" mb={2.5}>Universal Dictionary Details</Typography>
+                    <Box sx={{flex: 'auto'}}/>
+                    <Tooltip title={`Edit`}>
+                        <IconButton disabled={!disabled} aria-label="Edit" onClick={handleEditClick}>
+                            <EditOutlined />
+                        </IconButton>
+                    </Tooltip>
+                </Stack>
+            </Box>
             <form autoComplete="of" onSubmit={handleClick}>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -145,6 +195,7 @@ const UniversalDictionaryConfig = () => {
                             variant="outlined"
                             value={`${formData.universal_dictionary_url}`}
                             onChange={handleChange}
+                            disabled={disabled}
                             required
                             error={formErrors.universal_dictionary_url}
                             helperText={formErrors.universal_dictionary_url ? "Universal Data Dictionary URL is required" : ""}
@@ -159,6 +210,7 @@ const UniversalDictionaryConfig = () => {
                             variant="outlined"
                             value={formData.universal_dictionary_jwt}
                             onChange={handleChange}
+                            disabled={disabled}
                             required
                             error={formErrors.universal_dictionary_jwt}
                             helperText={formErrors.universal_dictionary_jwt ? "Universal Data Dictionary JWT Token is required" : ""}
@@ -171,7 +223,9 @@ const UniversalDictionaryConfig = () => {
                         <Autocomplete
                             id="db-select"
                             fullWidth
+                            value={formData.universal_dictionary_update_frequency}
                             options={frequency}
+                            disabled={disabled}
                             autoHighlight
                             size="small"
                             getOptionLabel={(option) => option}
@@ -214,6 +268,7 @@ const UniversalDictionaryConfig = () => {
                             variant="contained"
                             color="primary"
                             onClick={handleClick}
+                            disabled={disabled}
                         >
                             Save
                         </Button>
@@ -221,12 +276,28 @@ const UniversalDictionaryConfig = () => {
                             type={'reset'}
                             variant="contained"
                             color="error"
+                            disabled={disabled}
                         >
                             Cancel
                         </Button>
                     </Stack>
                 </Box>
             </form>
+            {/* Alert for success */}
+            {alertType === 'success' && (
+                <Alert severity="success">
+                    <AlertTitle>Success</AlertTitle>
+                    <Typography variant="body1">{alertMessage}</Typography>
+                </Alert>
+            )}
+
+            {/* Alert for error */}
+            {alertType === 'error' && (
+                <Alert severity="error">
+                    <AlertTitle>Error</AlertTitle>
+                    <Typography variant="body1">{alertMessage}</Typography>
+                </Alert>
+            )}
         </>
     )
 }
