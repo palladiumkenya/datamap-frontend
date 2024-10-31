@@ -17,7 +17,7 @@ import {EyeOutlined} from "@ant-design/icons";
 import {
     useGetDataDictionaries,
     useGetDataDictionaryTerms
-} from "../../store/data-dictionary/queries";
+} from "../../../store/data-dictionary/queries";
 
 
 const headCells = [

@@ -1,7 +1,7 @@
 import {Box, Button, Stack, Typography} from "@mui/material";
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
-import MainCard from "../../components/MainCard";
+import MainCard from "../../../components/MainCard";
 
 
 const FinalStepPage = () => {

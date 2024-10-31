@@ -11,10 +11,10 @@ import {
 } from "@mui/material";
 import {useState, useEffect} from "react";
 import {Link as RouterLink, useNavigate} from "react-router-dom";
-import {DeleteOutlined, EditOutlined, UploadOutlined} from "@ant-design/icons";
-import {useGetDataDictionariesUSL, useGetDataDictionaryTermsUSL} from "../../store/data-dictionary/queries";
-import DeleteDialog from "../../components/Dialogs/DeleteDialog";
-import {useDeleteDictionaryUSL} from "../../store/data-dictionary/mutations";
+import {DeleteOutlined, EyeOutlined, UploadOutlined} from "@ant-design/icons";
+import {useGetDataDictionariesUSL, useGetDataDictionaryTermsUSL} from "../../../store/data-dictionary/queries";
+import DeleteDialog from "../../../components/Dialogs/DeleteDialog";
+import {useDeleteDictionaryUSL} from "../../../store/data-dictionary/mutations";
 
 const headCells = [
     {
@@ -22,6 +22,12 @@ const headCells = [
         align: 'left',
         disablePadding: true,
         label: 'Name'
+    },
+    {
+        id: 'version_number',
+        align: 'left',
+        disablePadding: true,
+        label: 'Dictionary Version'
     },
     {
         id: 'terms',
@@ -149,6 +155,7 @@ const DataDictionaryListUSL = () => {
                                             {row.name}
                                         </Link>
                                     </TableCell>
+                                    <TableCell align="left">{row?.version_number}</TableCell>
                                     <TableCell align="left">{row.terms}</TableCell>
                                     <TableCell align="right">
                                         <Tooltip title={`Upload Dictionary`}>
@@ -156,9 +163,9 @@ const DataDictionaryListUSL = () => {
                                                 <UploadOutlined />
                                             </IconButton>
                                         </Tooltip>
-                                        <Tooltip title={`Edit Dictionary Variables`}>
+                                        <Tooltip title={`View Dictionary Variables`}>
                                             <IconButton aria-label="Edit" onClick={() => handleClickView(row.id)}>
-                                                <EditOutlined />
+                                                <EyeOutlined />
                                             </IconButton>
                                         </Tooltip>
                                         <Tooltip title={`Delete All Dictionary Variables`}>

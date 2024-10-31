@@ -1,9 +1,9 @@
 import {Box, Button, Grid, Typography} from "@mui/material";
-import MainCard from "../../components/MainCard";
+import MainCard from "../../../components/MainCard";
 import * as React from "react";
 import {useParams} from "react-router-dom";
 import DataDictionaryList from "./DataDictionaryList";
-import {useDataDictionarySync} from "../../store/data-dictionary/mutations";
+import {useDataDictionarySync} from "../../../store/data-dictionary/mutations";
 
 const DataDictionary = () => {
     const { dataSource } = useParams();
@@ -21,7 +21,7 @@ const DataDictionary = () => {
                         </Grid>
                         <Grid item>
                             <Button size="small" variant="contained" sx={{ textTransform: 'capitalize' }} onClick={handleSyncDictClick}>
-                                Sync Dictionary From USL
+                                Sync Dictionary From Universal Dictionaries
                             </Button>
                         </Grid>
                     </Grid>

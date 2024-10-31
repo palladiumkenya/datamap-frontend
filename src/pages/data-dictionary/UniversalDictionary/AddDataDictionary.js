@@ -1,4 +1,4 @@
-import MainCard from "../../components/MainCard";
+import MainCard from "../../../components/MainCard";
 import {Box, Button, Typography} from "@mui/material";
 import {useState} from "react";
 import Step from "@mui/material/Step";
