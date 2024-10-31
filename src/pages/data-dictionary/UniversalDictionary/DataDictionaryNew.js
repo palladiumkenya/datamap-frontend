@@ -32,7 +32,6 @@ const DataDictionaryNew = () => {
         event.preventDefault();
         if (handleValidation()) {
             addNewDictionary.mutate(formData)
-            // console.log(addNewDictionary.isSuccess)
         }
         if(addNewDictionary.isSuccess){
             setFormData({
@@ -57,7 +56,7 @@ const DataDictionaryNew = () => {
                         <TextField
                             type="text"
                             name="name"
-                            label="USL Data Dictionary Name"
+                            label="Universal Data Dictionary Name"
                             variant="outlined"
                             value={`${formData.name}`}
                             onChange={handleChange}
