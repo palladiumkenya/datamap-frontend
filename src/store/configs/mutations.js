@@ -27,6 +27,7 @@ const testUniversalDictionaryConfig = async (data) => {
         }
     )
     const responseData = await response.json();
+    return {response, responseData}
 }
 
 
