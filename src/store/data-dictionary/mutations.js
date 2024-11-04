@@ -66,6 +66,7 @@ export const useAddDataDictionary = () => {
             queryClient.invalidateQueries({queryKey: ['data_dictionaries_usl']})
             queryClient.invalidateQueries({queryKey: ['data_dictionary_terms_usl']})
             queryClient.invalidateQueries({queryKey: ['data_dictionary_term_usl']})
+            queryClient.invalidateQueries({queryKey: ['data_dictionary_change_log_usl']})
         }
     })
 };
@@ -79,6 +80,7 @@ export const useUpdateDataDictionaryTermUSL = () => {
             queryClient.invalidateQueries({queryKey: ['data_dictionaries_usl']})
             queryClient.invalidateQueries({queryKey: ['data_dictionary_terms_usl']})
             queryClient.invalidateQueries({queryKey: ['data_dictionary_term_usl']})
+            queryClient.invalidateQueries({queryKey: ['data_dictionary_change_log_usl']})
         }
     })
 };
@@ -104,6 +106,7 @@ export const useDeleteDictionaryTermUSL = () => {
             queryClient.invalidateQueries({queryKey: ['data_dictionaries_usl']})
             queryClient.invalidateQueries({queryKey: ['data_dictionary_terms_usl']})
             queryClient.invalidateQueries({queryKey: ['data_dictionary_term_usl']})
+            queryClient.invalidateQueries({queryKey: ['data_dictionary_change_log_usl']})
         }
     })
 };
@@ -117,6 +120,7 @@ export const useDeleteDictionaryUSL = () => {
             queryClient.invalidateQueries({queryKey: ['data_dictionaries_usl']})
             queryClient.invalidateQueries({queryKey: ['data_dictionary_terms_usl']})
             queryClient.invalidateQueries({queryKey: ['data_dictionary_term_usl']})
+            queryClient.invalidateQueries({queryKey: ['data_dictionary_change_log_usl']})
         }
     })
 };
