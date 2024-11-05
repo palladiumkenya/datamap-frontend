@@ -64,6 +64,7 @@ const ValidateDataDictionaryFile = ({file, onFinish, dictionary}) => {
 
     const validateFile = (data) => {
         setLoading(true);
+        data.pop()
         // Validate each row in the file
         const errors = data.map(row => checkErrors(row));
         setErrors(errors);
@@ -86,7 +87,7 @@ const ValidateDataDictionaryFile = ({file, onFinish, dictionary}) => {
         }
 
         if (row.is_required) {
-            // Check if is_required is 'yes' or 'no' (case insensitive)
+            // Check if is_required is 'yes' or 'no' (case-insensitive)
             const isRequiredLowerCase = row?.is_required.toLowerCase();
             if (isRequiredLowerCase !== 'yes' && isRequiredLowerCase !== 'no') {
                 errors.push("Is Required field must be 'Yes' or 'No'");
@@ -193,7 +194,6 @@ const ValidateDataDictionaryFile = ({file, onFinish, dictionary}) => {
                     </TableHead>
                     <TableBody>
                         {(file || []).map((row, index) => {
-
                             return (
                                 <TableRow
                                     hover

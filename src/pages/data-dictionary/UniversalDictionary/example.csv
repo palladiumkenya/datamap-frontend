@@ -1,0 +1,2 @@
+﻿column,data_type,is_required,description,expected_values,
+Name of the Column Reqired,data type of the column required,whether the column can be null (yes or no),Optional desciption of the column,expected values for the column in regex. Documnetation here,DELETE ME

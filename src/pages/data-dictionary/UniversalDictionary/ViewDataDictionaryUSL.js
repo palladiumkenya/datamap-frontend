@@ -2,7 +2,7 @@ import {
     Accordion, AccordionDetails, AccordionSummary,
     Box, Chip,
     CircularProgress, Grid,
-    IconButton, Table,
+    IconButton, Skeleton, Table,
     TableBody,
     TableCell,
     TableContainer,
@@ -247,6 +247,7 @@ const ViewDataDictionaryUSL = () => {
             <Grid item xs={4} md={4} style={{maxHeight: '97vh', overflowY: 'auto'}}>
                 <Box style={{width: '100%'}}>
                     <MainCard content={true} title={`${dict} Dictionary Version History`}>
+                        {isLoadingHistory && <Skeleton variant="rectangular" height={118} />}
                         {changeLog.map(({ version, changes }, index) => (
                             <Accordion key={version} defaultExpanded={index === 0}>
                                 <AccordionSummary expandIcon={<ExpandAltOutlined />}>
