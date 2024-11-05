@@ -1,6 +1,6 @@
 import {
     Box, CircularProgress, IconButton,
-    Link,
+    Link, Stack,
     Table,
     TableBody,
     TableCell,
@@ -15,6 +15,8 @@ import {DeleteOutlined, EyeOutlined, UploadOutlined} from "@ant-design/icons";
 import {useGetDataDictionariesUSL, useGetDataDictionaryTermsUSL} from "../../../store/data-dictionary/queries";
 import DeleteDialog from "../../../components/Dialogs/DeleteDialog";
 import {useDeleteDictionaryUSL} from "../../../store/data-dictionary/mutations";
+import Dot from "../../../components/@extended/Dot";
+import PropTypes from "prop-types";
 
 const headCells = [
     {
@@ -30,6 +32,12 @@ const headCells = [
         label: 'Dictionary Version'
     },
     {
+        id: 'is_published',
+        align: 'left',
+        disablePadding: true,
+        label: 'Published'
+    },
+    {
         id: 'terms',
         align: 'left',
         disablePadding: false,
@@ -42,6 +50,36 @@ const headCells = [
         label: ''
     }
 ];
+
+const OrderStatus = ({ status }) => {
+    let color;
+    let title;
+
+    switch (status) {
+        case true:
+            color = 'success';
+            title = 'Published';
+            break;
+        case false:
+            color = 'warning';
+            title = 'Draft';
+            break;
+        default:
+            color = 'error';
+            title = 'Unknown';
+    }
+
+    return (
+        <Stack direction="row" spacing={1} alignItems="center">
+            <Dot color={color} />
+            <Typography>{title}</Typography>
+        </Stack>
+    );
+};
+
+OrderStatus.propTypes = {
+    status: PropTypes.number
+};
 
 const DataDictionaryListUSL = () => {
     const [selected] = useState([]);
@@ -156,6 +194,9 @@ const DataDictionaryListUSL = () => {
                                         </Link>
                                     </TableCell>
                                     <TableCell align="left">{row?.version_number}</TableCell>
+                                    <TableCell align="left">
+                                        <OrderStatus status={row.is_published} />
+                                    </TableCell>
                                     <TableCell align="left">{row.terms}</TableCell>
                                     <TableCell align="right">
                                         <Tooltip title={`Upload Dictionary`}>

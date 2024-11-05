@@ -39,6 +39,13 @@ const getDataDictionaryTermUSL = async ({queryKey}) => {
     return jsonData ?? [];
 };
 
+const getDataDictionaryChangeLogUSL = async ({queryKey}) => {
+    const [, id] = queryKey;
+    const res = await fetch(`${API_URL}/usl/data_dictionary/get_change_logs/${id}`)
+    const jsonData = await res.json();
+    return jsonData ?? [];
+};
+
 export const useGetDataDictionariesUSL = () => useQuery({
     queryKey: ['data_dictionaries_usl'],
     queryFn: getDataDictionariesUSL
@@ -68,5 +75,11 @@ export const useGetDataDictionaryTerm = (id) => useQuery({
 export const useGetDataDictionaryTermUSL = (id) => useQuery({
     queryKey: ['data_dictionary_term_usl', id],
     queryFn: getDataDictionaryTermUSL,
+    enabled: !!id
+});
+
+export const useGetDataDictionaryChangeLogUSL = (id) => useQuery({
+    queryKey: ['data_dictionary_change_log_usl', id],
+    queryFn: getDataDictionaryChangeLogUSL,
     enabled: !!id
 });

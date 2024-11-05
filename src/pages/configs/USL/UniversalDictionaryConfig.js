@@ -85,13 +85,13 @@ const UniversalDictionaryConfig = () => {
                             setAlertMessage(responseData.detail)
                         }
                     },
-                    // onError: (error) => {
-                    //     setAlertType('error')
-                    //     setAlertMessage(error.detail || "An error occurred")
-                    // },
+                    onError: (error) => {
+                        setAlertType('error')
+                        setAlertMessage(error.detail || "An error occurred")
+                    },
                     onSettled: () => {
                         setTestLoader(false)
-                    }
+                    },
                 })
 
             } catch (error) {
