@@ -1,7 +1,8 @@
-import {Box} from "@mui/material";
+import {Box, Link, Typography} from "@mui/material";
 import {useDropzone} from "react-dropzone";
 import {useState} from "react";
 import "./FileUpload.css";
+import exampleCsv from './example.csv'
 
 
 const DataDictionaryUpload = ({onNextStep}) => {
@@ -64,8 +65,10 @@ const DataDictionaryUpload = ({onNextStep}) => {
 
     return (
         <Box sx={{width: '100%'}}>
+            <Typography sx={{mb: '25px'}}>
+                Get csv template <Link href={exampleCsv} download={'example.csv'}>here</Link>
+            </Typography>
             <div>
-
                 <div className="dropzone-container">
                     <div {...getRootProps()} className="dropzone">
                         <input {...getInputProps()} />
