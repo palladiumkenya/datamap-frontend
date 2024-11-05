@@ -2,8 +2,7 @@ import {
     Accordion, AccordionDetails, AccordionSummary,
     Box, Chip,
     CircularProgress, Grid,
-    IconButton,
-    Table,
+    IconButton, Table,
     TableBody,
     TableCell,
     TableContainer,
@@ -142,8 +141,8 @@ const ViewDataDictionaryUSL = () => {
     }
 
     return (
-        <Grid container columnSpacing={2} sx={{ margin: '5px'}}>
-            <Grid item size={{ xs: 6, md: 8 }}  xs={8} >
+        <Grid container columnSpacing={2} sx={{ marginY: '5px'}}>
+            <Grid item xs={8} md={8} style={{maxHeight: '97vh', overflowY: 'auto'}}>
                 <Box>
                     <MainCard content={true} title={`${dict} Dictionary Terms`}>
 
@@ -175,6 +174,12 @@ const ViewDataDictionaryUSL = () => {
                                                 key={headCell.id}
                                                 align={headCell.align}
                                                 padding={headCell.disablePadding ? 'none' : 'normal'}
+                                                style={headCell.id === 'actions' ? {
+                                                    position: "sticky",
+                                                    background: "white",
+                                                    boxShadow: "5px 2px 5px grey",
+                                                    right: 0
+                                                } : {}}
                                             >
                                                 {headCell.label}
                                             </TableCell>
@@ -200,7 +205,13 @@ const ViewDataDictionaryUSL = () => {
                                                 <TableCell align="left">{row?.is_required ? 'yes': 'no'}</TableCell>
                                                 <TableCell align="left">{row?.term_description}</TableCell>
                                                 <TableCell align="left">{row?.expected_values}</TableCell>
-                                                <TableCell align="right">
+                                                <TableCell align="right"
+                                                           style={{
+                                                               position: "sticky",
+                                                               background: "white",
+                                                               boxShadow: "5px 2px 5px grey",
+                                                               right: 0
+                                                }}>
 
                                                     <Tooltip title={`Edit Dictionary Variables`}>
                                                         <IconButton aria-label="Edit" onClick={() => handleUpdateDialogOpen(row)}>
@@ -233,17 +244,17 @@ const ViewDataDictionaryUSL = () => {
                     </MainCard>
                 </Box>
             </Grid>
-            <Grid item size={{ xs: 6, md: 4 }} xs={4} style={{height: '100%', overflowY: 'auto'}}>
+            <Grid item xs={4} md={4} style={{maxHeight: '97vh', overflowY: 'auto'}}>
                 <Box style={{width: '100%'}}>
                     <MainCard content={true} title={`${dict} Dictionary Version History`}>
-                        {changeLog.map(({ version, changes }) => (
-                            <Accordion key={version} defaultExpanded>
+                        {changeLog.map(({ version, changes }, index) => (
+                            <Accordion key={version} defaultExpanded={index === 0}>
                                 <AccordionSummary expandIcon={<ExpandAltOutlined />}>
                                     <Typography variant="h6">Version {version}</Typography>
                                 </AccordionSummary>
                                 <AccordionDetails>
                                     {changes.map((change) => (
-                                        <div elevation={3} style={{ padding: '10px', marginBottom: '16px' }} key={change.id}>
+                                        <div style={{ padding: '10px', marginBottom: '16px' }} key={change.id}>
                                             <Typography variant="body2" color="textSecondary">
                                                 Operation: <Chip label={change.operation} size="small" color={change.operation === 'ADD' ? 'success' : change.operation === 'DELETE' ? 'error' : 'primary'} />
                                             </Typography>
