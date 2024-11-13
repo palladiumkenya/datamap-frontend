@@ -17,15 +17,18 @@ const Color = Loadable(lazy(() => import('pages/components-overview/Color')));
 const Shadow = Loadable(lazy(() => import('pages/components-overview/Shadow')));
 const AntIcons = Loadable(lazy(() => import('pages/components-overview/AntIcons')));
 const Configs = Loadable(lazy(() => import('pages/configs/Configs')));
+const USLConfigs = Loadable(lazy(() => import('pages/configs/USL/USLConfigs')));
+const SchedulesConfigs = Loadable(lazy(() => import('pages/configs/Schedules/SchedulesConfigs')));
+const SiteConfigs = Loadable(lazy(() => import('pages/configs/Site/SiteConfigs')));
 const DataAccessConfigs = Loadable(lazy(() => import('pages/configs/DataAccess/DataAccessConfigs')));
 const AddConfig = Loadable(lazy(() => import('pages/configs/DataAccess/AddConfig')));
 // const Selector = Loadable(lazy(() => import('pages/indicator-selection/Selector')));
 // const Indicators = Loadable(lazy(() => import('pages/indicator-selection/Indicators')));
 const DataExtraction = Loadable(lazy(() => import('pages/data-extraction/DataExtraction')));
-const DataDictionary = Loadable(lazy(() => import('pages/data-dictionary/DataDictionary')));
+const DataDictionary = Loadable(lazy(() => import('pages/data-dictionary/DicitionarySync/DataDictionary')));
 // const DictionaryConfigs = Loadable(lazy(() => import('pages/indicator-selection/DictionaryConfigs')));
-const AddDataDictionary = Loadable(lazy(() => import('pages/data-dictionary/AddDataDictionary')));
-const ViewDataDictionary = Loadable(lazy(() => import('pages/data-dictionary/ViewDataDictionary')));
+const AddDataDictionary = Loadable(lazy(() => import('pages/data-dictionary/UniversalDictionary/AddDataDictionary')));
+const ViewDataDictionary = Loadable(lazy(() => import('pages/data-dictionary/DicitionarySync/ViewDataDictionary')));
 const Selector = Loadable(lazy(() => import('pages/mapper/Mapper')));
 const Indicators = Loadable(lazy(() => import('pages/mapper/BaseRepositories')));
 const Text2SQL = Loadable(lazy(() => import('pages/text2sql/Text2Sql')));
@@ -95,15 +98,15 @@ const MainRoutes = {
         },
         {
           path: 'usl',
-          element: <AddConfig />
+          element: <USLConfigs />
         },
         {
           path: 'scheduling',
-          element: <AddConfig />
+          element: <SchedulesConfigs />
         },
         {
           path: 'site',
-          element: <AddConfig />
+          element: <SiteConfigs />
         },
       ]
     },

@@ -1,8 +1,8 @@
 import {Box, Button, Grid, Stack, TextField, Typography} from "@mui/material";
-import MainCard from "../../components/MainCard";
+import MainCard from "../../../components/MainCard";
 import * as React from "react";
 import {useState} from "react";
-import {useAddDataDictionary} from "../../store/data-dictionary/mutations";
+import {useAddDataDictionary} from "../../../store/data-dictionary/mutations";
 
 
 const DataDictionaryNew = () => {
@@ -32,7 +32,11 @@ const DataDictionaryNew = () => {
         event.preventDefault();
         if (handleValidation()) {
             addNewDictionary.mutate(formData)
-            console.log(addNewDictionary.isSuccess)
+        }
+        if(addNewDictionary.isSuccess){
+            setFormData({
+                name: ''
+            })
         }
     };
 
@@ -52,7 +56,7 @@ const DataDictionaryNew = () => {
                         <TextField
                             type="text"
                             name="name"
-                            label="USL Data Dictionary Name"
+                            label="Universal Data Dictionary Name"
                             variant="outlined"
                             value={`${formData.name}`}
                             onChange={handleChange}
@@ -60,7 +64,7 @@ const DataDictionaryNew = () => {
                             error={formErrors.name}
                             helperText={formErrors.name ? "Provide name" : ""}
                         />
-                        <Typography variant="body2" color="textSecondary">Enter Name od USL Data Dictionary</Typography>
+                        <Typography variant="body2" color="textSecondary">Enter Name of Universal Data Dictionary</Typography>
                     </Box>
                     <Stack direction="row" spacing={2}>
                         <Button

@@ -4,10 +4,8 @@ import { NavLink } from 'react-router-dom';
 // material-ui
 import {Grid, Stack, Typography, Button, Divider, Box, IconButton, Tooltip, Fab, Alert, Skeleton} from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
-import {
-    CheckCircleFilled, EditOutlined, DownCircleFilled, CloseCircleFilled, CloudUploadOutlined,
-    FileSyncOutlined, RightCircleFilled, InfoCircleFilled
-} from '@ant-design/icons';
+import { CheckCircleFilled,EditOutlined,DownCircleFilled,CloseCircleFilled,CloudUploadOutlined,
+    FileSyncOutlined,RightCircleFilled } from '@ant-design/icons';
 
 import MainCard from 'components/MainCard';
 

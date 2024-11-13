@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import {useContext, useEffect, useState} from 'react';
 import { Outlet } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -14,6 +14,8 @@ import Breadcrumbs from 'components/@extended/Breadcrumbs';
 
 // types
 import { openDrawer } from 'store/reducers/menu';
+import {AlertDictionaryVersionsContext} from "../../contexts/UniversalDictionaryVersionsContext";
+import UpdateAlert from "../../components/UpdateAlert";
 
 // ==============================|| MAIN LAYOUT ||============================== //
 
@@ -21,6 +23,7 @@ const MainLayout = () => {
   const theme = useTheme();
   const matchDownLG = useMediaQuery(theme.breakpoints.down('lg'));
   const dispatch = useDispatch();
+  const { activeAlert } = useContext(AlertDictionaryVersionsContext);
 
   const { drawerOpen } = useSelector((state) => state.menu);
 
@@ -50,6 +53,9 @@ const MainLayout = () => {
       <Drawer open={open} handleDrawerToggle={handleDrawerToggle} />
       <Box component="main" sx={{ width: '100%', flexGrow: 1, p: { xs: 2, sm: 3 } }}>
         <Toolbar />
+        {activeAlert.show && (
+          <UpdateAlert message={activeAlert.message} color={activeAlert.color} isOpen={activeAlert.show} />
+        )}
         <Breadcrumbs navigation={navigation} title />
         <Outlet />
       </Box>

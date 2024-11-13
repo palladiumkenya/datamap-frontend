@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
-import {API_URL} from "../../constants";
+import {API_URL} from "../../../constants";
 
 const headCells = [
     {
@@ -64,6 +64,7 @@ const ValidateDataDictionaryFile = ({file, onFinish, dictionary}) => {
 
     const validateFile = (data) => {
         setLoading(true);
+        data.pop()
         // Validate each row in the file
         const errors = data.map(row => checkErrors(row));
         setErrors(errors);
@@ -86,7 +87,7 @@ const ValidateDataDictionaryFile = ({file, onFinish, dictionary}) => {
         }
 
         if (row.is_required) {
-            // Check if is_required is 'yes' or 'no' (case insensitive)
+            // Check if is_required is 'yes' or 'no' (case-insensitive)
             const isRequiredLowerCase = row?.is_required.toLowerCase();
             if (isRequiredLowerCase !== 'yes' && isRequiredLowerCase !== 'no') {
                 errors.push("Is Required field must be 'Yes' or 'No'");
@@ -125,7 +126,7 @@ const ValidateDataDictionaryFile = ({file, onFinish, dictionary}) => {
     const handlePostValidRows = async () => {
         try {
             setLoading(true)
-            const response = await fetch(`${API_URL}/data_dictionary/add_data_dictionary_terms`, {
+            const response = await fetch(`${API_URL}/usl/data_dictionary/add_data_dictionary_terms`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -193,7 +194,6 @@ const ValidateDataDictionaryFile = ({file, onFinish, dictionary}) => {
                     </TableHead>
                     <TableBody>
                         {(file || []).map((row, index) => {
-
                             return (
                                 <TableRow
                                     hover

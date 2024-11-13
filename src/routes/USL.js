@@ -3,9 +3,9 @@ import {lazy} from "react";
 import MainRoutes from "./MainRoutes";
 import MinimalLayout from "../layout/MinimalLayout";
 
-const DataDictionaryUSL = Loadable(lazy(() => import('pages/data-dictionary/DataDictionaryUSL')));
-const ViewDataDictionaryUSL = Loadable(lazy(() => import('pages/data-dictionary/ViewDataDictionaryUSL')));
-const AddDataDictionary = Loadable(lazy(() => import('pages/data-dictionary/AddDataDictionary')));
+const DataDictionaryUSL = Loadable(lazy(() => import('pages/data-dictionary/UniversalDictionary/DataDictionaryUSL')));
+const ViewDataDictionaryUSL = Loadable(lazy(() => import('pages/data-dictionary/UniversalDictionary/ViewDataDictionaryUSL')));
+const AddDataDictionary = Loadable(lazy(() => import('pages/data-dictionary/UniversalDictionary/AddDataDictionary')));
 
 const USL = {
     path: 'usl_dictionary',

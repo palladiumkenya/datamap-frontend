@@ -3,13 +3,13 @@ import {API_URL} from "../../constants";
 
 
 const getDataDictionariesUSL = async () => {
-    const res = await fetch(`${API_URL}/data_dictionary/data_dictionaries_usl`);
+    const res = await fetch(`${API_URL}/usl/data_dictionary/data_dictionaries_usl`);
     const jsonData = await res.json();
     return jsonData ?? [];
 };
 
 const getDataDictionaryTermsUSL = async () => {
-    const res = await fetch(`${API_URL}/data_dictionary/data_dictionary_terms_usl`);
+    const res = await fetch(`${API_URL}/usl/data_dictionary/data_dictionary_terms_usl`);
     const jsonData = await res.json();
     return jsonData ?? [];
 };
@@ -34,7 +34,14 @@ const getDataDictionaryTerm = async ({queryKey}) => {
 
 const getDataDictionaryTermUSL = async ({queryKey}) => {
     const [, id] = queryKey;
-    const res = await fetch(`${API_URL}/data_dictionary/data_dictionary_terms_usl/${id}`)
+    const res = await fetch(`${API_URL}/usl/data_dictionary/data_dictionary_terms_usl/${id}`)
+    const jsonData = await res.json();
+    return jsonData ?? [];
+};
+
+const getDataDictionaryChangeLogUSL = async ({queryKey}) => {
+    const [, id] = queryKey;
+    const res = await fetch(`${API_URL}/usl/data_dictionary/get_change_logs/${id}`)
     const jsonData = await res.json();
     return jsonData ?? [];
 };
@@ -68,5 +75,11 @@ export const useGetDataDictionaryTerm = (id) => useQuery({
 export const useGetDataDictionaryTermUSL = (id) => useQuery({
     queryKey: ['data_dictionary_term_usl', id],
     queryFn: getDataDictionaryTermUSL,
+    enabled: !!id
+});
+
+export const useGetDataDictionaryChangeLogUSL = (id) => useQuery({
+    queryKey: ['data_dictionary_change_log_usl', id],
+    queryFn: getDataDictionaryChangeLogUSL,
     enabled: !!id
 });

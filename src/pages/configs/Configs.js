@@ -1,8 +1,7 @@
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom';
 
 // material-ui
-import { Box, Button, Grid, Typography } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import CorporateFareRoundedIcon from '@mui/icons-material/CorporateFareRounded';
 import ManageHistoryRoundedIcon from '@mui/icons-material/ManageHistoryRounded';
 import KeyRoundedIcon from '@mui/icons-material/KeyRounded';
@@ -13,11 +12,6 @@ import ConfigCard from "../../components/cards/ConfigCard";
 
 
 const Configs = () => {
-    const navigate = useNavigate();
-
-    const handleClick = (route) => {
-        navigate(route);
-    };
 
     return (
         <Box sx={{ width: '100%' }}>
@@ -26,7 +20,7 @@ const Configs = () => {
                     <MainCard sx={{ mt: 2 }} content={true}>
                         <Grid container rowSpacing={2.5} columnSpacing={2.75} alignItems="center" justifyContent="space-between" direction={'row'}>
                             <Grid item xs={4}>
-                                <ConfigCard title={'Database Configurations'} icon={<KeyRoundedIcon sx={{ fontSize: 40 }}/>} action={'/configs/db/list'}/>
+                                <ConfigCard title={'Data Access Configurations'} icon={<KeyRoundedIcon sx={{ fontSize: 40 }}/>} action={'/configs/db/list'}/>
                             </Grid>
                             <Grid item xs={4}>
                                 <ConfigCard title={'USL Configurations'} icon={<DatasetRoundedIcon sx={{ fontSize: 40 }}/>} action={'/configs/usl'}/>

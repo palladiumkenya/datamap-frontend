@@ -2,7 +2,7 @@ import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {API_URL} from "../../constants";
 
 const addDataDictionary = async (data) => {
-    const res = await fetch(`${API_URL}/data_dictionary/create_data_dictionary_usl`, {
+    const res = await fetch(`${API_URL}/usl/data_dictionary/create_data_dictionary_usl`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -14,7 +14,7 @@ const addDataDictionary = async (data) => {
 
 const updateDataDictionaryTermUSL = async (data) => {
     console.log(data)
-    const res = await fetch(`${API_URL}/data_dictionary/update_data_dictionary_terms_usl/${data.term_id}`, {
+    const res = await fetch(`${API_URL}/usl/data_dictionary/update_data_dictionary_terms_usl/${data.term_id}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json"
@@ -37,7 +37,7 @@ const syncDataDictionary = async (dataSource) => {
 
 const deleteDictionaryTermUSL = async (id) => {
     console.log(id)
-    const res = await fetch(`${API_URL}/data_dictionary/delete_data_dictionary_terms_usl/${id}`, {
+    const res = await fetch(`${API_URL}/usl/data_dictionary/delete_data_dictionary_terms_usl/${id}`, {
         method: "DELETE",
         headers: {
             "Content-Type": "application/json"
@@ -66,6 +66,7 @@ export const useAddDataDictionary = () => {
             queryClient.invalidateQueries({queryKey: ['data_dictionaries_usl']})
             queryClient.invalidateQueries({queryKey: ['data_dictionary_terms_usl']})
             queryClient.invalidateQueries({queryKey: ['data_dictionary_term_usl']})
+            queryClient.invalidateQueries({queryKey: ['data_dictionary_change_log_usl']})
         }
     })
 };
@@ -79,6 +80,7 @@ export const useUpdateDataDictionaryTermUSL = () => {
             queryClient.invalidateQueries({queryKey: ['data_dictionaries_usl']})
             queryClient.invalidateQueries({queryKey: ['data_dictionary_terms_usl']})
             queryClient.invalidateQueries({queryKey: ['data_dictionary_term_usl']})
+            queryClient.invalidateQueries({queryKey: ['data_dictionary_change_log_usl']})
         }
     })
 };
@@ -104,6 +106,7 @@ export const useDeleteDictionaryTermUSL = () => {
             queryClient.invalidateQueries({queryKey: ['data_dictionaries_usl']})
             queryClient.invalidateQueries({queryKey: ['data_dictionary_terms_usl']})
             queryClient.invalidateQueries({queryKey: ['data_dictionary_term_usl']})
+            queryClient.invalidateQueries({queryKey: ['data_dictionary_change_log_usl']})
         }
     })
 };
@@ -117,6 +120,7 @@ export const useDeleteDictionaryUSL = () => {
             queryClient.invalidateQueries({queryKey: ['data_dictionaries_usl']})
             queryClient.invalidateQueries({queryKey: ['data_dictionary_terms_usl']})
             queryClient.invalidateQueries({queryKey: ['data_dictionary_term_usl']})
+            queryClient.invalidateQueries({queryKey: ['data_dictionary_change_log_usl']})
         }
     })
 };

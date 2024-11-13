@@ -1,5 +1,5 @@
 import {Box, Button, Grid, Typography} from "@mui/material";
-import MainCard from "../../components/MainCard";
+import MainCard from "../../../components/MainCard";
 import * as React from "react";
 import DataDictionaryNew from "./DataDictionaryNew";
 import DataDictionaryListUSL from "./DataDictionaryListUSL";
@@ -13,7 +13,7 @@ const DataDictionary = () => {
                 <Grid item xs={12}>
                     <Grid container alignItems="center" justifyContent="space-between">
                         <Grid item>
-                            <Typography  variant="h5">USL Data Dictionaries</Typography>
+                            <Typography  variant="h5">Universal Data Dictionaries</Typography>
                         </Grid>
                     </Grid>
                 </Grid>
