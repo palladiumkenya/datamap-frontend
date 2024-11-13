@@ -1,17 +1,11 @@
-import { useEffect, useState, useRef } from 'react';
 import { NavLink } from 'react-router-dom';
 
 // material-ui
-import {Grid, Stack, Typography, Button, Divider, Box, IconButton, Tooltip, Fab, Alert, Skeleton} from '@mui/material';
-import CircularProgress from '@mui/material/CircularProgress';
-import { CheckCircleFilled,EditOutlined,DownCircleFilled,CloseCircleFilled,CloudUploadOutlined,
-    FileSyncOutlined,RightCircleFilled } from '@ant-design/icons';
+import {Grid, Stack, Typography, Tooltip, Skeleton} from '@mui/material';
+import { RightCircleFilled } from '@ant-design/icons';
 
 import MainCard from 'components/MainCard';
-
-import {API_URL} from "../../constants"
-import axios from "axios";
-import { useQuery, QueryClient, QueryClientProvider  } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import {fetchBaseRepositories} from "../../actions";
 // import {fetchBaseRepositories} from "../../actions";
 
@@ -60,9 +54,9 @@ const BaseRepositories = () =>{
                         <Stack direction="row" justifyContent="space-between" alignItems="baseline" sx={{ mb: { xs: -0.5, sm: 0.5 } }}>
                             <MainCard border={false} boxShadow  sx={{ width: '100%' }}>
                                 <Typography variant="h6">
-                                    {base.name}
+                                    {base.schema}
                                     <Tooltip title="Expand/Hide">
-                                        <NavLink to={`/schema/config?baselookup=${base.name}`} exact activeClassName="active-link">
+                                        <NavLink to={`/schema/config?baselookup=${base.schema}`} exact activeClassName="active-link">
                                             <RightCircleFilled
                                                 // onClick={(e)=>{setIsExpanded(!isExpanded)}}
                                             />
