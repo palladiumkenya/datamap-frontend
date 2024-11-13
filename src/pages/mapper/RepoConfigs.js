@@ -14,7 +14,7 @@ import Paper from '@mui/material/Paper';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import CircularProgress from '@mui/material/CircularProgress';
 import { CheckCircleFilled,EditOutlined,DownCircleFilled,CloseCircleFilled,CloudUploadOutlined,
-    FileSyncOutlined,RightCircleFilled } from '@ant-design/icons';
+    FileSyncOutlined,RightCircleFilled,InfoCircleFilled  } from '@ant-design/icons';
 
 import MainCard from 'components/MainCard';
 
@@ -32,6 +32,8 @@ const RepoConfigs = () =>{
     const [spinner, setSpinner] = useState(null);
     const [uploadSpinner, setUploadSpinner] = useState(null);
     const [importSpinner, setImportSpinner] = useState(null);
+    const [sendingSpinner, setSendingSpinner] = useState(null);
+
     const [successAlert, setSuccessAlert] = useState(null);
     const [message, setMessage] = useState(null);
     const [loadSuccessAlert, setLoadSuccessAlert] = useState(null);
@@ -39,11 +41,13 @@ const RepoConfigs = () =>{
     const [alertType, setAlertType] = useState(null);
 
     const [progress, setProgress] = useState(0);
+    // const [ws, setWs] = useState(null);
 
     const [datagridcolumns, setColumns] =useState([])
     const [datagridrows, setRows] =useState([])
     const [baseSchemas, setBaseSchemas] = useState([]);
     const [isExpanded,setIsExpanded] = useState(false);
+    // const [isCalled, setIsCalled] = useState(false);
 
     const urlSearchString = window.location.search;
     const params = new URLSearchParams(urlSearchString);
@@ -56,7 +60,9 @@ const RepoConfigs = () =>{
 
     if (isPending) return 'Loading...'
 
-    if (error) return 'An error has occurred: ' + error.message + " Check your source DB/API connection"
+    if (error) return <Alert color="error" icon={<InfoCircleFilled  />}>
+    An error has occurred: Check your source DB/API connection in the Configurations page and make
+        sure you can connect to it and then try again    </Alert>
 
 
     const getBaseSchemas = async() => {
@@ -98,60 +104,64 @@ const RepoConfigs = () =>{
     const verifyManifest = async (baseRepo) =>{
         setLoadSuccessAlert(false);
         setProgress(0);
+        setSendingSpinner(true)
 
-        const data = {
-            "base_repository": baseRepo,
-            "count": "100",
-            "columns": ["ClientID","Gender","MaritalStatus","DOB", "FacilityID"],
-            "sessionID": "jjjnjjcncccj",
-            "source_system_name": "kenyaemr source system",
-            "source_system_version": "19.1.1",
-            "opendive_version": "1.0.0"
-        }
-        try {
-            const response = await fetch(`https://4459-165-90-30-222.ngrok-free.app/api/staging/verify`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(data)
-            });
+        console.log('manifest url ', API_URL+"/dictionary_mapper/manifest/usl/"+baselookup)
+        const manifest_response = await fetch(`${API_URL}/dictionary_mapper/manifest/usl/${baselookup}`, {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+        }).then(res => {
+            const data =  res.json().then(manifest => {
+                console.log('manifest success-->', manifest);
+                sendManifest(baseRepo, manifest);
+            }); // Parse JSON error response
 
-            if (!response.ok) {
-                const errorData = await response.json(); // Parse JSON error response
+        }).catch( (error) => {
+                console.log('manifest failed error-->', error)
+
                 setSpinner(false);
+                setSendingSpinner(false)
                 setLoadSuccessAlert(true);
                 setAlertType("error");
-                setLoadMessage("Error loading ==> "+errorData.detail);
+                setLoadMessage("Error creating manifest ==> "+error);
+        });
+    }
 
+    const sendManifest= async (baseRepo, manifest) => {
+        console.log("manifest to send ,",manifest)
+            try {
+                const response = await fetch(`https://e6de-165-90-30-222.ngrok-free.app/api/staging/verify`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(manifest)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json(); // Parse JSON error response
+                    setSpinner(false);
+                    setLoadSuccessAlert(true);
+                    setAlertType("error");
+                    setLoadMessage("Error verifying endpoint ==> " + errorData.detail);
+
+                }
+
+                setLoadSuccessAlert(true);
+                setAlertType("success");
+                setLoadMessage("Successfully verified " + baselookup + " endpoint. We are now starting to send");
+                sendData(baseRepo)
+
+            } catch (error) { //try catch block
+
+                console.log("Error sending Manifes. ERROR: ==> " + error)
             }
-            for(var i=0; i<=100; i=i+0.1){
-
-                setProgress(progress+i);
-            }
-            const result = await response.json(); // Process successful response
-            setLoadSuccessAlert(true);
-            setAlertType("success");
-            setLoadMessage("Successfully verified "+baselookup+" endpoint. We are now starting to send");
-            sendData(baseRepo)
-
-        } catch (error) {
-
-            console.log("Error loading ==> "+error)
-        }
-
-        // setLoadSuccessAlert(false);
-        //
-        // for(var i=0; i<=100; i=i+0.1){
-        //
-        //     setProgress(progress+i);
-        // }
-        // setLoadSuccessAlert(true);
-        // setLoadMessage("Successfully sent "+baselookup+" to the warehouse");
-
     }
 
     const sendData = async (baseRepo) =>{
+
         const data={}
         try {
             // const res = await fetch(`https://4459-165-90-30-222.ngrok-free.app/api/staging/usl/${baseRepo}`, {
@@ -159,20 +169,27 @@ const RepoConfigs = () =>{
             console.log("response -->", response)
             if (!response.ok) {
                 const errorData = await response.json(); // Parse JSON error response
-                setSpinner(false);
+                setSendingSpinner(false);
                 setLoadSuccessAlert(true);
                 setAlertType("error");
                 setLoadMessage("Error sending ==> "+errorData.detail);
 
             }
+            for (var i = 0; i <= 100; i = i + 0.1) {
+
+                setProgress(progress + i);
+            }
             const result = await response.json(); // Process successful response
             setLoadSuccessAlert(true);
+            setSendingSpinner(false);
             setAlertType("success");
             setLoadMessage("Sending completed");
-            sendData(baseRepo)
 
         } catch (error) {
-
+            const errorData = await response.json(); // Parse JSON error response
+            setSendingSpinner(false);
+            setLoadSuccessAlert(true);
+            setAlertType("error");
             console.log("Error sending ==> "+error)
         }
     }
@@ -203,6 +220,33 @@ const RepoConfigs = () =>{
             getBaseSchemas();
         })
     }
+
+
+    // useEffect(() => {
+    //     // Establish WebSocket connection when component mounts
+    //     const websocket = new WebSocket(`ws://${API_URL}/dictionary_mapper/ws/progress`);
+    //     console.log("websocket ===>", websocket)
+    //     websocket.onmessage = (event) => {
+    //         console.log("message.event ==>",event)
+    //
+    //         const message = JSON.parse(event.data);
+    //         console.log("message.message ==>",message), "done"
+    //
+    //         setProgress(message.progress);  // Update the progress bar with new value
+    //         console.log("message.progress ==>",message.progress)
+    //     };
+    //
+    //     websocket.onclose = () => {
+    //         console.log('WebSocket connection closed');
+    //     };
+    //
+    //     setWs(websocket);
+    //
+    //     // Cleanup WebSocket connection when the component unmounts
+    //     return () => {
+    //         websocket.close();
+    //     };
+    // }, []);
 
 
     return(
@@ -248,10 +292,12 @@ const RepoConfigs = () =>{
                                             </Typography>
                                             <Typography variant="h6">
                                                 {base.schema} Count: <b  style={{"color":"#13c2c2"}}>{datagridrows.length}</b>
-                                                {loadSuccessAlert &&
-                                                    <Button variant="outlined" color="success" size="extraSmall" onClick={()=>verifyManifest(baselookup)} style={{"marginLeft":"50px"}}>
-                                                        Send To WareHouse
-                                                    </Button>
+
+                                                <Button variant="outlined" color="success" size="extraSmall" onClick={()=>verifyManifest(baselookup)} style={{"marginLeft":"50px"}}>
+                                                    Send To WareHouse
+                                                </Button>
+                                                {sendingSpinner &&
+                                                    <CircularProgress style={{"color":"black"}} size="2rem"/>
                                                 }
                                             </Typography>
                                             {/*<Typography variant="h6">Date: <b style={{"color":"#13c2c2"}}>{txcurr.indicator_date}</b></Typography>*/}

@@ -4,8 +4,10 @@ import { NavLink } from 'react-router-dom';
 // material-ui
 import {Grid, Stack, Typography, Button, Divider, Box, IconButton, Tooltip, Fab, Alert, Skeleton} from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
-import { CheckCircleFilled,EditOutlined,DownCircleFilled,CloseCircleFilled,CloudUploadOutlined,
-    FileSyncOutlined,RightCircleFilled } from '@ant-design/icons';
+import {
+    CheckCircleFilled, EditOutlined, DownCircleFilled, CloseCircleFilled, CloudUploadOutlined,
+    FileSyncOutlined, RightCircleFilled, InfoCircleFilled
+} from '@ant-design/icons';
 
 import MainCard from 'components/MainCard';
 
@@ -40,8 +42,9 @@ const BaseRepositories = () =>{
             <Grid item xs={6}><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></Grid>
         </div>)
 
-    if (error) return (<Typography variant="caption" color="text.error">'An error has occurred: ' + error.message + "
-        Check your source DB/API source connection configuration"</Typography>)
+    if (error) return (<Alert color="error" icon={<InfoCircleFilled  />}>
+        An error has occurred: Check your source DB/API connection in the Configurations page and make
+        sure you can connect to it and then try again    </Alert>)
 
 
     return(

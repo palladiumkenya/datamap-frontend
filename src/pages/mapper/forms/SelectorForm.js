@@ -16,7 +16,7 @@ import {
     InputAdornment,
     InputLabel,
     OutlinedInput,
-    Stack,
+    Stack,Alert, Chip,
     Typography, Select, MenuItem, Skeleton,TextField
 } from '@mui/material';
 import MainCard from 'components/MainCard';
@@ -26,11 +26,12 @@ import AnimateButton from 'components/@extended/AnimateButton';
 import { strengthColor, strengthIndicator } from 'utils/password-strength';
 
 // assets
-import {ArrowRightOutlined, CheckCircleFilled} from '@ant-design/icons';
+import {ArrowRightOutlined, InfoCircleFilled , CheckCircleFilled} from '@ant-design/icons';
 
 import { API_URL } from '../../../constants';
 
 import axios from "axios";
+import {fetchSourceSystemInfo, fetchSourceSystemTablesAndColumns} from "../../../actions";
 
 
 
@@ -45,6 +46,9 @@ const SelectorForm = () => {
     const [databaseColumns, setdatabaseColumns] = useState({});
     const [tablenames, setTablenames] = useState(Object.keys(databaseColumns));
     const [baseIndicators, setBaseIndicators] = useState([])
+    const [fetchedSourceTables, setFetchedSourceTables] = useState(null);
+    const [systemName, setSystemName] = useState(null);
+    const [systemVersion, setSystemVersion] = useState(null);
 
     const [warning, setWarning] = useState("")
 
@@ -85,11 +89,20 @@ const SelectorForm = () => {
     };
 
     const getDatabaseColumns = async() => {
-        await axios.get(API_URL+"/dictionary_mapper/get_database_columns").then(res => {
+        const systemInforesults = fetchSourceSystemInfo();
+        console.log("systemInforesults -->",systemInforesults)
+
+        if (systemInforesults.ok){
+            setSystemName(res.data.name);
+            setSystemVersion(res.data.system_version);
+        }
+        const results = fetchSourceSystemTablesAndColumns();
+        if (results.ok){
             setdatabaseColumns(res.data);
             setTablenames(Object.keys(res.data));
+            setFetchedSourceTables(true);
+        }
 
-        });
     };
 
     const handleTableSelect = (tableSelected, basevariable) => {
@@ -173,9 +186,16 @@ const SelectorForm = () => {
 
     return (
         <>
-
+            { !fetchedSourceTables &&
+                <Alert color="error" icon={<InfoCircleFilled  />}>
+                    An error has occurred: Check your source DB/API connection in the Configurations page and make
+                    sure you can connect to it and then restart the application. You cannot map unless the Source system is correctly configured
+                </Alert>
+            }
                     <form noValidate onSubmit={handleSubmit}>
-                        <Typography color="text.info" variant="h4">{baselookup} Mapping</Typography>
+                        <Typography color="text.info" variant="h4">{baselookup} Mapping
+                            <Chip label={systemName} variant="light" color="primary" />
+                        </Typography>
                         <Divider sx={{marginBottom:"20px"}}/>
                         <Grid container spacing={1}>
                             <Grid container spacing={1} sx={{marginBottom:"20px"}}>
@@ -339,7 +359,7 @@ const SelectorForm = () => {
                                     </div>
                                 )}
 
-
+                            {fetchedSourceTables &&
                             <Grid item xs={12}>
                                 <AnimateButton>
                                     <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="primary">
@@ -347,7 +367,7 @@ const SelectorForm = () => {
                                     </Button>
                                 </AnimateButton>
                             </Grid>
-
+                            }
                         </Grid>
                     </form>
 

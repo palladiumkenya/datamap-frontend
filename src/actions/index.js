@@ -20,3 +20,17 @@ export const fetchRepoMappings = async(baselookup) => {
     );
     return data;
 };
+
+export const fetchSourceSystemTablesAndColumns = async(baselookup) => {
+    const data =  fetch(API_URL+"/dictionary_mapper/get_database_columns").then((res) =>
+        res.json(),
+    );
+    return data;
+};
+
+export const fetchSourceSystemInfo = async(baselookup) => {
+    return fetch(API_URL+"/db_access/active_connection").then((res) =>
+        res.json(),
+    );
+    
+};
