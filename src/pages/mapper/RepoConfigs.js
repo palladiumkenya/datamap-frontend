@@ -2,7 +2,21 @@ import { useEffect, useState, useRef } from 'react';
 import { NavLink } from 'react-router-dom';
 
 // material-ui
-import {Skeleton,Grid, Stack, Typography,Button, Divider,Box,IconButton,Tooltip, Fab,Alert,LinearProgress } from '@mui/material';
+import {
+    Skeleton,
+    Grid,
+    Stack,
+    Typography,
+    Button,
+    Divider,
+    Box,
+    IconButton,
+    Tooltip,
+    Fab,
+    Alert,
+    LinearProgress,
+    Chip
+} from '@mui/material';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -21,7 +35,9 @@ import MainCard from 'components/MainCard';
 import {API_URL, STAGING_API} from "../../constants"
 import axios from "axios";
 import { useQuery, QueryClient, QueryClientProvider  } from '@tanstack/react-query'
-import {fetchRepoMappings} from "../../actions";
+import {fetchRepoMappings, fetchSourceSystemInfo, fetchSourceSystemTablesAndColumns} from "../../actions/queries";
+import {useGetDataDictionarySyncAlert} from "../../store/alerts/queries";
+import SourceSystemInfo from "./source-system/SourceSystemInfo";
 
 
 
@@ -106,7 +122,6 @@ const RepoConfigs = () =>{
         setProgress(0);
         setSendingSpinner(true)
 
-        console.log('manifest url ', API_URL+"/dictionary_mapper/manifest/usl/"+baselookup)
         const manifest_response = await fetch(`${API_URL}/dictionary_mapper/manifest/usl/${baselookup}`, {
                         method: "GET",
                         headers: {
@@ -165,7 +180,7 @@ const RepoConfigs = () =>{
         const data={}
         try {
             // const res = await fetch(`https://4459-165-90-30-222.ngrok-free.app/api/staging/usl/${baseRepo}`, {
-            const response = await fetch(`${API_URL}/dictionary_mapper/send/usl/${baseRepo}`);
+            const response = await fetch(`${API_URL}/usl_data/send/usl/${baseRepo}`);
             console.log("response -->", response)
             if (!response.ok) {
                 const errorData = await response.json(); // Parse JSON error response
@@ -221,10 +236,26 @@ const RepoConfigs = () =>{
         })
     }
 
+    // const getSourceSystemInfo =  async () => {
+    //     const systemInforesults = await fetch(API_URL+"/db_access/active_connection").then((res) =>
+    //             res.json(),
+    //
+    //     );
+    //
+    //     if (!systemInforesults.ok){
+    //         throw new Error(`Response status: ${response.status}`);
+    //     }
+    //     const json = await response.json();
+    //     console.log("systemInforesults -->",json)
+    //
+    //     // setSystemName(json.data.name);
+    //     // setSystemVersion(json.data.system_version);
+    // };
+
 
     // useEffect(() => {
     //     // Establish WebSocket connection when component mounts
-    //     const websocket = new WebSocket(`ws://${API_URL}/dictionary_mapper/ws/progress`);
+    //     const websocket = new WebSocket(`ws://${API_URL}/usl_data/ws/progress`);
     //     console.log("websocket ===>", websocket)
     //     websocket.onmessage = (event) => {
     //         console.log("message.event ==>",event)
@@ -254,7 +285,9 @@ const RepoConfigs = () =>{
             <Grid container spacing={3}>
                 <Grid item xs={12}>
                     <Stack direction="row" justifyContent="space-between" alignItems="baseline" sx={{ mb: { xs: 0.5, sm: 0.5 } }}>
-                        <Typography variant="h3">{baselookup}</Typography>
+                        <Typography variant="h3">{baselookup}
+                            <SourceSystemInfo />
+                        </Typography>
                     </Stack>
                 </Grid>
 
@@ -263,16 +296,57 @@ const RepoConfigs = () =>{
                     {data.length>0 ? data.map( (base) => (
                         <Stack direction="row" justifyContent="space-between" alignItems="baseline" sx={{ mb: { xs: -0.5, sm: 0.5 } }}>
                             <MainCard border={false} boxShadow  sx={{ width: '100%' }}>
-                                <Typography variant="h6">
-                                    {base.schema}
-                                    <Tooltip title="Expand/Hide">
-                                        <NavLink to={`/Schema/config?baselookup=${base.schema}`} exact activeClassName="active-link">
-                                            <RightCircleFilled  onClick={(e)=>{setIsExpanded(!isExpanded)}} />
-                                        </NavLink>
-                                    </Tooltip>
-                                </Typography>
 
                                     <MainCard sx={{ width: '100%'}} >
+
+                                        <Box sx={{ p: 2 }}>
+                                            <Typography variant="h4">Base Variables
+                                                <NavLink to={`/schema/selector?baselookup=${base.schema}`} exact activeClassName="active-link">
+                                                    <Tooltip title="Manually map/update Variable Mappings">
+                                                        {/*<IconButton variant="outlined" color="success">*/}
+                                                        {/*     <EditOutlined />*/}
+                                                        {/*</IconButton>*/}
+                                                        <Button  color="success"
+                                                                 // onClick={()=>importConfig(base.schema)}
+                                                                 endIcon={<EditOutlined sx={{ marginLeft: "20px" }}/>}
+                                                        >Edit Mappings</Button>
+                                                    </Tooltip>
+                                                </NavLink>
+                                                <Tooltip title="Import Mappings Config from the MarketPlace">
+                                                    <Button  color="info"
+                                                             onClick={()=>importConfig(base.schema)}
+                                                             endIcon={importSpinner ?
+                                                        <CircularProgress style={{"color":"black"}} size="1rem"/>
+                                                        :
+                                                        <FileSyncOutlined sx={{ marginLeft: "20px" }}/>
+                                                    }>Import Mappings</Button>
+                                                </Tooltip>
+                                            </Typography>
+
+                                            {base.base_variables.map(base => (
+                                                <Button variant="outlined" color={base.matched ? "warning" : "error"} endIcon={base.matched ? <CheckCircleFilled /> : <CloseCircleFilled />} className={{backgroundColor:'rgb(82, 196, 26)'}}>{base.variable}</Button>
+                                                )
+                                            )}
+
+                                        </Box>
+                                        <Tooltip title="Upload Mappings Config to the MarketPlace">
+                                            <Fab color="error" variant="extended" onClick={()=>uploadConfig(base.schema)}>
+                                                Upload Mappings
+                                                {uploadSpinner ?
+                                                    <CircularProgress style={{"color":"black", "marginLeft":"10px"}} size="1rem"/>
+                                                    :
+                                                    <CloudUploadOutlined style={{ marginLeft: "10px" }}/>
+                                                }
+                                            </Fab>
+                                        </Tooltip>
+                                        {successAlert &&
+                                            <Alert color="success" onClose={() => {}}>
+                                                 {message}
+                                            </Alert>
+                                        }
+
+                                        <Divider/>
+
                                         <Box sx={{ p: 2 }}>
                                             <Typography variant="caption" color="text.secondary">
                                                 <Button variant="contained" color="info" onClick={()=>loadData(baselookup)}>
@@ -285,7 +359,7 @@ const RepoConfigs = () =>{
                                                 </Button>
                                                 {loadSuccessAlert &&
                                                     <Alert color={alertType} onClose={() => {}}>
-                                                         {loadMessage}
+                                                        {loadMessage}
                                                     </Alert>
                                                 }
 
@@ -323,50 +397,6 @@ const RepoConfigs = () =>{
                                             }
 
                                         </Box>
-
-                                        <Divider/>
-
-                                        <Box sx={{ p: 2 }}>
-                                            <Typography variant="h4">Base Variables
-                                                <NavLink to={`/schema/selector?baselookup=${base.schema}`} exact activeClassName="active-link">
-                                                    <Tooltip title="Manually map/update Variable Mappings">
-                                                        <IconButton variant="outlined" color="success">
-                                                             <EditOutlined />
-                                                        </IconButton>
-                                                    </Tooltip>
-                                                </NavLink>
-                                                <Tooltip title="Import Mappings Config from the MarketPlace">
-                                                    <Button  color="info"
-                                                             onClick={()=>importConfig(base.schema)}
-                                                             endIcon={importSpinner ?
-                                                        <CircularProgress style={{"color":"black"}} size="1rem"/>
-                                                        :
-                                                        <FileSyncOutlined sx={{ marginLeft: "20px" }}/>
-                                                    }>Import Mappings</Button>
-                                                </Tooltip>
-                                            </Typography>
-
-                                            {base.base_variables.map(base => (
-                                                <Button variant="outlined" color={base.matched ? "warning" : "error"} endIcon={base.matched ? <CheckCircleFilled /> : <CloseCircleFilled />} className={{backgroundColor:'rgb(82, 196, 26)'}}>{base.variable}</Button>
-                                                )
-                                            )}
-
-                                        </Box>
-                                        <Tooltip title="Upload Mappings Config to the MarketPlace">
-                                            <Fab color="error" variant="extended" onClick={()=>uploadConfig(base.schema)}>
-                                                Upload Mappings
-                                                {uploadSpinner ?
-                                                    <CircularProgress style={{"color":"black", "marginLeft":"10px"}} size="1rem"/>
-                                                    :
-                                                    <CloudUploadOutlined style={{ marginLeft: "10px" }}/>
-                                                }
-                                            </Fab>
-                                        </Tooltip>
-                                        {successAlert &&
-                                            <Alert color="success" onClose={() => {}}>
-                                                 {message}
-                                            </Alert>
-                                        }
 
                                     </MainCard>
                             </MainCard>

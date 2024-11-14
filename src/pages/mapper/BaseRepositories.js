@@ -4,15 +4,15 @@ import { NavLink } from 'react-router-dom';
 // material-ui
 import {Grid, Stack, Typography, Button, Divider, Box, IconButton, Tooltip, Fab, Alert, Skeleton} from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
-import { CheckCircleFilled,EditOutlined,DownCircleFilled,CloseCircleFilled,CloudUploadOutlined,
-    FileSyncOutlined,RightCircleFilled } from '@ant-design/icons';
+import { InfoCircleFilled ,RightCircleFilled } from '@ant-design/icons';
 
 import MainCard from 'components/MainCard';
 
 import {API_URL} from "../../constants"
 import axios from "axios";
 import { useQuery, QueryClient, QueryClientProvider  } from '@tanstack/react-query'
-import {fetchBaseRepositories} from "../../actions";
+import {fetchBaseRepositories} from "../../actions/queries";
+import SourceSystemInfo from "./source-system/SourceSystemInfo";
 // import {fetchBaseRepositories} from "../../actions";
 
 
@@ -50,7 +50,7 @@ const BaseRepositories = () =>{
             <Grid container spacing={3}>
                 <Grid item xs={12}>
                     <Stack direction="row" justifyContent="space-between" alignItems="baseline" sx={{ mb: { xs: -0.5, sm: 0.5 } }}>
-                        <Typography variant="h3">Base Repositories</Typography>
+                        <Typography variant="h3">Base Repositories  <SourceSystemInfo /></Typography>
                     </Stack>
                 </Grid>
 

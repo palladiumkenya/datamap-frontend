@@ -27,11 +27,11 @@ import { strengthColor, strengthIndicator } from 'utils/password-strength';
 
 // assets
 import {ArrowRightOutlined, InfoCircleFilled , CheckCircleFilled} from '@ant-design/icons';
+import SourceSystemInfo from "../source-system/SourceSystemInfo";
 
 import { API_URL } from '../../../constants';
+import { fetchBaseVariables, fetchSourceSystemTablesAndColumns } from '../../../actions/queries';
 
-import axios from "axios";
-import {fetchSourceSystemInfo, fetchSourceSystemTablesAndColumns} from "../../../actions";
 
 
 
@@ -47,8 +47,6 @@ const SelectorForm = () => {
     const [tablenames, setTablenames] = useState(Object.keys(databaseColumns));
     const [baseIndicators, setBaseIndicators] = useState([])
     const [fetchedSourceTables, setFetchedSourceTables] = useState(null);
-    const [systemName, setSystemName] = useState(null);
-    const [systemVersion, setSystemVersion] = useState(null);
 
     const [warning, setWarning] = useState("")
 
@@ -66,46 +64,60 @@ const SelectorForm = () => {
 
 
     const getBaseVariables = async() => {
-        await axios.get(API_URL+"/dictionary_mapper/base_variables/"+baselookup).then(res => {
-            setBaseIndicators(res.data);
+        const baseVariables = await fetchBaseVariables(baselookup);
+        if (baseVariables) {
+            setBaseIndicators(baseVariables);
 
             const allColumns = []
-            res.data.map(o =>{
+            baseVariables.map(o =>{
                 allColumns.push({"baseVariable":o.term,"tableSelected":"", "matchingTableColumns":[]});
             });
 
             setColumns(allColumns);
-        });
+        }
     };
 
     const handleColumnChange = (e, baseVariable, table, join_by) => {
         const filteredData = columns.filter(item => item.baseVariable === baseVariable);
         const selectIdentifier = baseVariable+"column";
         const column = document.getElementsByName(selectIdentifier)[0].value;
-        formData.push({"base_repository":baselookup,"base_variable_mapped_to":baseVariable, "tablename":filteredData[0].tableSelected,
-            "columnname":column, "join_by":join_by, "datatype":"string"})
-        setFormData(formData)
+
+        // if item in list, filter it out and update the current value picked
+        const mappingExists = formData.find(item => item.base_variable_mapped_to == baseVariable);
+        if (mappingExists){
+            mappingExists.tablename = filteredData[0].tableSelected;
+            mappingExists.columnname = column;
+            mappingExists.join_by = join_by;
+        }else {
+            formData.push({
+                "base_repository": baselookup,
+                "base_variable_mapped_to": baseVariable,
+                "tablename": filteredData[0].tableSelected,
+                "columnname": column,
+                "join_by": join_by,
+                "datatype": "string"
+            })
+            setFormData(formData)
+        }
+        console.log("formData -->",formData)
 
     };
 
     const getDatabaseColumns = async() => {
-        const systemInforesults = fetchSourceSystemInfo();
-        console.log("systemInforesults -->",systemInforesults)
-
-        if (systemInforesults.ok){
-            setSystemName(res.data.name);
-            setSystemVersion(res.data.system_version);
-        }
-        const results = fetchSourceSystemTablesAndColumns();
-        if (results.ok){
-            setdatabaseColumns(res.data);
-            setTablenames(Object.keys(res.data));
+        const res = await fetchSourceSystemTablesAndColumns();
+        if (res){
+            setdatabaseColumns(res);
+            setTablenames(Object.keys(res));
             setFetchedSourceTables(true);
         }
 
     };
 
     const handleTableSelect = (tableSelected, basevariable) => {
+        //clear any selected data for base variable
+        // document.getElementById(basevariable+"column").value = "";
+        // document.getElementById(basevariable+"JoinColumn").value = "";
+        // console.log("columns  -->", columns)
         const variableObj = {};
         variableObj[tableSelected] = databaseColumns[tableSelected];
         variableObj["baseVariable"] = basevariable;
@@ -171,7 +183,13 @@ const SelectorForm = () => {
 
         event.preventDefault();
 
-        axios.post(API_URL+ "/dictionary_mapper/add_mapped_variables/"+baselookup,  formData).then(res => {
+        fetch(API_URL+ "/dictionary_mapper/add_mapped_variables/"+baselookup, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(formData)
+        }).then(res => {
             window.location.href = `http://localhost:3000/schema/config?baselookup=` + baselookup;
         })
 
@@ -194,7 +212,7 @@ const SelectorForm = () => {
             }
                     <form noValidate onSubmit={handleSubmit}>
                         <Typography color="text.info" variant="h4">{baselookup} Mapping
-                            <Chip label={systemName} variant="light" color="primary" />
+                            <SourceSystemInfo />
                         </Typography>
                         <Divider sx={{marginBottom:"20px"}}/>
                         <Grid container spacing={1}>
