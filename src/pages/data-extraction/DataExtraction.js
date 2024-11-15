@@ -1,9 +1,9 @@
 import {Alert, Box, Button, Fab, LinearProgress, Typography} from "@mui/material";
 import CircularProgress from "@mui/material/CircularProgress";
 import {DataGrid} from "@mui/x-data-grid";
-import {useState} from "react";
+import {useState,useEffect} from "react";
 import axios from "axios";
-import {API_URL} from "../../constants";
+import {API_URL,STAGING_API} from "../../constants";
 import SourceSystemInfo from "../mapper/source-system/SourceSystemInfo";
 import {CloudUploadOutlined} from "@ant-design/icons";
 
@@ -23,8 +23,8 @@ const DataExtraction = ({baselookup}) =>{
     const [baseSchemas, setBaseSchemas] = useState([]);
     const [isExpanded,setIsExpanded] = useState(false);
 
-    const [progress, setProgress] = useState(0);
-    // const [ws, setWs] = useState(null);
+    const [progress, setProgress] = useState(null);
+    const [socket, setSocket] = useState(null);
 
     const loadData = async (baseRepo) =>{
         setSpinner(true)
@@ -58,10 +58,9 @@ const DataExtraction = ({baselookup}) =>{
 
     const verifyManifest = async (baseRepo) =>{
         setLoadSuccessAlert(false);
-        setProgress(0);
         setSendingSpinner(true)
 
-        const manifest_response = await fetch(`${API_URL}/dictionary_mapper/manifest/usl/${baselookup}`, {
+        const manifest_response = await fetch(`${API_URL}/usl_data/manifest/repository/${baselookup}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
@@ -86,7 +85,7 @@ const DataExtraction = ({baselookup}) =>{
     const sendManifest= async (baseRepo, manifest) => {
         console.log("manifest to send ,",manifest)
         try {
-            const response = await fetch(`https://e6de-165-90-30-222.ngrok-free.app/api/staging/verify`, {
+            const response = await fetch(`https://4ca2-41-80-117-126.ngrok-free.app/api/staging/verify`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -115,7 +114,6 @@ const DataExtraction = ({baselookup}) =>{
     }
 
     const sendData = async (baseRepo) =>{
-
         const data={}
         try {
             // const res = await fetch(`https://4459-165-90-30-222.ngrok-free.app/api/staging/usl/${baseRepo}`, {
@@ -129,10 +127,9 @@ const DataExtraction = ({baselookup}) =>{
                 setLoadMessage("Error sending ==> "+errorData.detail);
 
             }
-            for (var i = 0; i <= 100; i = i + 0.1) {
 
-                setProgress(progress + i);
-            }
+            ProgressUpdate();
+
             const result = await response.json(); // Process successful response
             setLoadSuccessAlert(true);
             setSendingSpinner(false);
@@ -148,19 +145,52 @@ const DataExtraction = ({baselookup}) =>{
         }
     }
 
+    function ProgressUpdate() {
+        setProgress(0); // Reset progress to 0
+        const newSocket = new WebSocket("ws://localhost:8000/api/usl_data/ws/progress");
+
+        // Set up the WebSocket connection
+        newSocket.onmessage = function (event) {
+            setProgress(Number(event.data)); // Update progress on receiving message
+        };
+
+        newSocket.onclose = function () {
+            console.log("WebSocket connection closed");
+        };
+
+        // Save the socket instance so we can close it later if needed
+        setSocket(newSocket);
+    }
+
+    useEffect(() => {
+        return () => {
+            if (socket) {
+                socket.close();
+            }
+        };
+    }, [socket]);
+    // useEffect(() => {
+    //     const ws = new WebSocket("ws://localhost:8000/api/usl_data/ws/progress");
+    //
+    //     ws.onmessage = (event) => {
+    //         setProgress(event.data); // Update progress
+    //         console.log("event.data ==>",event.data)
+    //     };
+    //
+    //     ws.onclose = () => {
+    //         console.log("WebSocket connection closed");
+    //     };
+    //
+    //     return () => ws.close();
+    // }, []);
+
+
 
     return (
         <>
             <Box sx={{ p: 2 }}>
                 <Typography variant="caption" color="text.secondary">
-                    {/*<Button variant="contained" color="info" onClick={()=>loadData(baselookup)}>*/}
-                    {/*    Generate / Load*/}
-                    {/*    {spinner ?*/}
-                    {/*        <CircularProgress style={{"color":"black"}} size="1rem"/>*/}
-                    {/*        :*/}
-                    {/*        <></>*/}
-                    {/*    }*/}
-                    {/*</Button>*/}
+
                     <Fab color="info" variant="extended" onClick={()=>loadData(baselookup)}>
                         Generate / Load
                         {spinner ?
@@ -192,6 +222,7 @@ const DataExtraction = ({baselookup}) =>{
                 { progress >0 &&
                     <LinearProgress variant="determinate" value={progress} />
                 }
+                <div>Progress Update: {progress}</div>
                 { datagridrows.length >0 &&
                     <div>
                         <DataGrid
