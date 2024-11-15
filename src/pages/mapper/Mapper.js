@@ -4,7 +4,7 @@ import {Grid, Stack, Typography} from '@mui/material';
 // project import
 import MainCard from 'components/MainCard';
 import {Link} from "react-router-dom";
-import SelectorForm from "./forms/SelectorForm";
+import SelectorForm from "./selector-form/SelectorForm";
 
 // ==============================|| SAMPLE PAGE ||============================== //
 
