@@ -11,10 +11,16 @@ import {
 } from "@mui/material";
 import {useState, useEffect} from "react";
 import {Link as RouterLink, useNavigate} from "react-router-dom";
-import {DeleteOutlined, EyeOutlined, UploadOutlined} from "@ant-design/icons";
+import {
+    CloudDownloadOutlined,
+    CloudUploadOutlined,
+    DeleteOutlined,
+    EyeOutlined,
+    UploadOutlined
+} from "@ant-design/icons";
 import {useGetDataDictionariesUSL, useGetDataDictionaryTermsUSL} from "../../../store/data-dictionary/queries";
 import DeleteDialog from "../../../components/Dialogs/DeleteDialog";
-import {useDeleteDictionaryUSL} from "../../../store/data-dictionary/mutations";
+import {useDeleteDictionaryUSL, usePublishUniversalDataDictionary} from "../../../store/data-dictionary/mutations";
 import Dot from "../../../components/@extended/Dot";
 import PropTypes from "prop-types";
 
@@ -91,6 +97,7 @@ const DataDictionaryListUSL = () => {
     const {isLoading: isLoadingDict, data: repos} = useGetDataDictionariesUSL();
     const {isLoading: isLoadingTerms, data: terms} = useGetDataDictionaryTermsUSL();
     const deleteDictionary = useDeleteDictionaryUSL();
+    const publishDictionary = usePublishUniversalDataDictionary();
 
     useEffect(() => {
         if (!isLoadingDict && !isLoadingTerms && repos && terms) {
@@ -106,6 +113,10 @@ const DataDictionaryListUSL = () => {
         navigate(`/usl_dictionary/upload/${name}`);
     };
 
+    const handleClickPublish = (id) => {
+        publishDictionary.mutate({id})
+    }
+
     const handleClickOpen = (id) => {
         setRowId(id);
         setDialogOpen(true);
@@ -116,14 +127,12 @@ const DataDictionaryListUSL = () => {
     };
 
     const handleDelete = () => {
-        console.log(rowId)
         // Add your delete logic here
         deleteDictionary.mutate(rowId, {
             onSuccess: () => {
                 handleClose();
             },
         });
-        console.log(deleteDictionary.isSuccess)
         handleClose();
     };
 
@@ -202,6 +211,11 @@ const DataDictionaryListUSL = () => {
                                         <Tooltip title={`Upload Dictionary`}>
                                             <IconButton aria-label="Upload" onClick={() => handleClickUpload(row.id)}>
                                                 <UploadOutlined />
+                                            </IconButton>
+                                        </Tooltip>
+                                        <Tooltip title={row.is_published?`Unpublish Dictionary`: `Publish Dictionary`}>
+                                            <IconButton aria-label="Publish/UnPublish" onClick={() => handleClickPublish(row.id)}>
+                                                {row.is_published? <CloudDownloadOutlined />: <CloudUploadOutlined />}
                                             </IconButton>
                                         </Tooltip>
                                         <Tooltip title={`View Dictionary Variables`}>
