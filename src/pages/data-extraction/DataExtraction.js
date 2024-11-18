@@ -3,7 +3,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import {DataGrid} from "@mui/x-data-grid";
 import {useState,useEffect} from "react";
 import axios from "axios";
-import {API_URL,STAGING_API} from "../../constants";
+import {API_URL, STAGING_API, WS_API} from "../../constants";
 import SourceSystemInfo from "../mapper/source-system/SourceSystemInfo";
 import {CloudUploadOutlined} from "@ant-design/icons";
 
@@ -80,7 +80,7 @@ const DataExtraction = ({baselookup}) =>{
 
     const sendManifest= async (baseRepo, manifest) => {
         try {
-            const response = await fetch(`https://4ca2-41-80-117-126.ngrok-free.app/api/staging/verify`, {
+            const response = await fetch(`${STAGING_API}/api/staging/verify`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -109,12 +109,12 @@ const DataExtraction = ({baselookup}) =>{
     }
 
 
-    function sendData() {
+    function sendData(baseRepo) {
 
         console.log("sending data... ")
 
         setProgress(0); // Reset progress to 0
-        const newSocket = new WebSocket("ws://localhost:8000/api/usl_data/ws/progress");
+        const newSocket = new WebSocket(`ws://${WS_API}/api/usl_data/ws/progress/${baseRepo}`);
 
         // Set up the WebSocket connection
         newSocket.onmessage = function (event) {

@@ -63,7 +63,7 @@ const RepoConfigs = () =>{
 
 
     const getBaseSchemas = async() => {
-        await fetch(API_URL+"/dictionary_mapper/base_schema_variables/"+baselookup).then(res => {
+        await fetch(`${API_URL}/dictionary_mapper/base_schema_variables/${baselookup}`).then(res => {
             setBaseSchemas(res.data);
         });
     };
@@ -73,7 +73,7 @@ const RepoConfigs = () =>{
         setUploadSpinner(true);
         setSuccessAlert(false);
 
-        await axios.get(API_URL+"/dictionary_mapper/generate_config", {
+        await axios.get(`${API_URL}dictionary_mapper/generate_config`, {
             params: { baseSchema }
         }).then((res)=> {
             setUploadSpinner(false);
@@ -86,7 +86,7 @@ const RepoConfigs = () =>{
     const importConfig = async (baseSchema) =>{
         setImportSpinner(true);
         setSuccessAlert(false);
-        await axios.get(API_URL+"/dictionary_mapper/import_config", {
+        await axios.get(`${API_URL}/dictionary_mapper/import_config`, {
             params: { baseSchema }
         }).then((res)=> {
             setImportSpinner(false);

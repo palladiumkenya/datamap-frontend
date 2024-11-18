@@ -29,7 +29,7 @@ import { strengthColor, strengthIndicator } from 'utils/password-strength';
 import {ArrowRightOutlined, InfoCircleFilled , CheckCircleFilled} from '@ant-design/icons';
 import SourceSystemInfo from "../source-system/SourceSystemInfo";
 
-import { API_URL } from '../../../constants';
+import {API_URL, FRONTEND_URL} from '../../../constants';
 import { fetchBaseVariables, fetchSourceSystemTablesAndColumns } from '../../../actions/queries';
 
 
@@ -183,14 +183,14 @@ const SelectorForm = () => {
 
         event.preventDefault();
 
-        fetch(API_URL+ "/dictionary_mapper/add_mapped_variables/"+baselookup, {
+        fetch(`${API_URL}/dictionary_mapper/add_mapped_variables/${baselookup}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify(formData)
         }).then(res => {
-            window.location.href = `http://localhost:3000/schema/config?baselookup=` + baselookup;
+            window.location.href = `${FRONTEND_URL}/schema/config?baselookup=${baselookup}`;
         })
 
     };
