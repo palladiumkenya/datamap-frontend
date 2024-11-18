@@ -4,7 +4,7 @@ import {Grid, Stack, Typography} from '@mui/material';
 // project import
 import SelectorForm from "./selector-form/SelectorForm";
 
-// ==============================|| SAMPLE PAGE ||============================== //
+
 
 const Mapper = () => (
     <Grid container spacing={3}>

@@ -30,7 +30,7 @@ import {ArrowRightOutlined, InfoCircleFilled , CheckCircleFilled} from '@ant-des
 import SourceSystemInfo from "../source-system/SourceSystemInfo";
 
 import {API_URL, FRONTEND_URL} from '../../../constants';
-import { fetchBaseVariables, fetchSourceSystemTablesAndColumns } from '../../../actions/queries';
+import { fetchBaseVariables, fetchSourceSystemTablesAndColumns } from '../../../store/mapper/queries';
 
 
 
@@ -165,7 +165,7 @@ const SelectorForm = () => {
         }
         else{
             if (myElement) {
-                // Perform DOM manipulations or actions
+                // Perform DOM manipulations or mapper
                 myElement.textContent  = "* Expected Datatype for variable mapped to "+baseVariable.term+" should be "+
                     baseVariable.datatype+" or similar to it";
             }

@@ -1,4 +1,4 @@
-import {API_URL} from "../constants";
+import {API_URL} from "../../constants";
 import {useQuery} from "@tanstack/react-query";
 
 
@@ -53,3 +53,17 @@ export const fetchBaseVariables = async (baselookup) => {
     const jsonData = await res.json();
     return jsonData ?? null;
 };
+
+
+const fetchConfigCreation = async () => {
+    const res = await fetch(`${API_URL}/dictionary_mapper/generate_config/${baselookup}`);
+    const jsonData = await res.json();
+    return jsonData ?? null;
+};
+
+export const useGetConfigCreation = () => useQuery({
+    queryKey: ['baselookup'],
+    queryFn: fetchConfigCreation,
+    refetchInterval: 1800000, // refresh every 30min
+
+});

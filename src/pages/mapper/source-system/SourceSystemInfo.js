@@ -2,7 +2,7 @@ import {
     Chip, Grid, Skeleton
 } from '@mui/material';
 
-import {useGetFetchSourceSystemInfo} from "../../../actions/queries";
+import {useGetFetchSourceSystemInfo} from "../../../store/mapper/queries";
 
 
 const SourceSystemInfo = () =>{

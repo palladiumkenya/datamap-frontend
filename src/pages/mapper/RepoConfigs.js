@@ -27,24 +27,19 @@ import MainCard from 'components/MainCard';
 import {API_URL} from "../../constants"
 import axios from "axios";
 import { useQuery  } from '@tanstack/react-query'
-import {fetchRepoMappings, fetchSourceSystemInfo} from "../../actions/queries";
+import {fetchRepoMappings, fetchSourceSystemInfo} from "../../store/mapper/queries";
 import SourceSystemInfo from "./source-system/SourceSystemInfo";
 import DataExtraction from "../data-extraction/DataExtraction";
+import UploadConfig from "./actions/UploadConfig";
+import EditMappings from "./actions/EditMappings";
+import ImportConfig from "./actions/ImportConfig";
+import RepoSkeleton from "../skeleton/Skeleton";
 
 
 
 const RepoConfigs = () =>{
     const [txcurr, settxcurr] = useState({"indicator_value":"-","indicator_date":"-"});
-
-    const [uploadSpinner, setUploadSpinner] = useState(null);
-    const [importSpinner, setImportSpinner] = useState(null);
-
-    const [successAlert, setSuccessAlert] = useState(null);
-    const [message, setMessage] = useState(null);
-
-
-    const [progress, setProgress] = useState(0);
-    // const [ws, setWs] = useState(null);
+    const [baseSchemas, setBaseSchemas] = useState([]);
 
     const urlSearchString = window.location.search;
     const params = new URLSearchParams(urlSearchString);
@@ -69,34 +64,6 @@ const RepoConfigs = () =>{
     };
 
 
-    const uploadConfig = async (baseSchema) =>{
-        setUploadSpinner(true);
-        setSuccessAlert(false);
-
-        await axios.get(`${API_URL}dictionary_mapper/generate_config`, {
-            params: { baseSchema }
-        }).then((res)=> {
-            setUploadSpinner(false);
-            setSuccessAlert(true);
-
-            setMessage("Successfully uploaded "+baselookup+" config")
-        })
-    }
-
-    const importConfig = async (baseSchema) =>{
-        setImportSpinner(true);
-        setSuccessAlert(false);
-        await axios.get(`${API_URL}/dictionary_mapper/import_config`, {
-            params: { baseSchema }
-        }).then((res)=> {
-            setImportSpinner(false);
-            setMessage("Successfully imported "+baselookup+" config from the marketplace");
-            setSuccessAlert(true);
-            getBaseSchemas();
-        })
-    }
-
-
 
     return(
         < >
@@ -119,35 +86,11 @@ const RepoConfigs = () =>{
 
                                         <Box sx={{ p: 2 }}>
                                             <Typography variant="h4">Base Variables
-                                                <NavLink to={`/schema/selector?baselookup=${base.schema}`} exact activeClassName="active-link">
-                                                    <Tooltip title="Manually map/update Variable Mappings">
-                                                        {/*<IconButton variant="outlined" color="success">*/}
-                                                        {/*     <EditOutlined />*/}
-                                                        {/*</IconButton>*/}
-                                                        <Button  color="success"
-                                                                 // onClick={()=>importConfig(base.schema)}
-                                                                 endIcon={<EditOutlined sx={{ marginLeft: "20px" }}/>}
-                                                        >Edit Mappings</Button>
-                                                    </Tooltip>
-                                                </NavLink>
-                                                <Tooltip title="Import Mappings Config from the MarketPlace">
-                                                    <Button  color="info"
-                                                             onClick={()=>importConfig(base.schema)}
-                                                             endIcon={importSpinner ?
-                                                        <CircularProgress style={{"color":"black"}} size="1rem"/>
-                                                        :
-                                                        <FileSyncOutlined sx={{ marginLeft: "20px" }}/>
-                                                    }>Import Mappings</Button>
-                                                </Tooltip>
-                                                <Tooltip title="Upload Mappings Config to the MarketPlace">
-                                                    <Button  color="success"
-                                                             onClick={()=>uploadConfig(base.schema)}
-                                                             endIcon={uploadSpinner ?
-                                                                 <CircularProgress style={{"color":"black"}} size="1rem"/>
-                                                                 :
-                                                                 <CloudUploadOutlined size="1rem"/>
-                                                             }>Upload Mappings</Button>
-                                                </Tooltip>
+                                                <EditMappings baselookup={baselookup}/>
+
+                                                <ImportConfig baselookup={baselookup}/>
+
+                                                <UploadConfig baselookup={baselookup}/>
                                             </Typography>
 
                                             {base.base_variables.map(base => (
@@ -157,11 +100,6 @@ const RepoConfigs = () =>{
 
                                         </Box>
 
-                                        {successAlert &&
-                                            <Alert color="success" onClose={() => { }}>
-                                                 {message}
-                                            </Alert>
-                                        }
 
                                         <Divider/>
 
@@ -171,36 +109,8 @@ const RepoConfigs = () =>{
                             </MainCard>
                         </Stack>
                     ) ) :
-                    (
-                        <div>
-                            <Skeleton variant="text" sx={{ fontSize: '1rem' }} />
-
-                            <Grid container spacing={3}>
-                                <Grid item xs={3}><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></Grid>
-                                <Grid item xs={3}><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></Grid>
-                            </Grid>
-                            <Skeleton variant="text" sx={{ fontSize: '1rem' }} />
-                            <Skeleton variant="rectangular" width={600} height={100} />
-                            <Skeleton variant="text" sx={{ fontSize: '1rem' }} />
-
-                            <Grid container spacing={3}>
-                                <Grid item xs={3}><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></Grid>
-                                <Grid item xs={3}><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></Grid>
-                            </Grid>
-                            <Skeleton variant="text" sx={{ fontSize: '1rem' }} />
-                            <Skeleton variant="rectangular" width={600} height={100} />
-
-                            <Grid container spacing={3}>
-                                <Grid item xs={6}><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></Grid>
-                                <Grid item xs={6}><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></Grid>
-                            </Grid><Grid container spacing={3}>
-                            <Grid item xs={6}><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></Grid>
-                            <Grid item xs={6}><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></Grid>
-                        </Grid><Grid container spacing={3}>
-                            <Grid item xs={6}><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></Grid>
-                            <Grid item xs={6}><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></Grid>
-                        </Grid>
-                        </div>
+                        (
+                        <RepoSkeleton/>
                         )
                     }
                 </Grid>

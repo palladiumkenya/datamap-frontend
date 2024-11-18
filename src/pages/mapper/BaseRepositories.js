@@ -11,9 +11,9 @@ import MainCard from 'components/MainCard';
 import {API_URL} from "../../constants"
 import axios from "axios";
 import { useQuery, QueryClient, QueryClientProvider  } from '@tanstack/react-query'
-import {fetchBaseRepositories} from "../../actions/queries";
+import {fetchBaseRepositories} from "../../store/mapper/queries";
 import SourceSystemInfo from "./source-system/SourceSystemInfo";
-// import {fetchBaseRepositories} from "../../actions";
+// import {fetchBaseRepositories} from "../../mapper";
 
 
 
