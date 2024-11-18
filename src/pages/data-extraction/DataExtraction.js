@@ -9,7 +9,7 @@ import {CloudUploadOutlined} from "@ant-design/icons";
 
 
 const DataExtraction = ({baselookup}) =>{
-    const [loadedData, setLoadedData] = useState([]);
+    const [loadedData, setLoadedData ] =useState([]);
 
     const [loadSuccessAlert, setLoadSuccessAlert] = useState(null);
     const [loadMessage, setLoadMessage] = useState(null);
@@ -20,8 +20,6 @@ const DataExtraction = ({baselookup}) =>{
 
     const [datagridcolumns, setColumns] =useState([])
     const [datagridrows, setRows] =useState([])
-    const [baseSchemas, setBaseSchemas] = useState([]);
-    const [isExpanded,setIsExpanded] = useState(false);
 
     const [progress, setProgress] = useState(null);
     const [socket, setSocket] = useState(null);
@@ -67,12 +65,10 @@ const DataExtraction = ({baselookup}) =>{
             },
         }).then(res => {
             const data =  res.json().then(manifest => {
-                console.log('manifest success-->', manifest);
                 sendManifest(baseRepo, manifest);
             }); // Parse JSON error response
 
         }).catch( (error) => {
-            console.log('manifest failed error-->', error)
 
             setSpinner(false);
             setSendingSpinner(false)
@@ -83,7 +79,6 @@ const DataExtraction = ({baselookup}) =>{
     }
 
     const sendManifest= async (baseRepo, manifest) => {
-        console.log("manifest to send ,",manifest)
         try {
             const response = await fetch(`https://4ca2-41-80-117-126.ngrok-free.app/api/staging/verify`, {
                 method: "POST",
@@ -107,58 +102,44 @@ const DataExtraction = ({baselookup}) =>{
             setLoadMessage("Successfully verified " + baselookup + " endpoint. We are now starting to send");
             sendData(baseRepo)
 
-        } catch (error) { //try catch block
-
-            console.log("Error sending Manifes. ERROR: ==> " + error)
-        }
-    }
-
-    const sendData = async (baseRepo) =>{
-        const data={}
-        try {
-            // const res = await fetch(`https://4459-165-90-30-222.ngrok-free.app/api/staging/usl/${baseRepo}`, {
-            const response = await fetch(`${API_URL}/usl_data/send/usl/${baseRepo}`);
-            console.log("response -->", response)
-            if (!response.ok) {
-                const errorData = await response.json(); // Parse JSON error response
-                setSendingSpinner(false);
-                setLoadSuccessAlert(true);
-                setAlertType("error");
-                setLoadMessage("Error sending ==> "+errorData.detail);
-
-            }
-
-            ProgressUpdate();
-
-            const result = await response.json(); // Process successful response
-            setLoadSuccessAlert(true);
-            setSendingSpinner(false);
-            setAlertType("success");
-            setLoadMessage("Sending completed");
-
         } catch (error) {
-            const errorData = await response.json(); // Parse JSON error response
-            setSendingSpinner(false);
-            setLoadSuccessAlert(true);
             setAlertType("error");
-            console.log("Error sending ==> "+error)
+            setLoadMessage("Error sending Manifes. ERROR: ==> "+error);
         }
     }
 
-    function ProgressUpdate() {
+
+    function sendData() {
+
+        console.log("sending data... ")
+
         setProgress(0); // Reset progress to 0
         const newSocket = new WebSocket("ws://localhost:8000/api/usl_data/ws/progress");
 
         // Set up the WebSocket connection
         newSocket.onmessage = function (event) {
-            setProgress(Number(event.data)); // Update progress on receiving message
+            console.log("ws connection established ")
+
+            const data = event.data;
+            if (data.includes("Error")) {
+                console.error(data);
+                newSocket.close();
+            } else {
+                setProgress(Number(data.replace("%", ""))); // Update progress
+            }
+        };
+
+        newSocket.onerror = function (error) {
+            console.log("connection failed with error: ", error)
         };
 
         newSocket.onclose = function () {
-            console.log("WebSocket connection closed");
+            console.log("ws connection closed");
+            setSendingSpinner(false);
+            setAlertType("success");
+            setLoadMessage("Sending completed");
         };
 
-        // Save the socket instance so we can close it later if needed
         setSocket(newSocket);
     }
 
@@ -169,21 +150,6 @@ const DataExtraction = ({baselookup}) =>{
             }
         };
     }, [socket]);
-    // useEffect(() => {
-    //     const ws = new WebSocket("ws://localhost:8000/api/usl_data/ws/progress");
-    //
-    //     ws.onmessage = (event) => {
-    //         setProgress(event.data); // Update progress
-    //         console.log("event.data ==>",event.data)
-    //     };
-    //
-    //     ws.onclose = () => {
-    //         console.log("WebSocket connection closed");
-    //     };
-    //
-    //     return () => ws.close();
-    // }, []);
-
 
 
     return (
@@ -220,9 +186,12 @@ const DataExtraction = ({baselookup}) =>{
             </Box>
             <Box sx={{ width: '100%' }}>
                 { progress >0 &&
+                    <>
                     <LinearProgress variant="determinate" value={progress} />
+                    <div>Sending Progress: {progress}%</div>
+                    </>
                 }
-                <div>Progress Update: {progress}</div>
+
                 { datagridrows.length >0 &&
                     <div>
                         <DataGrid

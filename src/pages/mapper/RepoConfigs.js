@@ -17,26 +17,17 @@ import {
     LinearProgress,
     Chip
 } from '@mui/material';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
 
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import CircularProgress from '@mui/material/CircularProgress';
-import { CheckCircleFilled,EditOutlined,DownCircleFilled,CloseCircleFilled,CloudUploadOutlined,
-    FileSyncOutlined,RightCircleFilled,InfoCircleFilled  } from '@ant-design/icons';
+import { CheckCircleFilled,EditOutlined,CloseCircleFilled,CloudUploadOutlined,
+    FileSyncOutlined,InfoCircleFilled  } from '@ant-design/icons';
 
 import MainCard from 'components/MainCard';
 
-import {API_URL, STAGING_API} from "../../constants"
+import {API_URL} from "../../constants"
 import axios from "axios";
-import { useQuery, QueryClient, QueryClientProvider  } from '@tanstack/react-query'
-import {fetchRepoMappings, fetchSourceSystemInfo, fetchSourceSystemTablesAndColumns} from "../../actions/queries";
-import {useGetDataDictionarySyncAlert} from "../../store/alerts/queries";
+import { useQuery  } from '@tanstack/react-query'
+import {fetchRepoMappings, fetchSourceSystemInfo} from "../../actions/queries";
 import SourceSystemInfo from "./source-system/SourceSystemInfo";
 import DataExtraction from "../data-extraction/DataExtraction";
 
@@ -105,48 +96,6 @@ const RepoConfigs = () =>{
         })
     }
 
-    // const getSourceSystemInfo =  async () => {
-    //     const systemInforesults = await fetch(API_URL+"/db_access/active_connection").then((res) =>
-    //             res.json(),
-    //
-    //     );
-    //
-    //     if (!systemInforesults.ok){
-    //         throw new Error(`Response status: ${response.status}`);
-    //     }
-    //     const json = await response.json();
-    //     console.log("systemInforesults -->",json)
-    //
-    //     // setSystemName(json.data.name);
-    //     // setSystemVersion(json.data.system_version);
-    // };
-
-
-    // useEffect(() => {
-    //     // Establish WebSocket connection when component mounts
-    //     const websocket = new WebSocket(`ws://${API_URL}/usl_data/ws/progress`);
-    //     console.log("websocket ===>", websocket)
-    //     websocket.onmessage = (event) => {
-    //         console.log("message.event ==>",event)
-    //
-    //         const message = JSON.parse(event.data);
-    //         console.log("message.message ==>",message), "done"
-    //
-    //         setProgress(message.progress);  // Update the progress bar with new value
-    //         console.log("message.progress ==>",message.progress)
-    //     };
-    //
-    //     websocket.onclose = () => {
-    //         console.log('WebSocket connection closed');
-    //     };
-    //
-    //     setWs(websocket);
-    //
-    //     // Cleanup WebSocket connection when the component unmounts
-    //     return () => {
-    //         websocket.close();
-    //     };
-    // }, []);
 
 
     return(
