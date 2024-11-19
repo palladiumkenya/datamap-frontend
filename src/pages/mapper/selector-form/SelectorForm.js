@@ -16,7 +16,7 @@ import {
     InputAdornment,
     InputLabel,
     OutlinedInput,
-    Stack,
+    Stack,Alert, Chip,
     Typography, Select, MenuItem, Skeleton,TextField
 } from '@mui/material';
 import MainCard from 'components/MainCard';
@@ -26,11 +26,12 @@ import AnimateButton from 'components/@extended/AnimateButton';
 import { strengthColor, strengthIndicator } from 'utils/password-strength';
 
 // assets
-import {ArrowRightOutlined, CheckCircleFilled} from '@ant-design/icons';
+import {ArrowRightOutlined, InfoCircleFilled , CheckCircleFilled} from '@ant-design/icons';
+import SourceSystemInfo from "../source-system/SourceSystemInfo";
 
-import { API_URL } from '../../../constants';
+import {API_URL, FRONTEND_URL} from '../../../constants';
+import { fetchBaseVariables, fetchSourceSystemTablesAndColumns } from '../../../store/mapper/queries';
 
-import axios from "axios";
 
 
 
@@ -45,6 +46,7 @@ const SelectorForm = () => {
     const [databaseColumns, setdatabaseColumns] = useState({});
     const [tablenames, setTablenames] = useState(Object.keys(databaseColumns));
     const [baseIndicators, setBaseIndicators] = useState([])
+    const [fetchedSourceTables, setFetchedSourceTables] = useState(null);
 
     const [warning, setWarning] = useState("")
 
@@ -62,37 +64,60 @@ const SelectorForm = () => {
 
 
     const getBaseVariables = async() => {
-        await axios.get(API_URL+"/dictionary_mapper/base_variables/"+baselookup).then(res => {
-            setBaseIndicators(res.data);
+        const baseVariables = await fetchBaseVariables(baselookup);
+        if (baseVariables) {
+            setBaseIndicators(baseVariables);
 
             const allColumns = []
-            res.data.map(o =>{
+            baseVariables.map(o =>{
                 allColumns.push({"baseVariable":o.term,"tableSelected":"", "matchingTableColumns":[]});
             });
 
             setColumns(allColumns);
-        });
+        }
     };
 
     const handleColumnChange = (e, baseVariable, table, join_by) => {
         const filteredData = columns.filter(item => item.baseVariable === baseVariable);
         const selectIdentifier = baseVariable+"column";
         const column = document.getElementsByName(selectIdentifier)[0].value;
-        formData.push({"base_repository":baselookup,"base_variable_mapped_to":baseVariable, "tablename":filteredData[0].tableSelected,
-            "columnname":column, "join_by":join_by, "datatype":"string"})
-        setFormData(formData)
+
+        // if item in list, filter it out and update the current value picked
+        const mappingExists = formData.find(item => item.base_variable_mapped_to == baseVariable);
+        if (mappingExists){
+            mappingExists.tablename = filteredData[0].tableSelected;
+            mappingExists.columnname = column;
+            mappingExists.join_by = join_by;
+        }else {
+            formData.push({
+                "base_repository": baselookup,
+                "base_variable_mapped_to": baseVariable,
+                "tablename": filteredData[0].tableSelected,
+                "columnname": column,
+                "join_by": join_by,
+                "datatype": "string"
+            })
+            setFormData(formData)
+        }
+        console.log("formData -->",formData)
 
     };
 
     const getDatabaseColumns = async() => {
-        await axios.get(API_URL+"/dictionary_mapper/get_database_columns").then(res => {
-            setdatabaseColumns(res.data);
-            setTablenames(Object.keys(res.data));
+        const res = await fetchSourceSystemTablesAndColumns();
+        if (res){
+            setdatabaseColumns(res);
+            setTablenames(Object.keys(res));
+            setFetchedSourceTables(true);
+        }
 
-        });
     };
 
     const handleTableSelect = (tableSelected, basevariable) => {
+        //clear any selected data for base variable
+        // document.getElementById(basevariable+"column").value = "";
+        // document.getElementById(basevariable+"JoinColumn").value = "";
+        // console.log("columns  -->", columns)
         const variableObj = {};
         variableObj[tableSelected] = databaseColumns[tableSelected];
         variableObj["baseVariable"] = basevariable;
@@ -140,7 +165,7 @@ const SelectorForm = () => {
         }
         else{
             if (myElement) {
-                // Perform DOM manipulations or actions
+                // Perform DOM manipulations or mapper
                 myElement.textContent  = "* Expected Datatype for variable mapped to "+baseVariable.term+" should be "+
                     baseVariable.datatype+" or similar to it";
             }
@@ -158,8 +183,14 @@ const SelectorForm = () => {
 
         event.preventDefault();
 
-        axios.post(API_URL+ "/dictionary_mapper/add_mapped_variables/"+baselookup,  formData).then(res => {
-            window.location.href = `http://localhost:3000/schema/config?baselookup=` + baselookup;
+        fetch(`${API_URL}/dictionary_mapper/add_mapped_variables/${baselookup}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(formData)
+        }).then(res => {
+            window.location.href = `${FRONTEND_URL}/schema/config?baselookup=${baselookup}`;
         })
 
     };
@@ -173,9 +204,16 @@ const SelectorForm = () => {
 
     return (
         <>
-
+            { !fetchedSourceTables &&
+                <Alert color="error" icon={<InfoCircleFilled  />}>
+                    An error has occurred: Check your source DB/API connection in the Configurations page and make
+                    sure you can connect to it and then restart the application. You cannot map unless the Source system is correctly configured
+                </Alert>
+            }
                     <form noValidate onSubmit={handleSubmit}>
-                        <Typography color="text.info" variant="h4">{baselookup} Mapping</Typography>
+                        <Typography color="text.info" variant="h4">{baselookup} Mapping
+                            <SourceSystemInfo />
+                        </Typography>
                         <Divider sx={{marginBottom:"20px"}}/>
                         <Grid container spacing={1}>
                             <Grid container spacing={1} sx={{marginBottom:"20px"}}>
@@ -339,7 +377,7 @@ const SelectorForm = () => {
                                     </div>
                                 )}
 
-
+                            {fetchedSourceTables &&
                             <Grid item xs={12}>
                                 <AnimateButton>
                                     <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="primary">
@@ -347,7 +385,7 @@ const SelectorForm = () => {
                                     </Button>
                                 </AnimateButton>
                             </Grid>
-
+                            }
                         </Grid>
                     </form>
 

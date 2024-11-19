@@ -1,13 +1,19 @@
+import { useEffect, useState, useRef } from 'react';
 import { NavLink } from 'react-router-dom';
 
 // material-ui
-import {Grid, Stack, Typography, Tooltip, Skeleton} from '@mui/material';
-import { RightCircleFilled } from '@ant-design/icons';
+import {Grid, Stack, Typography, Button, Divider, Box, IconButton, Tooltip, Fab, Alert, Skeleton} from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
+import { InfoCircleFilled ,RightCircleFilled } from '@ant-design/icons';
 
 import MainCard from 'components/MainCard';
-import { useQuery } from '@tanstack/react-query'
-import {fetchBaseRepositories} from "../../actions";
-// import {fetchBaseRepositories} from "../../actions";
+
+import {API_URL} from "../../constants"
+import axios from "axios";
+import { useQuery, QueryClient, QueryClientProvider  } from '@tanstack/react-query'
+import {fetchBaseRepositories} from "../../store/mapper/queries";
+import SourceSystemInfo from "./source-system/SourceSystemInfo";
+// import {fetchBaseRepositories} from "../../mapper";
 
 
 
@@ -34,8 +40,9 @@ const BaseRepositories = () =>{
             <Grid item xs={6}><Skeleton variant="text" sx={{ fontSize: '1rem' }} /></Grid>
         </div>)
 
-    if (error) return (<Typography variant="caption" color="text.error">'An error has occurred: ' + error.message + "
-        Check your source DB/API source connection configuration"</Typography>)
+    if (error) return (<Alert color="error" icon={<InfoCircleFilled  />}>
+        An error has occurred: Check your source DB/API connection in the Configurations page and make
+        sure you can connect to it and then try again    </Alert>)
 
 
     return(
@@ -43,7 +50,7 @@ const BaseRepositories = () =>{
             <Grid container spacing={3}>
                 <Grid item xs={12}>
                     <Stack direction="row" justifyContent="space-between" alignItems="baseline" sx={{ mb: { xs: -0.5, sm: 0.5 } }}>
-                        <Typography variant="h3">Base Repositories</Typography>
+                        <Typography variant="h3">Base Repositories  <SourceSystemInfo /></Typography>
                     </Stack>
                 </Grid>
 
@@ -54,9 +61,9 @@ const BaseRepositories = () =>{
                         <Stack direction="row" justifyContent="space-between" alignItems="baseline" sx={{ mb: { xs: -0.5, sm: 0.5 } }}>
                             <MainCard border={false} boxShadow  sx={{ width: '100%' }}>
                                 <Typography variant="h6">
-                                    {base.schema}
+                                    {base.name}
                                     <Tooltip title="Expand/Hide">
-                                        <NavLink to={`/schema/config?baselookup=${base.schema}`} exact activeClassName="active-link">
+                                        <NavLink to={`/schema/config?baselookup=${base.name}`} exact activeClassName="active-link">
                                             <RightCircleFilled
                                                 // onClick={(e)=>{setIsExpanded(!isExpanded)}}
                                             />
