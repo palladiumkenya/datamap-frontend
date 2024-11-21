@@ -4,6 +4,7 @@ import { lazy } from 'react';
 import Loadable from 'components/Loadable';
 import MainLayout from 'layout/MainLayout';
 import RepoConfigs from "../pages/mapper/RepoConfigs";
+import AddSiteConfigs from "../pages/configs/Site/AddSiteConfigs";
 
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
@@ -106,7 +107,11 @@ const MainRoutes = {
         },
         {
           path: 'site',
-          element: <SiteConfigs />
+          element: <AddSiteConfigs />
+        },
+        {
+          path: 'sites_list',
+          element: <ViewSiteConfigs />
         },
       ]
     },
