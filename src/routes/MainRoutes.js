@@ -4,7 +4,6 @@ import { lazy } from 'react';
 import Loadable from 'components/Loadable';
 import MainLayout from 'layout/MainLayout';
 import RepoConfigs from "../pages/mapper/RepoConfigs";
-import AddSiteConfigs from "../pages/configs/Site/AddSiteConfigs";
 
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
@@ -33,6 +32,8 @@ const ViewDataDictionary = Loadable(lazy(() => import('pages/data-dictionary/Dic
 const Selector = Loadable(lazy(() => import('pages/mapper/Mapper')));
 const Indicators = Loadable(lazy(() => import('pages/mapper/BaseRepositories')));
 const Text2SQL = Loadable(lazy(() => import('pages/text2sql/Text2Sql')));
+const AddSiteConfigs = Loadable(lazy(() => import('pages/configs/Site/AddSiteConfigs')));
+const ViewSiteConfigs = Loadable(lazy(() => import('pages/configs/Site/ViewSiteConfigs')));
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -106,11 +107,11 @@ const MainRoutes = {
           element: <SchedulesConfigs />
         },
         {
-          path: 'site',
+          path: 'site/add',
           element: <AddSiteConfigs />
         },
         {
-          path: 'sites_list',
+          path: 'site',
           element: <ViewSiteConfigs />
         },
       ]
