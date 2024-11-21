@@ -100,7 +100,7 @@ const DataExtraction = ({baselookup}) =>{
             setLoadSuccessAlert(true);
             setAlertType("success");
             setLoadMessage("Successfully verified " + baselookup + " endpoint. We are now starting to send");
-            sendData(baseRepo)
+            sendData(baseRepo, manifest)
 
         } catch (error) {
             setAlertType("error");
@@ -109,13 +109,16 @@ const DataExtraction = ({baselookup}) =>{
     }
 
 
-    function sendData(baseRepo) {
+    function sendData(baseRepo, manifest) {
 
         console.log("sending data... ")
 
         setProgress(0); // Reset progress to 0
         const newSocket = new WebSocket(`ws://${WS_API}/api/usl_data/ws/progress/${baseRepo}`);
 
+        newSocket.onopen = () => {
+            newSocket.send(JSON.stringify(manifest));
+        };
         // Set up the WebSocket connection
         newSocket.onmessage = function (event) {
             console.log("ws connection established ")
