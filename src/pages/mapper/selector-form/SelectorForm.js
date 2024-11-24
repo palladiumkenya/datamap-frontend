@@ -31,6 +31,7 @@ import SourceSystemInfo from "../source-system/SourceSystemInfo";
 
 import {API_URL, FRONTEND_URL} from '../../../constants';
 import { fetchBaseVariables, fetchSourceSystemTablesAndColumns } from '../../../store/mapper/queries';
+import ActiveSiteConfigInfo from "../../configs/Site/ActiveSiteConfigInfo";
 
 
 
@@ -212,7 +213,7 @@ const SelectorForm = () => {
             }
                     <form noValidate onSubmit={handleSubmit}>
                         <Typography color="text.info" variant="h4">{baselookup} Mapping
-                            <SourceSystemInfo />
+                            <ActiveSiteConfigInfo />  <SourceSystemInfo />
                         </Typography>
                         <Divider sx={{marginBottom:"20px"}}/>
                         <Grid container spacing={1}>

@@ -42,7 +42,7 @@ const headCells = [
     },
     {
         id: 'primary_system',
-        align: 'right',
+        align: 'left',
         disablePadding: false,
         label: 'Primary System'
     },
@@ -91,10 +91,6 @@ const ConfigsList = () =>{
     const navigate = useNavigate()
     const deleteAccess = useDeleteAccessConfig()
     const { isLoading: isLoading, data: getSiteConfigsData } = useGetSiteConfigs();
-
-    const handleDictListClick = (id) => {
-        navigate(`/dictionary/list/${id}`);
-    };
 
     const handleClickOpen = (id) => {
         setRowId(id);
@@ -176,7 +172,7 @@ const ConfigsList = () =>{
                                     <TableCell align="left">
                                         <SiteConfigStatus status={row.is_active} />
                                     </TableCell>
-                                    <TableCell align="right">{new Date(row.primary_system)}</TableCell>
+                                    <TableCell align="left">{row.primary_system}</TableCell>
                                     <TableCell align="right">
                                         <Tooltip title={`Edit`}>
                                             <IconButton aria-label="Edit">
@@ -196,7 +192,7 @@ const ConfigsList = () =>{
                 </Table>
             </TableContainer>
             <DeleteDialog
-                text="Database Config"
+                text="Site Config"
                 open={dialogOpen}
                 handleClose={handleClose}
                 handleDelete={handleDelete} />

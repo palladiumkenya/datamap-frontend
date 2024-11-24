@@ -34,6 +34,7 @@ import UploadConfig from "./actions/UploadConfig";
 import EditMappings from "./actions/EditMappings";
 import ImportConfig from "./actions/ImportConfig";
 import RepoSkeleton from "../skeleton/Skeleton";
+import ActiveSiteConfigInfo from "../configs/Site/ActiveSiteConfigInfo";
 
 
 
@@ -71,7 +72,7 @@ const RepoConfigs = () =>{
                 <Grid item xs={12}>
                     <Stack direction="row" justifyContent="space-between" alignItems="baseline" sx={{ mb: { xs: 0.5, sm: 0.5 } }}>
                         <Typography variant="h3">{baselookup}
-                            <SourceSystemInfo />
+                            <ActiveSiteConfigInfo /> <SourceSystemInfo />
                         </Typography>
                     </Stack>
                 </Grid>
