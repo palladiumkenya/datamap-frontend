@@ -53,8 +53,6 @@ const deleteDictionaryUSL = async (id) => {
     return res.json();
 };
 
-
-
 const publishUniversalDataDictionary = async (data) => {
     const res = await fetch(`${API_URL}/usl/data_dictionary/publish/universal_dictionary`, {
         method: "POST",
@@ -62,6 +60,16 @@ const publishUniversalDataDictionary = async (data) => {
             "Content-Type": "application/json"
         },
         body: JSON.stringify(data)
+    });
+    return res.json();
+}
+
+const refreshUniversalDataDictionaryToken = async () => {
+    const res = await fetch(`${API_URL}/usl/data_dictionary/refresh_universal_dictionary/token`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        }
     });
     return res.json();
 }
@@ -140,6 +148,16 @@ export const usePublishUniversalDataDictionary = () => {
         mutationFn: publishUniversalDataDictionary,
         onSuccess: () => {
             queryClient.invalidateQueries({queryKey: ['data_dictionaries_usl']})
+        }
+    })
+}
+
+export const useRefreshUniversalDataDictionaryToken = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: refreshUniversalDataDictionaryToken,
+        onSuccess: () => {
+            queryClient.invalidateQueries({queryKey: ['data_dictionary_token_usl']})
         }
     })
 }

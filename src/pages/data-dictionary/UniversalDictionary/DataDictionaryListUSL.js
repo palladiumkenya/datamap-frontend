@@ -84,7 +84,7 @@ const OrderStatus = ({ status }) => {
 };
 
 OrderStatus.propTypes = {
-    status: PropTypes.number
+    status: PropTypes.bool
 };
 
 const DataDictionaryListUSL = () => {

@@ -46,6 +46,18 @@ const getDataDictionaryChangeLogUSL = async ({queryKey}) => {
     return jsonData ?? [];
 };
 
+const getDataDictionaryTokenUSL = async () => {
+    const res = await fetch(`${API_URL}/usl/data_dictionary/universal_dictionary/token`)
+    const jsonData = await res.json();
+    return jsonData ?? {token: null};
+};
+
+const getUniversalDataDictionaryMetrics = async () => {
+    const res = await fetch(`${API_URL}/usl/data_dictionary/get_facility_pulls`)
+    const jsonData = await res.json();
+    return jsonData?.data ?? [];
+};
+
 export const useGetDataDictionariesUSL = () => useQuery({
     queryKey: ['data_dictionaries_usl'],
     queryFn: getDataDictionariesUSL
@@ -82,4 +94,14 @@ export const useGetDataDictionaryChangeLogUSL = (id) => useQuery({
     queryKey: ['data_dictionary_change_log_usl', id],
     queryFn: getDataDictionaryChangeLogUSL,
     enabled: !!id
+});
+
+export const useGetDataDictionaryTokenUSL = () => useQuery({
+    queryKey: ['data_dictionary_token_usl'],
+    queryFn: getDataDictionaryTokenUSL
+});
+
+export const useGetUniversalDataDictionaryMetrics = () => useQuery({
+    queryKey: ['data_dictionary_facility_metrics'],
+    queryFn: getUniversalDataDictionaryMetrics
 });
