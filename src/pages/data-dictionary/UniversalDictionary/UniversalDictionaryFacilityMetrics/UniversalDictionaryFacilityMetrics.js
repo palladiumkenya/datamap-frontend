@@ -10,15 +10,19 @@ import {
     TableCell,
     TableBody,
     Paper,
-    Collapse
+    Collapse, Checkbox, FormControlLabel, List, ListItem
 } from "@mui/material";
 import {useState} from "react";
-import {useGetUniversalDataDictionaryMetrics} from "../../../../store/data-dictionary/queries";
+import {
+    useGetDataDictionariesUSL,
+    useGetUniversalDataDictionaryMetrics
+} from "../../../../store/data-dictionary/queries";
 import {KeyboardArrowDown, KeyboardArrowUp} from "@mui/icons-material";
 
 
 function Row(props) {
     const { row } = props;
+    const {repos} = props;
     const [open, setOpen] = useState(false);
 
     return (
@@ -36,7 +40,7 @@ function Row(props) {
                 <TableCell component="th" scope="row">
                     {row.facility_mfl_code}
                 </TableCell>
-                <TableCell align="right">{row.date_last_updated}</TableCell>
+                <TableCell>{row.date_last_updated}</TableCell>
             </TableRow>
             <TableRow>
                 <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -49,7 +53,8 @@ function Row(props) {
                                 <TableHead>
                                     <TableRow>
                                         <TableCell>Dictionary</TableCell>
-                                        <TableCell align="right">Version</TableCell>
+                                        <TableCell align="right">Facility Version</TableCell>
+                                        <TableCell align="right">Latest Version</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -59,6 +64,9 @@ function Row(props) {
                                                 {version.name}
                                             </TableCell>
                                             <TableCell align="right">{version.version}</TableCell>
+                                            <TableCell align="right">
+                                                {repos.find((repo) => repo.name === version.name)?.version_number ?? 'DELETED'}
+                                            </TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
@@ -74,27 +82,47 @@ function Row(props) {
 
 const UniversalDictionaryFacilityMetrics = () => {
     const {data, isLoading} = useGetUniversalDataDictionaryMetrics()
+    const {isLoading: isLoadingDict, data: repos} = useGetDataDictionariesUSL();
+    const [showOutdated, setShowOutdated] = useState(false);
 
-    if(isLoading)
+    if(isLoading || isLoadingDict)
         return (<></>)
-    console.log(data)
 
+    const isOutdated = (row) => {
+        return row.dictionary_versions.some(version => {
+            const latestVersion = repos.find(repo => repo.name == version.name)?.version_number;
+            return latestVersion && version.version < latestVersion;
+        });
+    };
 
+    const filteredData = showOutdated ? data.filter(isOutdated) : data;
 
     return (
         <Box sx={{ width: '100%' }}>
+            <FormControlLabel
+                control={
+                    <Checkbox
+                        checked={showOutdated}
+                        onChange={() => setShowOutdated(!showOutdated)}
+                        name="showOutdated"
+                        color="primary"
+                    />
+                }
+                label="Show only facilities with outdated dictionaries"
+            />
+
             <TableContainer component={Paper}>
                 <Table aria-label="collapsible table">
                     <TableHead>
                         <TableRow>
                             <TableCell />
                             <TableCell>Facility MFLCode</TableCell>
-                            <TableCell align="right">Date Last Updated</TableCell>
+                            <TableCell>Date Last Updated</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {data.map((row) => (
-                            <Row key={row.facility_mfl_code} row={row} />
+                        {filteredData.map((row) => (
+                            <Row key={row.facility_mfl_code} row={row} repos={repos} />
                         ))}
                     </TableBody>
                 </Table>
