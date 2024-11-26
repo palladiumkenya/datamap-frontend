@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {Box, TextField, Typography, Button, CircularProgress, Alert, AlertTitle} from "@mui/material";
 import {API_URL} from "../../../constants";
+import {useUpdateAccessConfig} from "../../../store/access_configurations/mutations";
 
-const SaveConfig = ({ connString, onFinish }) => {
+const SaveUpdatedConfig = ({ connString, onFinish, data, id }) => {
     const [formData, setFormData] = useState({
         connectionName: ''
     });
@@ -10,6 +11,15 @@ const SaveConfig = ({ connString, onFinish }) => {
     const [alertType, setAlertType] = useState(null);
     const [alertMessage, setAlertMessage] = useState('');
     const [loader, setLoader] = useState(false);
+    const updateConn = useUpdateAccessConfig()
+
+    useEffect(() => {
+        if(data){
+            setFormData({
+                connectionName: data
+            })
+        }
+    }, [data]);
 
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -30,25 +40,19 @@ const SaveConfig = ({ connString, onFinish }) => {
         };
 
         try {
-            const response = await fetch(`${API_URL}/db_access/add_connection`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(connectionData),
-            });
-            const responseData = await response.json();
-            if (!response.ok) {
+            updateConn.mutate({id, connectionData})
+            console.log(updateConn.isSuccess)
+            if (updateConn.isError) {
                 setAlertType('error')
-                setAlertMessage(`Database connection failed! ${responseData.detail}`)
+                setAlertMessage(`Database connection failed! ${updateConn.error}`)
                 setLoader(false)
             } else {
                 setAlertType('success')
-                setAlertMessage(responseData?.message)
+                setAlertMessage(updateConn.data?.message)
                 setLoader(false)
+                onFinish();
             }
 
-            onFinish();
         } catch (error) {
             setAlertType('error')
             console.error('Error testing connection:', JSON.stringify(error));
@@ -100,4 +104,4 @@ const SaveConfig = ({ connString, onFinish }) => {
     );
 };
 
-export default SaveConfig;
+export default SaveUpdatedConfig;

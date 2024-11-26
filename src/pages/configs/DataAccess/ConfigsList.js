@@ -97,6 +97,10 @@ const ConfigsList = () =>{
         navigate(`/dictionary/list/${id}`);
     };
 
+    const handleConnEditClick = (id) => {
+        navigate(`/configs/db/edit/${id}`);
+    };
+
     const handleClickOpen = (id) => {
         setRowId(id);
         setDialogOpen(true);
@@ -107,10 +111,8 @@ const ConfigsList = () =>{
     };
 
     const handleDelete = () => {
-        console.log(rowId)
         // Add your delete logic here
         deleteAccess.mutate({id: rowId})
-        console.log(deleteAccess.isSuccess)
         handleClose();
     };
 
@@ -185,7 +187,7 @@ const ConfigsList = () =>{
                                             </IconButton>
                                         </Tooltip>
                                         <Tooltip title={`Edit`}>
-                                            <IconButton aria-label="Edit">
+                                            <IconButton aria-label="Edit" onClick={() => handleConnEditClick(row.id)}>
                                                 <EditOutlined />
                                             </IconButton>
                                         </Tooltip>
