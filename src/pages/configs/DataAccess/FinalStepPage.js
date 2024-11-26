@@ -18,7 +18,7 @@ const FinalStepPage = () => {
         <React.Fragment>
             <MainCard sx={{ mt: 2 }} content={true} title={`Done`}>
                 <Typography sx={{mt: 2, mb: 1}}>
-                    Database Configs Added - You&apos;re now finished
+                    Database Configs Added/Updated - You&apos;re now finished
                 </Typography>
                 <Typography sx={{mt: 2, mb: 1}}>
                     Next steps
