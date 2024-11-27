@@ -1,19 +1,23 @@
 import MainCard from "../../../components/MainCard";
 import {Alert, AlertTitle, Autocomplete, Box, Button, Stack, TextField, Typography} from "@mui/material";
 import {useState} from "react";
+import { useNavigate } from "react-router-dom";
 
 import * as React from "react";
-
 import {API_URL} from "../../../constants";
+import "../../../ToggleButton..css";
 
 
 
 const AddSiteConfigs = () => {
+    const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
         site_name: '',
         site_code: '',
-        primary_system: ''
+        primary_system: '',
+        is_active:false
+
     });
 
     const [alertType, setAlertType] = useState(null);
@@ -23,6 +27,16 @@ const AddSiteConfigs = () => {
         site_code: false,
         primary_system: false
     });
+    const [isOn, setIsOn] = useState(false);
+
+    const handleToggle = () => {
+        setIsOn(!isOn);
+        // setFormErrors({...formErrors, "is_active":!isOn});
+        setFormData((prevData) => ({
+            ...prevData,
+            ["is_active"]: !isOn,
+        }));
+    };
 
     const handleValidation = () => {
         let valid = true;
@@ -63,7 +77,6 @@ const AddSiteConfigs = () => {
             const apiRequest = {
                 ...formData,
             };
-
             // Call your API to test the connection
             try {
                 const response = await fetch(`${API_URL}/site_config/add_site_config`, {
@@ -74,15 +87,22 @@ const AddSiteConfigs = () => {
                     body: JSON.stringify(apiRequest),
                 });
                 const responseData = await response.json();
+                console.log("response ==>",response)
+                console.log("response.ok ==>",response.ok)
+
                 if (!response.ok) {
                     setAlertType('error')
                     setAlertMessage(`Save Site config failed! ${responseData.detail}`)
-                } else {
+                } else if(response.ok) {
+                    console.log("set alert ==>",response.ok)
+
                     setAlertType('success')
                     setAlertMessage(responseData.status)
+                    navigate('/configs/site');
+
                 }
             } catch (error) {
-                setAlertType('error')
+                setAlertType('error'+ JSON.stringify(error))
                 console.error('Error saving site config:', JSON.stringify(error));
                 setAlertMessage(error.detail)
             }
@@ -92,7 +112,7 @@ const AddSiteConfigs = () => {
     return (
         <Box>
             <Typography variant="h5" mb={2.5}>Site Configuration</Typography>
-            <form autoComplete="of" onSubmit={handleSave}>
+            <form autoComplete="off" onSubmit={handleSave}>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
 
                     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -121,7 +141,7 @@ const AddSiteConfigs = () => {
                             onChange={handleChange}
                             required
                             error={formErrors.site_code}
-                            helperText={formErrors.site_code ? "Username is required" : ""}
+                            helperText={formErrors.site_code ? "Site code is required" : ""}
                         />
                         <Typography variant="body2" color="textSecondary">Enter the Site Code</Typography>
                     </Box>
@@ -139,6 +159,13 @@ const AddSiteConfigs = () => {
                             helperText={formErrors.primary_system ? "Primary System Name is required" : ""}
                         />
                         <Typography variant="body2" color="textSecondary">Enter the rimary System Name</Typography>
+                    </Box>
+                    <Box>
+                        <div className={`toggle-switch ${isOn ? 'on' : 'off'}`} onClick={handleToggle}>
+                            <div className={`slider ${isOn ? 'on' : 'off'}`} />
+                        </div>
+                        <Typography variant="body2" color="textSecondary">Set this site as default: {isOn ? 'YES' : 'NO'}</Typography>
+
                     </Box>
                 </Box>
                 <Box sx={{display: 'flex', flexDirection: 'row', pt: 2}}>

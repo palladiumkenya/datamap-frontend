@@ -1,0 +1,38 @@
+
+.toggle-switch {
+    width: 50px;
+    height: 22px;
+    background-color: #ccc;
+    border-radius: 15px;
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.toggle-switch:hover {
+    background-color: #bbb;
+}
+
+.slider {
+    width: 20px;
+    height: 20px;
+    background-color: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    transition: transform 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.slider.on {
+    transform: translateX(30px);
+}
+
+.toggle-switch.on {
+    background-color: #13c3c3;
+}
+
+.toggle-switch.off {
+    background-color: #ff4c4f;
+}

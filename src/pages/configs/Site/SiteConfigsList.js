@@ -16,8 +16,8 @@ import PropTypes from "prop-types";
 import Dot from "../../../components/@extended/Dot";
 import {BookOutlined, DeleteOutlined, EditOutlined} from "@ant-design/icons";
 import DeleteDialog from "../../../components/Dialogs/DeleteDialog";
-import {useDeleteAccessConfig} from "../../../store/access_configurations/mutations";
 import { useGetSiteConfigs} from "../../../store/site_configurations/queries";
+import {useDeleteSiteConfig} from "../../../store/site_configurations/mutations";
 
 
 
@@ -89,7 +89,7 @@ const ConfigsList = () =>{
     const [dialogOpen, setDialogOpen] = useState(false)
     const [rowId, setRowId] = useState(null);
     const navigate = useNavigate()
-    const deleteAccess = useDeleteAccessConfig()
+    const deleteAccess = useDeleteSiteConfig()
     const { isLoading: isLoading, data: getSiteConfigsData } = useGetSiteConfigs();
 
     const handleClickOpen = (id) => {
@@ -102,10 +102,9 @@ const ConfigsList = () =>{
     };
 
     const handleDelete = () => {
-        console.log(rowId)
         // Add your delete logic here
         deleteAccess.mutate({id: rowId})
-        console.log(deleteAccess.isSuccess)
+        console.log("Delete ",deleteAccess.isSuccess)
         handleClose();
     };
 
