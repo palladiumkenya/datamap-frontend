@@ -79,7 +79,7 @@ const AddSiteConfigs = () => {
             };
             // Call your API to test the connection
             try {
-                const response = await fetch(`${API_URL}/site_config/add_site_config`, {
+                const response = await fetch(`${API_URL}/site_config/add/config`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

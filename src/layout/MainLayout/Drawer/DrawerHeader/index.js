@@ -19,7 +19,7 @@ const DrawerHeader = ({ open }) => {
     <DrawerHeaderStyled theme={theme} open={open}>
       <Stack direction="row" spacing={1} alignItems="center">
         {/*<Logo />*/}
-        {/*  <img src="opendiveLogo.png" alt="SVG Image" width="60" height="60"/>*/}
+        {/*  <img src="opendiveLogo.png" alt="png Image" width="60" height="60"/>*/}
           <DingdingOutlined color="text.info" style={{ fontSize: '30px'}}/>
 
           <Typography color="text.info" variant="h3">OpenDIVE</Typography>

@@ -1,8 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
 
-import { Link as RouterLink } from 'react-router-dom';
-import $ from 'jquery';
 // material-ui
 import {
     Box,
@@ -46,13 +43,13 @@ const SelectorForm = () => {
 
     const [databaseColumns, setdatabaseColumns] = useState({});
     const [tablenames, setTablenames] = useState(Object.keys(databaseColumns));
-    const [baseIndicators, setBaseIndicators] = useState([])
+    const [baseRepoVariables, setBaseRepoVariables] = useState([])
     const [fetchedSourceTables, setFetchedSourceTables] = useState(null);
 
     const [warning, setWarning] = useState("")
 
     const allColumns = []
-    baseIndicators.map(o =>{
+    baseRepoVariables.map(o =>{
         allColumns.push({"baseVariable":o,"tableSelected":"", "matchingTableColumns":[]});
     });
 
@@ -67,7 +64,7 @@ const SelectorForm = () => {
     const getBaseVariables = async() => {
         const baseVariables = await fetchBaseVariables(baselookup);
         if (baseVariables) {
-            setBaseIndicators(baseVariables);
+            setBaseRepoVariables(baseVariables);
 
             const allColumns = []
             baseVariables.map(o =>{
@@ -100,7 +97,6 @@ const SelectorForm = () => {
             })
             setFormData(formData)
         }
-        console.log("formData -->",formData)
 
     };
 
@@ -263,8 +259,8 @@ const SelectorForm = () => {
                                 <Grid item xs={3} md={3}>JOIN Primary table By</Grid>
                             </Grid>
 
-                            { baseIndicators.length>0 ?
-                                baseIndicators.map(baseVariable => (
+                            { baseRepoVariables.length>0 ?
+                                baseRepoVariables.map(baseVariable => (
                                     <MainCard border={true} boxShadow   sx={{ width: '100%', marginBottom:'10px' }}>
 
                                         <Grid container spacing={1} sx={{marginBottom:"20px"}}>
@@ -379,7 +375,7 @@ const SelectorForm = () => {
                                 )}
 
                             {fetchedSourceTables &&
-                            <Grid item xs={12}>
+                            <Grid item xs={4}>
                                 <AnimateButton>
                                     <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="primary">
                                                 Save

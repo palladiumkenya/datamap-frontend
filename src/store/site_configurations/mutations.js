@@ -3,7 +3,7 @@ import {API_URL} from "../../constants";
 
 const deleteSiteConfig = async (id) => {
     console.log(id)
-    const res = await fetch(`${API_URL}/site_config/delete_site_config/${id.id}`, {
+    const res = await fetch(`${API_URL}/site_config/delete/config/${id.id}`, {
         method: "DELETE",
         headers: {
             "Content-Type": "application/json"

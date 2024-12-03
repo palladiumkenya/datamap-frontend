@@ -33,7 +33,7 @@ import DataExtraction from "../data-extraction/DataExtraction";
 import UploadConfig from "./actions/UploadConfig";
 import EditMappings from "./actions/EditMappings";
 import ImportConfig from "./actions/ImportConfig";
-import RepoSkeleton from "../skeleton/Skeleton";
+import RepoSkeleton from "../../components/skeleton/Skeleton";
 import ActiveSiteConfigInfo from "../configs/Site/ActiveSiteConfigInfo";
 
 
@@ -104,7 +104,7 @@ const RepoConfigs = () =>{
 
                                         <Divider/>
 
-                                        <DataExtraction baselookup={baselookup} />
+                                        <DataExtraction baseRepo={baselookup} />
 
                                     </MainCard>
                             </MainCard>

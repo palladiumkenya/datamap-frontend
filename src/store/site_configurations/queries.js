@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import {API_URL} from "../../constants";
 
 const getAllSiteConfigs = async () => {
-    const res = await fetch(`${API_URL}/site_config/get_site_configs`);
+    const res = await fetch(`${API_URL}/site_config/all/configs`);
     const jsonData = await res.json();
     return jsonData?.data ?? [];
 };
@@ -14,7 +14,7 @@ export const useGetSiteConfigs = () => useQuery({
 
 
 const getActiveSiteConfig = async () => {
-    const res = await fetch(`${API_URL}/site_config/get_active_site_config`);
+    const res = await fetch(`${API_URL}/site_config/active_site_config`);
     const jsonData = await res.json();
     return jsonData?.data ?? [];
 };

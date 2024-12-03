@@ -26,7 +26,7 @@
 }
 
 .slider.on {
-    transform: translateX(30px);
+    transform: translateX(27px);
 }
 
 .toggle-switch.on {
