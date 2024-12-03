@@ -39,7 +39,13 @@ const refreshAccessToken = async () => {
     }
 
     try {
-        const response = await fetch(`${API_URL}/user/refresh`, { refresh_token: refreshToken });
+        const response = await fetch(`${API_URL}/user/refresh`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body:JSON.stringify({ refresh_token: refreshToken })
+        });
         const resp = await response.json()
         const newAccessToken = await resp.access_token;
 
