@@ -13,7 +13,6 @@ const addDataDictionary = async (data) => {
 };
 
 const updateDataDictionaryTermUSL = async (data) => {
-    console.log(data)
     const res = await fetch(`${API_URL}/usl/data_dictionary/update_data_dictionary_terms_usl/${data.term_id}`, {
         method: "PUT",
         headers: {
@@ -25,7 +24,6 @@ const updateDataDictionaryTermUSL = async (data) => {
 };
 
 const syncDataDictionary = async (dataSource) => {
-    console.log(dataSource)
     const res = await fetch(`${API_URL}/data_dictionary/sync_all/${dataSource}`, {
         method: "GET",
         headers: {
@@ -36,7 +34,6 @@ const syncDataDictionary = async (dataSource) => {
 };
 
 const deleteDictionaryTermUSL = async (id) => {
-    console.log(id)
     const res = await fetch(`${API_URL}/usl/data_dictionary/delete_data_dictionary_terms_usl/${id}`, {
         method: "DELETE",
         headers: {
@@ -47,8 +44,7 @@ const deleteDictionaryTermUSL = async (id) => {
 };
 
 const deleteDictionaryUSL = async (id) => {
-    console.log(id)
-    const res = await fetch(`${API_URL}/data_dictionary/delete_data_dictionary_usl/${id}`, {
+    const res = await fetch(`${API_URL}/usl/data_dictionary/delete_data_dictionary_usl/${id}`, {
         method: "DELETE",
         headers: {
             "Content-Type": "application/json"
@@ -56,6 +52,27 @@ const deleteDictionaryUSL = async (id) => {
     });
     return res.json();
 };
+
+const publishUniversalDataDictionary = async (data) => {
+    const res = await fetch(`${API_URL}/usl/data_dictionary/publish/universal_dictionary`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    });
+    return res.json();
+}
+
+const refreshUniversalDataDictionaryToken = async () => {
+    const res = await fetch(`${API_URL}/usl/data_dictionary/refresh_universal_dictionary/token`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    });
+    return res.json();
+}
 
 export const useAddDataDictionary = () => {
     const queryClient = useQueryClient();
@@ -124,3 +141,23 @@ export const useDeleteDictionaryUSL = () => {
         }
     })
 };
+
+export const usePublishUniversalDataDictionary = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: publishUniversalDataDictionary,
+        onSuccess: () => {
+            queryClient.invalidateQueries({queryKey: ['data_dictionaries_usl']})
+        }
+    })
+}
+
+export const useRefreshUniversalDataDictionaryToken = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: refreshUniversalDataDictionaryToken,
+        onSuccess: () => {
+            queryClient.invalidateQueries({queryKey: ['data_dictionary_token_usl']})
+        }
+    })
+}

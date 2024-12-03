@@ -22,6 +22,7 @@ const SchedulesConfigs = Loadable(lazy(() => import('pages/configs/Schedules/Sch
 const SiteConfigs = Loadable(lazy(() => import('pages/configs/Site/SiteConfigs')));
 const DataAccessConfigs = Loadable(lazy(() => import('pages/configs/DataAccess/DataAccessConfigs')));
 const AddConfig = Loadable(lazy(() => import('pages/configs/DataAccess/AddConfig')));
+const EditConfig = Loadable(lazy(() => import('pages/configs/DataAccess/UpdateConfig')));
 // const Selector = Loadable(lazy(() => import('pages/indicator-selection/Selector')));
 // const Indicators = Loadable(lazy(() => import('pages/indicator-selection/Indicators')));
 const DataExtraction = Loadable(lazy(() => import('pages/data-extraction/DataExtraction')));
@@ -97,6 +98,10 @@ const MainRoutes = {
         {
           path: 'db/add',
           element: <AddConfig />
+        },
+        {
+          path: 'db/edit/:connection_id',
+          element: <EditConfig />
         },
         {
           path: 'usl',
