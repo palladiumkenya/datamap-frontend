@@ -56,7 +56,8 @@ const AuthLogin = () => {
             setSubmitting(true);
             const response = await login.mutateAsync(values)
             setStatus({ success: login.isSuccess });
-            localStorage.setItem('token', response?.token)
+            localStorage.setItem('access_token', response?.access_token)
+            localStorage.setItem('refresh_token', response?.refresh_token)
             navigate(`/`)
 
           } catch (err) {
