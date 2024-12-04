@@ -90,7 +90,7 @@ const ConfigsList = () =>{
     const [rowId, setRowId] = useState(null);
     const navigate = useNavigate()
     const deleteAccess = useDeleteSiteConfig()
-    const { isLoading: isLoading, data: getSiteConfigsData } = useGetSiteConfigs();
+    const { isSuccess, error, isLoading: isLoading, data: getSiteConfigsData } = useGetSiteConfigs();
 
     const handleClickOpen = (id) => {
         setRowId(id);
@@ -104,7 +104,6 @@ const ConfigsList = () =>{
     const handleDelete = () => {
         // Add your delete logic here
         deleteAccess.mutate({id: rowId})
-        console.log("Delete ",deleteAccess.isSuccess)
         handleClose();
     };
 
@@ -148,7 +147,7 @@ const ConfigsList = () =>{
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {!isLoading && (getSiteConfigsData)?.map((row, index) => {
+                        {!isLoading && !error && getSiteConfigsData && getSiteConfigsData.map((row, index) => {
                             const isItemSelected = isSelected(row.site_name);
                             const labelId = `enhanced-table-checkbox-${index}`;
 

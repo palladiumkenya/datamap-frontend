@@ -87,8 +87,6 @@ const AddSiteConfigs = () => {
                     body: JSON.stringify(apiRequest),
                 });
                 const responseData = await response.json();
-                console.log("response ==>",response)
-                console.log("response.ok ==>",response.ok)
 
                 if (!response.ok) {
                     setAlertType('error')

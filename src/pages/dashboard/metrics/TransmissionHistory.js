@@ -34,7 +34,6 @@ const TransmissionHistory = () =>{
     if (isPending) return 'Loading...'
 
     if (error) {
-        console.log("error==>",error)
         return <Alert color="error" icon={<InfoCircleFilled  />}>
             An error has occurred: Check your source DB/API connection in the Configurations page and make
             sure you can connect to it and then try again </Alert>
