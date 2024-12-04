@@ -13,6 +13,7 @@ import axios from "axios";
 import { useQuery, QueryClient, QueryClientProvider  } from '@tanstack/react-query'
 import {fetchBaseRepositories} from "../../store/mapper/queries";
 import SourceSystemInfo from "./source-system/SourceSystemInfo";
+import ActiveSiteConfigInfo from "../configs/Site/ActiveSiteConfigInfo";
 // import {fetchBaseRepositories} from "../../mapper";
 
 
@@ -50,7 +51,7 @@ const BaseRepositories = () =>{
             <Grid container spacing={3}>
                 <Grid item xs={12}>
                     <Stack direction="row" justifyContent="space-between" alignItems="baseline" sx={{ mb: { xs: -0.5, sm: 0.5 } }}>
-                        <Typography variant="h3">Base Repositories  <SourceSystemInfo /></Typography>
+                        <Typography variant="h3">Base Repositories  <ActiveSiteConfigInfo /> <SourceSystemInfo /> </Typography>
                     </Stack>
                 </Grid>
 

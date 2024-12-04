@@ -4,12 +4,13 @@ import {DataGrid} from "@mui/x-data-grid";
 import {useState,useEffect} from "react";
 import axios from "axios";
 import {API_URL, STAGING_API, WS_API} from "../../constants";
-import SourceSystemInfo from "../mapper/source-system/SourceSystemInfo";
-import {CloudUploadOutlined} from "@ant-design/icons";
+import {useGetLoadedData} from "../../store/data-transmission/queries";
 
 
-const DataExtraction = ({baselookup}) =>{
+
+const DataExtraction = ({baseRepo}) =>{
     const [loadedData, setLoadedData ] =useState([]);
+    const {isLoading,isSuccess,isError, error, refetch, data} = useGetLoadedData(baseRepo);
 
     const [loadSuccessAlert, setLoadSuccessAlert] = useState(null);
     const [loadMessage, setLoadMessage] = useState(null);
@@ -24,33 +25,40 @@ const DataExtraction = ({baselookup}) =>{
     const [progress, setProgress] = useState(null);
     const [socket, setSocket] = useState(null);
 
+
     const loadData = async (baseRepo) =>{
         setSpinner(true)
         setLoadSuccessAlert(false);
 
-        await axios.get(API_URL+"/dictionary_mapper/load_data/"+baselookup).then((res)=> {
-            // setLoadedData(res.data);
-            const data = []
-            data.push({ field: "id", headerName: "id", width: 130 },)
-            Object.keys(res.data[0]).map(row => {
-                data.push({ field: row, headerName: row, width: 130 },)
-            })
-            setColumns(data)
+        const { data: loadedDataFromSource} = await refetch()
+        if(isSuccess){
 
-            const rowsWithIds = res.data.map((row, index) => ({ id: index, ...row }));
-            setRows(rowsWithIds)
-            // setRows(res.data)
+            if (loadedDataFromSource.length>0) setLoadedRepoData(loadedDataFromSource)
 
             setSpinner(false);
             setAlertType("success");
             setLoadSuccessAlert(true);
-            setLoadMessage("Successfully loaded "+baselookup+" data");
-        }).catch( (error) => {
+            setLoadMessage("Successfully loaded "+baseRepo+" data");
+        }
+        if(isError){
             setSpinner(false);
             setLoadSuccessAlert(true);
             setAlertType("error");
             setLoadMessage("Error loading ==> "+error);
+        }
+
+    }
+
+    const setLoadedRepoData=async(repoData)=>{
+        const data = []
+        data.push({ field: "id", headerName: "id", width: 130 },)
+        Object.keys(repoData[0]).map(row => {
+            data.push({ field: row, headerName: row, width: 130 },)
         })
+        setColumns(data)
+
+        const rowsWithIds = repoData.map((row, index) => ({ id: index, ...row }));
+        setRows(rowsWithIds)
     }
 
 
@@ -58,7 +66,7 @@ const DataExtraction = ({baselookup}) =>{
         setLoadSuccessAlert(false);
         setSendingSpinner(true)
 
-        const manifest_response = await fetch(`${API_URL}/usl_data/manifest/repository/${baselookup}`, {
+        const manifest_response = await fetch(`${API_URL}/usl_data/manifest/repository/${baseRepo}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
@@ -99,8 +107,8 @@ const DataExtraction = ({baselookup}) =>{
 
             setLoadSuccessAlert(true);
             setAlertType("success");
-            setLoadMessage("Successfully verified " + baselookup + " endpoint. We are now starting to send");
-            sendData(baseRepo)
+            setLoadMessage("Successfully verified " + baseRepo + " endpoint. We are now starting to send");
+            sendData(baseRepo, manifest)
 
         } catch (error) {
             setAlertType("error");
@@ -109,13 +117,16 @@ const DataExtraction = ({baselookup}) =>{
     }
 
 
-    function sendData(baseRepo) {
+    function sendData(baseRepo, manifest) {
 
         console.log("sending data... ")
 
         setProgress(0); // Reset progress to 0
         const newSocket = new WebSocket(`ws://${WS_API}/api/usl_data/ws/progress/${baseRepo}`);
 
+        newSocket.onopen = () => {
+            newSocket.send(JSON.stringify(manifest));
+        };
         // Set up the WebSocket connection
         newSocket.onmessage = function (event) {
             console.log("ws connection established ")
@@ -143,6 +154,8 @@ const DataExtraction = ({baselookup}) =>{
         setSocket(newSocket);
     }
 
+
+
     useEffect(() => {
         return () => {
             if (socket) {
@@ -152,12 +165,14 @@ const DataExtraction = ({baselookup}) =>{
     }, [socket]);
 
 
+
+
     return (
         <>
             <Box sx={{ p: 2 }}>
                 <Typography variant="caption" color="text.secondary">
 
-                    <Fab color="info" variant="extended" onClick={()=>loadData(baselookup)}>
+                    <Fab color="info" variant="extended" onClick={()=>loadData(baseRepo)}>
                         Generate / Load
                         {spinner ?
                             <CircularProgress style={{"color":"black"}} size="1rem"/>
@@ -173,9 +188,9 @@ const DataExtraction = ({baselookup}) =>{
 
                 </Typography>
                 <Typography variant="h6">
-                    {baselookup} Count: <b  style={{"color":"#13c2c2"}}>{datagridrows.length}</b>
+                    {baseRepo} Count: <b  style={{"color":"#13c2c2"}}>{datagridrows.length}</b>
 
-                    <Button variant="outlined" color="success" size="extraSmall" onClick={()=>verifyManifest(baselookup)} style={{"marginLeft":"50px"}}>
+                    <Button variant="outlined" color="success" size="extraSmall" onClick={()=>verifyManifest(baseRepo)} style={{"marginLeft":"50px"}}>
                         Send To WareHouse
                     </Button>
                     {sendingSpinner &&

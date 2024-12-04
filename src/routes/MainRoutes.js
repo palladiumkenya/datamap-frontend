@@ -33,6 +33,8 @@ const ViewDataDictionary = Loadable(lazy(() => import('pages/data-dictionary/Dic
 const Selector = Loadable(lazy(() => import('pages/mapper/Mapper')));
 const Indicators = Loadable(lazy(() => import('pages/mapper/BaseRepositories')));
 const Text2SQL = Loadable(lazy(() => import('pages/text2sql/Text2Sql')));
+const AddSiteConfigs = Loadable(lazy(() => import('pages/configs/Site/AddSiteConfigs')));
+const ViewSiteConfigs = Loadable(lazy(() => import('pages/configs/Site/ViewSiteConfigs')));
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -110,8 +112,12 @@ const MainRoutes = {
           element: <SchedulesConfigs />
         },
         {
+          path: 'site/add',
+          element: <AddSiteConfigs />
+        },
+        {
           path: 'site',
-          element: <SiteConfigs />
+          element: <ViewSiteConfigs />
         },
       ]
     },

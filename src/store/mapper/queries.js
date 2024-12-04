@@ -48,11 +48,17 @@ export const useGetFetchSourceSystemInfo = () => useQuery({
 });
 
 
-export const fetchBaseVariables = async (baselookup) => {
-    const res = await fetch(`${API_URL}/dictionary_mapper/base_variables/`+baselookup);
+export const fetchBaseVariables = async (baseRepo) => {
+    const res = await fetch(`${API_URL}/dictionary_mapper/base_variables/${baseRepo}`);
     const jsonData = await res.json();
-    return jsonData ?? null;
+    return jsonData?.data ?? null;
 };
+export const useGetBaseVariables  = (baseRepo) => useQuery({
+    queryKey: ['baseRepo'],
+    queryFn: fetchBaseVariables(baseRepo),
+    refetchInterval: 1800000, // refresh every 30min
+
+});
 
 
 const fetchConfigCreation = async () => {
@@ -64,6 +70,21 @@ const fetchConfigCreation = async () => {
 export const useGetConfigCreation = () => useQuery({
     queryKey: ['baselookup'],
     queryFn: fetchConfigCreation,
+    refetchInterval: 1800000, // refresh every 30min
+
+});
+
+
+const fetchRepositoryLoadedData = async (baseRepo) => {
+    const res = await fetch(`${API_URL}/usl_data/repository/${baseRepo}`);
+    const jsonData = await res.json();
+    console.log("data ==>", jsonData)
+    return jsonData?.data ?? null;
+};
+
+export const useGetRepositoryLoadedData  = (baseRepo) => useQuery({
+    queryKey: ['baseRepo'],
+    queryFn: fetchRepositoryLoadedData(baseRepo),
     refetchInterval: 1800000, // refresh every 30min
 
 });
