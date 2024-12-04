@@ -29,6 +29,9 @@ import SourceSystemInfo from "../source-system/SourceSystemInfo";
 import {API_URL, FRONTEND_URL} from '../../../constants';
 import { fetchBaseVariables, fetchSourceSystemTablesAndColumns } from '../../../store/mapper/queries';
 import ActiveSiteConfigInfo from "../../configs/Site/ActiveSiteConfigInfo";
+import {useDeleteSiteConfig} from "../../../store/site_configurations/mutations";
+import {useSaveMappings} from "../../../store/data-transmission/mutations";
+import CircularProgress from "@mui/material/CircularProgress";
 
 
 
@@ -38,8 +41,12 @@ const SelectorForm = () => {
     const params = new URLSearchParams(urlSearchString);
     const baselookup=params.get('baselookup')
 
+    const saveMappings = useSaveMappings();
 
     const isSubmitting=false;
+    const [submitMessage, setSubmitMessage] = useState(null);
+    const [alertType, setAlertType] = useState(null);
+    const [spinner, setSpinner] = useState(null);
 
     const [databaseColumns, setdatabaseColumns] = useState({});
     const [tablenames, setTablenames] = useState(Object.keys(databaseColumns));
@@ -180,15 +187,18 @@ const SelectorForm = () => {
 
         event.preventDefault();
 
-        fetch(`${API_URL}/dictionary_mapper/add_mapped_variables/${baselookup}`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(formData)
-        }).then(res => {
+        saveMappings.mutate({baselookup,formData})
+
+        if (saveMappings.isError) {
+            setSpinner(false);
+            setAlertType("error");
+            setSubmitMessage("Error saving mappings ==> " + errorData.detail);
+
+        }
+        if (saveMappings.isSuccess){
             window.location.href = `${FRONTEND_URL}/schema/config?baselookup=${baselookup}`;
-        })
+        }
+
 
     };
 
@@ -380,6 +390,11 @@ const SelectorForm = () => {
                                     <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="primary">
                                                 Save
                                     </Button>
+                                    {spinner ?
+                                        <CircularProgress style={{"color":"black"}} size="1rem"/>
+                                        :
+                                        <></>
+                                    }
                                 </AnimateButton>
                             </Grid>
                             }
