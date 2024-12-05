@@ -23,6 +23,21 @@ const updateAccessConfig = async ({id, connectionData}) => {
     return await res.json()
 }
 
+const createAccessConfig = async (body) => {
+    const response = await fetch(`${API_URL}/db_access/add_connection`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+    });
+    if(!response.ok){
+        const error = await response.json()
+        throw Error(error.detail || 'Creation Failed')
+    }
+    return await response.json();
+}
+
 export const useDeleteAccessConfig = () => {
     const queryClient = useQueryClient();
 
@@ -39,6 +54,17 @@ export const useUpdateAccessConfig = () => {
 
     return useMutation({
         mutationFn: updateAccessConfig,
+        onSuccess: () => {
+            queryClient.invalidateQueries({queryKey: ['access_configs']})
+        }
+    })
+};
+
+export const useCreateAccessConfig = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: createAccessConfig,
         onSuccess: () => {
             queryClient.invalidateQueries({queryKey: ['access_configs']})
         }

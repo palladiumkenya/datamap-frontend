@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import {LoadingButton} from "@mui/lab";
 import {API_URL} from "../../../constants";
+import {ReloadOutlined} from "@ant-design/icons";
 
 
 
@@ -290,6 +291,7 @@ const ConnectionDetails = ({ onNextStep }) => {
                         <LoadingButton
                             loading={testLoader}
                             loadingPosition="start"
+                            startIcon={<ReloadOutlined />}
                             variant="contained"
                             color="success"
                             onClick={handleConnectionTest}

@@ -13,6 +13,12 @@ const getAccessConfig = async ({queryKey}) => {
     return await res.json()
 }
 
+const getSystemsConfig = async () => {
+    const res = await fetch(`${API_URL}/db_access/dictionary/systems`)
+    const data = await res.json()
+    return data.data || []
+}
+
 export const useGetAccessConfigs = () => useQuery({
     queryKey: ['access_configs'],
     queryFn: getAllAccessConfigs
@@ -23,3 +29,8 @@ export const useGetAccessConfig = (id) => useQuery({
     queryFn: getAccessConfig,
     enabled: !!id
 })
+
+export const useGetSystems = () => useQuery({
+    queryKey: ['systems'],
+    queryFn: getSystemsConfig
+});
