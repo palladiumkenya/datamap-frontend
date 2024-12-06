@@ -59,7 +59,7 @@ const SaveConfig = ({ connString, onFinish }) => {
             onFinish();
         } catch (error) {
             setAlertType('error')
-            setAlertMessage(error.message)
+            setAlertMessage(error.message || error.detail || 'An unexpected error occurred')
             setLoader(false)
         } finally {
             setLoading(false);
