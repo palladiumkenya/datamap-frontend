@@ -55,19 +55,8 @@ const SaveConfig = ({ connString, onFinish }) => {
         };
 
         try {
-            const response = await createConfig.mutateAsync(connectionData);
-
-            if (response.isError) {
-                setAlertType('error')
-                setAlertMessage(`Database connection failed! ${response.error.message}`)
-                setLoader(false)
-            } else {
-                setAlertType('success')
-                setAlertMessage(response.data?.message)
-                setLoader(false)
-                onFinish();
-            }
-
+            await createConfig.mutateAsync(connectionData);
+            onFinish();
         } catch (error) {
             setAlertType('error')
             setAlertMessage(error.message)
