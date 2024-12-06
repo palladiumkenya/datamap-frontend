@@ -1,15 +1,28 @@
 import React, { useState } from 'react';
-import {Box, TextField, Typography, Button, CircularProgress, Alert, AlertTitle} from "@mui/material";
+import {Box, TextField, Typography, Button, CircularProgress, Alert, AlertTitle, Autocomplete, LinearProgress} from "@mui/material";
 import {API_URL} from "../../../constants";
+import {useGetSystems} from "../../../store/access_configurations/queries";
+import {useCreateAccessConfig} from "../../../store/access_configurations/mutations";
 
 const SaveConfig = ({ connString, onFinish }) => {
     const [formData, setFormData] = useState({
-        connectionName: ''
+        connectionName: '',
+        system_id: ''
     });
     const [loading, setLoading] = useState(false);
     const [alertType, setAlertType] = useState(null);
     const [alertMessage, setAlertMessage] = useState('');
     const [loader, setLoader] = useState(false);
+    const {data: systems, isLoading} = useGetSystems()
+    const createConfig = useCreateAccessConfig()
+
+    if (isLoading){
+        return (
+            <Box sx={{ width: '100%' }}>
+                <LinearProgress />
+            </Box>
+        )
+    }
 
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -19,6 +32,17 @@ const SaveConfig = ({ connString, onFinish }) => {
         }));
     };
 
+    const handleAutocompleteChange = (event, newValue) => {
+        if (newValue) {
+            setFormData((prevData) => ({...prevData, system_id: newValue.id}))
+        } else {
+            setFormData({
+                ...formData,
+                system_id: ''
+            });
+        }
+    };
+
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -26,33 +50,16 @@ const SaveConfig = ({ connString, onFinish }) => {
 
         const connectionData = {
             conn_string: connString,
-            name: formData.connectionName
+            name: formData.connectionName,
+            system_id: formData.system_id
         };
 
         try {
-            const response = await fetch(`${API_URL}/db_access/add_connection`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(connectionData),
-            });
-            const responseData = await response.json();
-            if (!response.ok) {
-                setAlertType('error')
-                setAlertMessage(`Database connection failed! ${responseData.detail}`)
-                setLoader(false)
-            } else {
-                setAlertType('success')
-                setAlertMessage(responseData?.message)
-                setLoader(false)
-            }
-
+            await createConfig.mutateAsync(connectionData);
             onFinish();
         } catch (error) {
             setAlertType('error')
-            console.error('Error testing connection:', JSON.stringify(error));
-            setAlertMessage(error.detail)
+            setAlertMessage(error.message || error.detail || 'An unexpected error occurred')
             setLoader(false)
         } finally {
             setLoading(false);
@@ -72,6 +79,34 @@ const SaveConfig = ({ connString, onFinish }) => {
                     required
                     fullWidth
                     margin="normal"
+                />
+                <Autocomplete
+                    fullWidth
+                    options={systems}
+                    autoHighlight
+                    size="small"
+                    getOptionLabel={(option) => option.name}
+                    renderOption={({ key, ...props }, option) => (
+                        <Box key={key} component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
+                            {option.name}
+                        </Box>
+                    )}
+                    required
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            placeholder="Choose a system"
+                            label="System *"
+                            variant="outlined"
+                            inputProps={{
+                                ...params.inputProps,
+                                autoComplete: 'new-password'
+                            }}
+                            // error={formErrors.db_type}
+                            // helperText={formErrors.db_type ? "Data source service is required" : ""}
+                        />
+                    )}
+                    onChange={handleAutocompleteChange}
                 />
 
                 <Box sx={{display: 'flex', flexDirection: 'row', pt: 2}}>
