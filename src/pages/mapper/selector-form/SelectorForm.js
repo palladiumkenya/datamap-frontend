@@ -191,24 +191,7 @@ const SelectorForm = () => {
 
 
 
-    const handleSubmit = async (event) => {
 
-        event.preventDefault();
-
-        saveMappings.mutate({baselookup,formData})
-
-        if (saveMappings.isError) {
-            setSpinner(false);
-            setAlertType("error");
-            setSubmitMessage("Error saving mappings ==> " + errorData.detail);
-
-        }
-        if (saveMappings.isSuccess){
-            window.location.href = `${FRONTEND_URL}/schema/config?baselookup=${baselookup}`;
-        }
-
-
-    };
 
 
 
@@ -228,7 +211,7 @@ const SelectorForm = () => {
                     sure you can connect to it and then restart the application. You cannot map unless the Source system is correctly configured
                 </Alert>
             }
-                    <form noValidate onSubmit={handleSubmit}>
+                    <form noValidate >
                         <Typography color="text.info" variant="h4">{baselookup} Mapping
                             <ActiveSiteConfigInfo />  <SourceSystemInfo />
                         </Typography>
