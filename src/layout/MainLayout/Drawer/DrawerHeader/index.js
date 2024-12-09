@@ -19,10 +19,11 @@ const DrawerHeader = ({ open }) => {
     <DrawerHeaderStyled theme={theme} open={open}>
       <Stack direction="row" spacing={1} alignItems="center">
         {/*<Logo />*/}
-        {/*  <img src="opendiveLogo.png" alt="png Image" width="60" height="60"/>*/}
-          <DingdingOutlined color="text.info" style={{ fontSize: '30px'}}/>
+          <img src="/logo/mainopendiveLogo.png" alt="png Image" height="50"/>
 
-          <Typography color="text.info" variant="h3">OpenDIVE</Typography>
+          {/*<DingdingOutlined color="text.info" style={{ fontSize: '30px'}}/>*/}
+          {/**/}
+          {/*<Typography color="text.info" variant="h3">OpenDIVE</Typography>*/}
         {/*<Chip*/}
         {/*  label={'OpenDIVE'}*/}
         {/*  size="medium"*/}

@@ -30,8 +30,9 @@ import {API_URL, FRONTEND_URL} from '../../../constants';
 import { fetchBaseVariables, fetchSourceSystemTablesAndColumns } from '../../../store/mapper/queries';
 import ActiveSiteConfigInfo from "../../configs/Site/ActiveSiteConfigInfo";
 import {useDeleteSiteConfig} from "../../../store/site_configurations/mutations";
-import {useSaveMappings} from "../../../store/data-transmission/mutations";
+import {useSaveMappings} from "../../../store/mapper/mutations";
 import CircularProgress from "@mui/material/CircularProgress";
+import TestMappings from "../test-mappings/TestMappings";
 
 
 
@@ -158,6 +159,7 @@ const SelectorForm = () => {
 
         const stringTypes = ["VARCHAR","NVARCHAR","CHAR", "TEXT"]
         const numberTypes = ["INT","INTEGER","BIGINT","SMALLINT", "FLOAT"]
+        const dateTypes = ["DATE","DATETIME","DATETIME2"]
 
         if(stringTypes.some(substring => baseVariable.datatype.toLowerCase().includes(substring.toLowerCase())) &&
             stringTypes.some(substring => columnSelectedDatatype.toLowerCase().includes(substring.toLowerCase()))) {
@@ -167,11 +169,15 @@ const SelectorForm = () => {
             numberTypes.some(substring => columnSelectedDatatype.toLowerCase().includes(substring.toLowerCase()))) {
             myElement.textContent  ="";
         }
+        else if( dateTypes.some(substring => baseVariable.datatype.toLowerCase().includes(substring.toLowerCase())) &&
+            dateTypes.some(substring => columnSelectedDatatype.toLowerCase().includes(substring.toLowerCase()))) {
+            myElement.textContent  ="";
+        }
         else{
             if (myElement) {
                 // Perform DOM manipulations or mapper
-                myElement.textContent  = "* Expected Datatype for variable mapped to "+baseVariable.term+" should be "+
-                    baseVariable.datatype+" or similar to it";
+                myElement.textContent  = `* Expected Datatype for variable mapped to ${baseVariable.term} should be
+                 ${baseVariable.datatype} or similar to it.  ${columnSelected} has datatype ${columnSelectedDatatype}`;
             }
         }
         // const table = document.getElementsByName('PrimaryTable')[0].value;
@@ -182,6 +188,8 @@ const SelectorForm = () => {
         // console.log(formData)
 
     };
+
+
 
     const handleSubmit = async (event) => {
 
@@ -201,6 +209,9 @@ const SelectorForm = () => {
 
 
     };
+
+
+
 
 
     useEffect(() => {
@@ -285,7 +296,7 @@ const SelectorForm = () => {
                                                         placeholder="BaseVariable"
                                                         fullWidth
                                                         // helperText="Variable Description and expected value"
-                                                        size="small"
+                                                        size="small" required
                                                         sx={{ backgroundColor:'white' }}
                                                     />
 
@@ -304,7 +315,7 @@ const SelectorForm = () => {
                                                     <Select
                                                         id={baseVariable.term+"table"}
                                                         fullWidth
-                                                        size="small"
+                                                        size="small" required
                                                         sx={{ backgroundColor:'#e6f7ff', borderRadius: '20px', border:'1px #40a9ff solid' }}
                                                         onChange={(e)=>{handleTableSelect(e.target.value, baseVariable.term)}}
                                                     >
@@ -325,7 +336,7 @@ const SelectorForm = () => {
                                                         id={baseVariable.term+"column"}
                                                         placeholder="variable"
                                                         fullWidth
-                                                        size="small"
+                                                        size="small" required
                                                         sx={{ backgroundColor:'#e6f7ff', borderRadius: '20px', border:'1px #40a9ff solid' }}
                                                         // onChange={(e)=>{columnMappedQualityCheck(e, baseVariable, e.target.value)}}
                                                     >
@@ -335,7 +346,7 @@ const SelectorForm = () => {
                                                             ))
                                                         }
                                                     </Select>
-                                                    <p  style={{"color":"red"}} id={baseVariable.term+"columnWarning"}></p>
+                                                    <p  style={{"color":"red","font-size":"9px"}} id={baseVariable.term+"columnWarning"}></p>
                                                 </Stack>
                                             </Grid>
 
@@ -347,7 +358,7 @@ const SelectorForm = () => {
                                                         id={baseVariable.term+"JoinColumn"}
                                                         placeholder="JOIN"
                                                         fullWidth
-                                                        size="small"
+                                                        size="small" required
                                                         sx={{ backgroundColor:'#e6f7ff', borderRadius: '20px', border:'1px #40a9ff solid' }}
                                                         onChange={(e)=>{handleColumnChange(e, baseVariable.term,Object.keys(columns)[0], e.target.value)}}
                                                     >
@@ -385,18 +396,24 @@ const SelectorForm = () => {
                                 )}
 
                             {fetchedSourceTables &&
-                            <Grid item xs={4}>
-                                <AnimateButton>
-                                    <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="primary">
-                                                Save
-                                    </Button>
-                                    {spinner ?
-                                        <CircularProgress style={{"color":"black"}} size="1rem"/>
-                                        :
-                                        <></>
-                                    }
-                                </AnimateButton>
-                            </Grid>
+                                <>
+                                {/*<Grid item xs={4}>*/}
+                                {/*    <AnimateButton>*/}
+                                {/*        <Button disableElevation disabled={isSubmitting} fullWidth size="medium" type="submit" variant="contained" color="primary">*/}
+                                {/*                    Save*/}
+                                {/*        </Button>*/}
+                                {/*        {spinner ?*/}
+                                {/*            <CircularProgress style={{"color":"black"}} size="1rem"/>*/}
+                                {/*            :*/}
+                                {/*            <></>*/}
+                                {/*        }*/}
+                                {/*    </AnimateButton>*/}
+                                {/*</Grid>*/}
+                                {/*    <Grid item xs={12}>*/}
+                                        <TestMappings formData={formData} baselookup={baselookup}/>
+
+                                    {/*</Grid>*/}
+                                </>
                             }
                         </Grid>
                     </form>
