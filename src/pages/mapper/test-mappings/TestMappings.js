@@ -40,7 +40,7 @@ import {API_URL, FRONTEND_URL} from '../../../constants';
 import {useSaveMappings} from "../../../store/data-transmission/mutations";
 import {useTestMappings} from "../../../store/mapper/mutations";
 import {Link as RouterLink} from "react-router-dom";
-import {WarningFilled} from "@ant-design/icons";
+import {InfoCircleFilled, WarningFilled} from "@ant-design/icons";
 import CircularProgress from "@mui/material/CircularProgress";
 
 
@@ -77,7 +77,7 @@ const TestMappings = ({formData, baselookup}) => {
     const [testingSpinner, setTestingSpinner] = useState(null);
 
     const [alertType, setAlertType] = useState(null);
-    const [submitMessage, setSubmitMessage] = useState(null);
+    const [alertMessage, setAlertMessage] = useState(null);
     const [disableSave, setDisableSave] = useState(true);
 
     const isSubmitting=false;
@@ -87,17 +87,43 @@ const TestMappings = ({formData, baselookup}) => {
         setTestingSpinner(true)
         setDisableSave(true)
 
-        testMappingsData.mutate({baselookup,formData})
+        const testingResponse = await testMappingsData.mutateAsync({baselookup,formData})
 
-        if (testMappingsData.isError) {
+        if (testingResponse?.length==0){
+            if (testingResponse && testingResponse?.length==0) {
+                setDisableSave(false)
+                setAlertType("success");
+                setAlertMessage("No data issues found with mappings");
+            }
+            setTestingSpinner(false)
+        }
+        else {
             setSpinner(false);
             setAlertType("error");
-            setSubmitMessage("Error testing mappings ");
+            setAlertMessage("Error testing mappings ");
 
         }
-        if (testMappingsData.isSuccess){
-            setDisableSave(false)
+
+    };
+
+    const handleSubmit = async (event) => {
+        setSpinner(true);
+
+        event.preventDefault();
+
+        saveMappings.mutate({baselookup,formData})
+
+        if (saveMappings.isError) {
+            setSpinner(false);
+            setAlertType("error");
+            setSubmitMessage("Error saving mappings ==> " + errorData.detail);
+
         }
+        if (saveMappings.isSuccess){
+            window.location.href = `${FRONTEND_URL}/schema/config?baselookup=${baselookup}`;
+        }
+
+
     };
 
 
@@ -108,7 +134,8 @@ const TestMappings = ({formData, baselookup}) => {
 
             <Grid item xs={2}>
                 <AnimateButton>
-                    <Button disableElevation disabled={disableSave} fullWidth size="medium" type="submit" variant="contained" color="primary">
+                    <Button disableElevation disabled={disableSave} fullWidth size="medium" type="submit" variant="contained"
+                            color="primary" onClick={()=>handleSubmit()}>
                         Save
                         {spinner &&
                             <CircularProgress style={{"color":"black","marginLeft":"10px"}} size="1rem"/>
@@ -129,7 +156,13 @@ const TestMappings = ({formData, baselookup}) => {
                 </AnimateButton>
             </Grid>
 
-            { testMappingsData?.data &&
+            {alertMessage &&
+                <Alert color={alertType} icon={<InfoCircleFilled  />}>
+                    {alertMessage}
+                </Alert>
+            }
+
+            { testMappingsData?.data && testMappingsData?.data.length>0 &&
                 <TableContainer
                 sx={{
                     width: '100%',

@@ -30,9 +30,10 @@ const DataExtraction = ({baseRepo}) =>{
         setSpinner(true)
         setLoadSuccessAlert(false);
 
-        const { data: loadedDataFromSource} = await refetch()
-        if(isSuccess){
+        const { isSuccess, isError, error, data: loadedDataFromSource} = await refetch()
+        console.log(isSuccess,"loadedDataFromSource",loadedDataFromSource)
 
+        if(isSuccess){
             if (loadedDataFromSource.length>0) setLoadedRepoData(loadedDataFromSource)
 
             setSpinner(false);
@@ -74,7 +75,7 @@ const DataExtraction = ({baseRepo}) =>{
         }).then(res => {
             const data =  res.json().then(manifest => {
                 sendManifest(baseRepo, manifest);
-            }); // Parse JSON error response
+            });
 
         }).catch( (error) => {
 
