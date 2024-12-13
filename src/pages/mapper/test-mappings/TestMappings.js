@@ -37,7 +37,7 @@ import { strengthColor, strengthIndicator } from 'utils/password-strength';
 
 // assets
 import {API_URL, FRONTEND_URL} from '../../../constants';
-import {useSaveMappings} from "../../../store/data-transmission/mutations";
+import {useSaveMappings} from "../../../store/mapper/mutations";
 import {useTestMappings} from "../../../store/mapper/mutations";
 import {Link as RouterLink} from "react-router-dom";
 import {InfoCircleFilled, WarningFilled} from "@ant-design/icons";
@@ -82,6 +82,7 @@ const TestMappings = ({formData, baselookup}) => {
 
     const isSubmitting=false;
     const testMappingsData = useTestMappings();
+    const saveMappings = useSaveMappings();
 
     const testVariableMappings = async () => {
         setTestingSpinner(true)
@@ -106,20 +107,20 @@ const TestMappings = ({formData, baselookup}) => {
 
     };
 
-    const handleSubmit = async (event) => {
+    const handleSubmit = async () => {
         setSpinner(true);
 
-        event.preventDefault();
+        // event.preventDefault();
 
-        saveMappings.mutate({baselookup,formData})
-
-        if (saveMappings.isError) {
+        const saveResponse = await saveMappings.mutateAsync({baselookup,formData})
+        if (!saveResponse.ok) {
             setSpinner(false);
             setAlertType("error");
-            setSubmitMessage("Error saving mappings ==> " + errorData.detail);
+            // setSubmitMessage("Error saving mappings ==> " + errorData.detail);
+            console.log("success ",saveResponse.ok)
 
         }
-        if (saveMappings.isSuccess){
+        if (saveResponse.ok){
             window.location.href = `${FRONTEND_URL}/schema/config?baselookup=${baselookup}`;
         }
 
@@ -134,7 +135,7 @@ const TestMappings = ({formData, baselookup}) => {
 
             <Grid item xs={2}>
                 <AnimateButton>
-                    <Button disableElevation disabled={disableSave} fullWidth size="medium" type="submit" variant="contained"
+                    <Button disableElevation disabled={disableSave} fullWidth size="medium" type="button" variant="contained"
                             color="primary" onClick={()=>handleSubmit()}>
                         Save
                         {spinner &&

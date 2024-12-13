@@ -30,7 +30,7 @@ import {API_URL, FRONTEND_URL} from '../../../constants';
 import { fetchBaseVariables, fetchSourceSystemTablesAndColumns } from '../../../store/mapper/queries';
 import ActiveSiteConfigInfo from "../../configs/Site/ActiveSiteConfigInfo";
 import {useDeleteSiteConfig} from "../../../store/site_configurations/mutations";
-import {useSaveMappings} from "../../../store/mapper/mutations";
+// import {useSaveMappings} from "../../../store/mapper/mutations";
 import CircularProgress from "@mui/material/CircularProgress";
 import TestMappings from "../test-mappings/TestMappings";
 
@@ -41,8 +41,6 @@ const SelectorForm = () => {
     const urlSearchString = window.location.search;
     const params = new URLSearchParams(urlSearchString);
     const baselookup=params.get('baselookup')
-
-    const saveMappings = useSaveMappings();
 
     const isSubmitting=false;
     const [submitMessage, setSubmitMessage] = useState(null);

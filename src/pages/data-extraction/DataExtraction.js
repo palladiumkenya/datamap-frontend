@@ -31,21 +31,19 @@ const DataExtraction = ({baseRepo}) =>{
         setLoadSuccessAlert(false);
 
         const { isSuccess, isError, error, data: loadedDataFromSource} = await refetch()
-        console.log(isSuccess,"loadedDataFromSource",loadedDataFromSource)
 
-        if(isSuccess){
+        if(loadedDataFromSource.status == 500){
+            setSpinner(false);
+            setLoadSuccessAlert(true);
+            setAlertType("error");
+            setLoadMessage("Error loading ==> "+loadedDataFromSource.error);
+        }else{
             if (loadedDataFromSource.length>0) setLoadedRepoData(loadedDataFromSource)
 
             setSpinner(false);
             setAlertType("success");
             setLoadSuccessAlert(true);
             setLoadMessage("Successfully loaded "+baseRepo+" data");
-        }
-        if(isError){
-            setSpinner(false);
-            setLoadSuccessAlert(true);
-            setAlertType("error");
-            setLoadMessage("Error loading ==> "+error);
         }
 
     }
