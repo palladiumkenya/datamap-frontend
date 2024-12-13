@@ -7,7 +7,11 @@ const getLoadedData = async ({queryKey}) => {
     const [key, baseRepo] = queryKey;
     const res = await fetch(`${API_URL}/dictionary_mapper/load_data/${baseRepo}`);
     const jsonData = await res.json();
-    return jsonData?.data ?? [];
+    if (jsonData?.data) {
+        return jsonData?.data ?? [];
+    }else{
+        return {"status":500,"error":jsonData?.detail};
+    }
 };
 
 export const useGetLoadedData = (baseRepo) => useQuery({

@@ -9,7 +9,7 @@ const saveMappings = async ({baselookup,formData}) => {
         },
         body: JSON.stringify(formData)
     });
-    // return res;
+    return res;
 };
 
 export const useSaveMappings = () => {
