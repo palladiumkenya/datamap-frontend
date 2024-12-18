@@ -111,7 +111,7 @@ const DataExtraction = ({baseRepo}) =>{
 
         } catch (error) {
             setAlertType("error");
-            setLoadMessage("Error sending Manifes. ERROR: ==> "+error);
+            setLoadMessage("Error sending Manifest. ERROR: ==> "+error);
         }
     }
 
@@ -121,7 +121,7 @@ const DataExtraction = ({baseRepo}) =>{
         console.log("sending data... ")
 
         setProgress(0); // Reset progress to 0
-        const newSocket = new WebSocket(`ws://${WS_API}/api/usl_data/ws/progress/${baseRepo}`);
+        const newSocket = new WebSocket(`wss://${WS_API}/api/usl_data/ws/progress/${baseRepo}`);
 
         newSocket.onopen = () => {
             newSocket.send(JSON.stringify(manifest));
