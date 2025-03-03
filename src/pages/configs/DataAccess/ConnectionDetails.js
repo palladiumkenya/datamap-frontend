@@ -12,17 +12,20 @@ import {
 import {LoadingButton} from "@mui/lab";
 import {API_URL} from "../../../constants";
 import {ReloadOutlined} from "@ant-design/icons";
+import {useDropzone} from "react-dropzone";
+import "./FileUpload.css";
+import {parseCSV} from "../../../helpers/parseCSV";
 
 
 
 const ConnectionDetails = ({ onNextStep }) => {
-
     const [formData, setFormData] = useState({
         host_port: '',
         username: '',
         password: '',
         database: '',
-        db_type: ''
+        db_type: '',
+        conn_type: ''
     });
     const [alertType, setAlertType] = useState(null);
     const [alertMessage, setAlertMessage] = useState('');
@@ -34,6 +37,7 @@ const ConnectionDetails = ({ onNextStep }) => {
         database: false,
         db_type: false
     });
+    const [selectedFile, setSelectedFile] = useState(null);
 
     const handleValidation = () => {
         let valid = true;
@@ -68,17 +72,18 @@ const ConnectionDetails = ({ onNextStep }) => {
     const handleClick = () => {
         if (handleValidation()) {
             let conn_str = `${formData.db_type}://${formData.username}:${formData.password}@${formData.host_port}/${formData.database}`
-            onNextStep(conn_str);
+            onNextStep({conn_str, conn_type: formData.conn_type});
         }
     };
 
     const handleAutocompleteChange = (event, newValue) => {
         if (newValue) {
-            setFormData((prevData) => ({...prevData, db_type: newValue.driver}))
+            setFormData((prevData) => ({...prevData, db_type: newValue.driver, conn_type: newValue.title.toLowerCase()}))
         } else {
             setFormData({
                 ...formData,
-                db_type: ''
+                db_type: '',
+                conn_type: ''
             });
         }
     };
@@ -128,7 +133,6 @@ const ConnectionDetails = ({ onNextStep }) => {
         }
     };
 
-
     const images = [
         {
             url: '/data_sources/mysql.png',
@@ -163,10 +167,10 @@ const ConnectionDetails = ({ onNextStep }) => {
             disabled: true
         },
         {
-            url: '',
+            url: '/data_sources/csv.png',
             title: 'CSV',
-            driver: 'flatfile',
-            disabled: true
+            driver: 'csv',
+            disabled: false
         },
         {
             url: '',
@@ -181,6 +185,20 @@ const ConnectionDetails = ({ onNextStep }) => {
             disabled: true
         },
     ];
+
+    const onDrop = (acceptedFiles) => {
+        setSelectedFile(acceptedFiles[0]);
+        const reader = new FileReader();
+        reader.onload = () => {
+            const data = reader.result;
+            let parsedData = parseCSV(data);
+            onNextStep({db: formData.db_type, csvData: parsedData || [], conn_type: formData.conn_type})
+        };
+        reader.readAsText(acceptedFiles[0]);
+    };
+
+    const { getRootProps, getInputProps } = useDropzone({ onDrop, accept: ".csv", });
+
     return (
         <Box>
             <Typography variant="h5" mb={2.5}>Connection Details</Typography>
@@ -224,66 +242,87 @@ const ConnectionDetails = ({ onNextStep }) => {
                             onChange={handleAutocompleteChange}
                         />
                     </Box>
-                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                        {/*<Typography variant="subtitle1">Host & Port</Typography>*/}
-                        <TextField
-                            type="text"
-                            name="host_port"
-                            label="Host and Port"
-                            variant="outlined"
-                            value={`${formData.host_port}`}
-                            onChange={handleChange}
-                            required
-                            error={formErrors.host_port}
-                            helperText={formErrors.host_port ? "Host and Port is required" : ""}
-                        />
-                        <Typography variant="body2" color="textSecondary">Enter the host address and port</Typography>
-                    </Box>
-                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                        {/*<Typography variant="subtitle1">Username</Typography>*/}
-                        <TextField
-                            type="text"
-                            name="username"
-                            label="DB Username"
-                            variant="outlined"
-                            value={formData.username}
-                            onChange={handleChange}
-                            required
-                            error={formErrors.username}
-                            helperText={formErrors.username ? "Username is required" : ""}
-                        />
-                        <Typography variant="body2" color="textSecondary">Enter the username</Typography>
-                    </Box>
-                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                        {/*<Typography variant="subtitle1">Password</Typography>*/}
-                        <TextField
-                            type="password"
-                            name="password"
-                            label="DB Password"
-                            variant="outlined"
-                            value={formData.password}
-                            onChange={handleChange}
-                            required
-                            error={formErrors.password}
-                            helperText={formErrors.password ? "Password is required" : ""}
-                        />
-                        <Typography variant="body2" color="textSecondary">Enter the password</Typography>
-                    </Box>
-                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                        {/*<Typography variant="subtitle1">Database</Typography>*/}
-                        <TextField
-                            type="text"
-                            name="database"
-                            label="Database"
-                            variant="outlined"
-                            value={formData.database}
-                            onChange={handleChange}
-                            required
-                            error={formErrors.database}
-                            helperText={formErrors.database ? "Database is required" : ""}
-                        />
-                        <Typography variant="body2" color="textSecondary">Enter the database name</Typography>
-                    </Box>
+                    {['mysql', 'mssql+pymssql', 'postgresql'].includes(formData.db_type) &&
+                        <>
+                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                {/*<Typography variant="subtitle1">Host & Port</Typography>*/}
+                                <TextField
+                                    type="text"
+                                    name="host_port"
+                                    label="Host and Port"
+                                    variant="outlined"
+                                    value={`${formData.host_port}`}
+                                    onChange={handleChange}
+                                    required
+                                    error={formErrors.host_port}
+                                    helperText={formErrors.host_port ? "Host and Port is required" : ""}
+                                />
+                                <Typography variant="body2" color="textSecondary">Enter the host address and port</Typography>
+                            </Box>
+                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                {/*<Typography variant="subtitle1">Username</Typography>*/}
+                                <TextField
+                                    type="text"
+                                    name="username"
+                                    label="DB Username"
+                                    variant="outlined"
+                                    value={formData.username}
+                                    onChange={handleChange}
+                                    required
+                                    error={formErrors.username}
+                                    helperText={formErrors.username ? "Username is required" : ""}
+                                />
+                                <Typography variant="body2" color="textSecondary">Enter the username</Typography>
+                            </Box>
+                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                {/*<Typography variant="subtitle1">Password</Typography>*/}
+                                <TextField
+                                    type="password"
+                                    name="password"
+                                    label="DB Password"
+                                    variant="outlined"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    required
+                                    error={formErrors.password}
+                                    helperText={formErrors.password ? "Password is required" : ""}
+                                />
+                                <Typography variant="body2" color="textSecondary">Enter the password</Typography>
+                            </Box>
+                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                <TextField
+                                    type="text"
+                                    name="database"
+                                    label="Database"
+                                    variant="outlined"
+                                    value={formData.database}
+                                    onChange={handleChange}
+                                    required
+                                    error={formErrors.database}
+                                    helperText={formErrors.database ? "Database is required" : ""}
+                                />
+                                <Typography variant="body2" color="textSecondary">Enter the database name</Typography>
+                            </Box>
+                        </>
+                    }
+                    {
+                        formData.db_type === 'csv' &&
+                        <Box sx={{width: '100%'}}>
+                            <Typography sx={{mb: '25px'}}>
+                                Add csv file with data
+                            </Typography>
+                            <div>
+                                <div className="dropzone-container">
+                                    <div {...getRootProps()} className="dropzone">
+                                        <input {...getInputProps()} />
+                                        <p>Drag & drop a CSV file here or click to select a file</p>
+                                    </div>
+                                    {selectedFile && <p>Selected file: {selectedFile.name}</p>}
+                                </div>
+                            </div>
+                        </Box>
+                    }
+
                 </Box>
                 <Box sx={{display: 'flex', flexDirection: 'row', pt: 2}}>
                     <Box sx={{flex: '1 1 auto'}}/>

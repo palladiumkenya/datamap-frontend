@@ -3,48 +3,11 @@ import {useDropzone} from "react-dropzone";
 import {useState} from "react";
 import "./FileUpload.css";
 import exampleCsv from './example.csv'
+import {parseCSV} from "../../../helpers/parseCSV";
 
 
 const DataDictionaryUpload = ({onNextStep}) => {
     const [selectedFile, setSelectedFile] = useState(null);
-    const parseCSV = (csvData) => {
-        const rows = csvData.split("\n"); // Split CSV data into rows
-        let headers = rows[0].split(","); // Assuming the first row contains headers
-        headers = headers.map(h => h.replace(/\r/g, ""));
-
-        const result = [];
-        for (let i = 1; i < rows.length; i++) {
-            const row = rows[i];
-            const obj = {};
-            let currentField = '';
-            let insideQuotes = false;
-
-            for (let j = 0; j < row.length; j++) {
-                const char = row[j];
-                const nextChar = row[j + 1];
-
-                if (char === '"') {
-                    if (insideQuotes && nextChar === '"') {
-                        currentField += '"';
-                        j++; // Skip the next quote
-                    } else {
-                        insideQuotes = !insideQuotes;
-                    }
-                } else if (char === ',' && !insideQuotes) {
-                    obj[headers[Object.keys(obj).length]] = currentField.trim();
-                    currentField = '';
-                } else {
-                    currentField += char;
-                }
-            }
-
-            // Add the last field to the object
-            obj[headers[Object.keys(obj).length]] = currentField.trim();
-            result.push(obj);
-        }
-
-        return result;
-    };
 
     const onDrop = (acceptedFiles) => {
         setSelectedFile(acceptedFiles[0]);

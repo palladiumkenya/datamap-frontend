@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {Box, TextField, Typography, Button, CircularProgress, Alert, AlertTitle, Autocomplete, LinearProgress} from "@mui/material";
 import {API_URL} from "../../../constants";
 import {useGetSystems} from "../../../store/access_configurations/queries";
 import {useCreateAccessConfig} from "../../../store/access_configurations/mutations";
+import axios from "axios";
 
 const SaveConfig = ({ connString, onFinish }) => {
     const [formData, setFormData] = useState({
@@ -15,6 +16,7 @@ const SaveConfig = ({ connString, onFinish }) => {
     const [loader, setLoader] = useState(false);
     const {data: systems, isLoading} = useGetSystems()
     const createConfig = useCreateAccessConfig()
+
 
     if (isLoading){
         return (
@@ -49,13 +51,25 @@ const SaveConfig = ({ connString, onFinish }) => {
         setLoading(true);
 
         const connectionData = {
-            conn_string: connString,
+            conn_string: connString?.db === 'csv' ? 'csv' : connString?.conn_str,
+            conn_type: connString?.conn_type,
             name: formData.connectionName,
             system_id: formData.system_id
         };
 
         try {
             await createConfig.mutateAsync(connectionData);
+            if (connString?.db === 'csv') {
+                try {
+                    const response = await axios.post(`${API_URL}/db_access/upload_csv`, {
+                        data: connString?.csvData,
+                        name: formData.connectionName
+                    })
+                } catch (error) {
+                    console.error(error?.response?.data?.detail || error.message)
+                }
+            }
+
             onFinish();
         } catch (error) {
             setAlertType('error')
@@ -65,6 +79,7 @@ const SaveConfig = ({ connString, onFinish }) => {
             setLoading(false);
         }
     };
+
 
     return (
         <Box>
@@ -102,8 +117,6 @@ const SaveConfig = ({ connString, onFinish }) => {
                                 ...params.inputProps,
                                 autoComplete: 'new-password'
                             }}
-                            // error={formErrors.db_type}
-                            // helperText={formErrors.db_type ? "Data source service is required" : ""}
                         />
                     )}
                     onChange={handleAutocompleteChange}
