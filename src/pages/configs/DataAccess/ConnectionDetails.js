@@ -217,14 +217,14 @@ const ConnectionDetails = ({ onNextStep }) => {
                         setAlertMessage('Data does not contain JSON key in result')
                     }
                 }
-                setTestLoader(false)
             } catch (error) {
                 setAlertType('error')
                 console.error('Error testing API connection:', JSON.stringify(error));
                 setAlertMessage(error)
                 setTestLoader(false)
+            } finally {
+                setTestLoader(false)
             }
-
         }
         setTestLoader(false)
     };
