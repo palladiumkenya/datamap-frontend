@@ -35,6 +35,7 @@ const Indicators = Loadable(lazy(() => import('pages/mapper/BaseRepositories')))
 const Text2SQL = Loadable(lazy(() => import('pages/text2sql/Text2Sql')));
 const AddSiteConfigs = Loadable(lazy(() => import('pages/configs/Site/AddSiteConfigs')));
 const ViewSiteConfigs = Loadable(lazy(() => import('pages/configs/Site/ViewSiteConfigs')));
+const EditSiteConfigDetails = Loadable(lazy(() => import('pages/configs/Site/EditSiteConfigDetails')));
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -119,6 +120,10 @@ const MainRoutes = {
           path: 'site',
           element: <ViewSiteConfigs />
         },
+        {
+          path: 'site/edit/:config_id',
+          element: <EditSiteConfigDetails />
+        }
       ]
     },
     {

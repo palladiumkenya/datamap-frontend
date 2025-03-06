@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import {API_URL} from "../../constants";
+import {fetchBaseVariables} from "../mapper/queries";
 
 const getAllSiteConfigs = async () => {
     const res = await fetch(`${API_URL}/site_config/all/configs`);
@@ -10,6 +11,20 @@ const getAllSiteConfigs = async () => {
 export const useGetSiteConfigs = () => useQuery({
     queryKey: ['site_configs'],
     queryFn: getAllSiteConfigs
+});
+
+const getSiteConfigsDetails = async ({queryKey}) => {
+    const [, id] = queryKey;
+    const res = await fetch(`${API_URL}/site_config/details/${id}`)
+    const jsonData = await res.json();
+    console.log("jsonData ==>", jsonData)
+
+    return jsonData.data ?? [];
+};
+export const useGetSiteConfigDetails = (id) => useQuery({
+    queryKey: ['site_config', id],
+    queryFn: getSiteConfigsDetails,
+    enabled:!!id,
 });
 
 

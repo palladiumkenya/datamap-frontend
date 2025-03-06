@@ -19,7 +19,7 @@ const DrawerHeader = ({ open }) => {
     <DrawerHeaderStyled theme={theme} open={open}>
       <Stack direction="row" spacing={1} alignItems="center">
         {/*<Logo />*/}
-          <img src="./logo/mainopendiveLogo.png" alt="png Image" height="50"/>
+          <img src="/logo/mainopendiveLogo.png" alt="png Image" height="50"/>
 
           {/*<DingdingOutlined color="text.info" style={{ fontSize: '30px'}}/>*/}
           {/**/}
