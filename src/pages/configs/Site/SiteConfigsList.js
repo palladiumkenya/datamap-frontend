@@ -11,10 +11,10 @@ import {
     TableRow, Tooltip,
     Typography
 } from "@mui/material";
-import {Link as RouterLink, useNavigate} from "react-router-dom";
+import {Link as RouterLink, NavLink, useNavigate} from "react-router-dom";
 import PropTypes from "prop-types";
 import Dot from "../../../components/@extended/Dot";
-import {BookOutlined, DeleteOutlined, EditOutlined} from "@ant-design/icons";
+import {BookOutlined, DeleteOutlined, EditOutlined, RightCircleFilled} from "@ant-design/icons";
 import DeleteDialog from "../../../components/Dialogs/DeleteDialog";
 import { useGetSiteConfigs} from "../../../store/site_configurations/queries";
 import {useDeleteSiteConfig} from "../../../store/site_configurations/mutations";
@@ -88,9 +88,10 @@ const ConfigsList = () =>{
     const [selected] = useState([]);
     const [dialogOpen, setDialogOpen] = useState(false)
     const [rowId, setRowId] = useState(null);
-    const navigate = useNavigate()
     const deleteAccess = useDeleteSiteConfig()
     const { isSuccess, error, isLoading: isLoading, data: getSiteConfigsData } = useGetSiteConfigs();
+
+
 
     const handleClickOpen = (id) => {
         setRowId(id);
@@ -173,9 +174,11 @@ const ConfigsList = () =>{
                                     <TableCell align="left">{row.primary_system}</TableCell>
                                     <TableCell align="right">
                                         <Tooltip title={`Edit`}>
-                                            <IconButton aria-label="Edit">
-                                                <EditOutlined />
-                                            </IconButton>
+                                            <NavLink to={`/configs/site/edit/${row.id}`} exact activeClassName="active-link">
+                                                <IconButton aria-label="Edit" >
+                                                    <EditOutlined />
+                                                </IconButton>
+                                            </NavLink>
                                         </Tooltip>
                                         <Tooltip title={`Delete`}>
                                             <IconButton aria-label="Delete" onClick={() => handleClickOpen(row.id)}>

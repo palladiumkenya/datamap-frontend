@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 // material-ui
 import {
@@ -13,7 +13,7 @@ import {
     InputAdornment,
     InputLabel,
     OutlinedInput,
-    Stack,Alert, Chip,
+    Stack,Alert, Chip, Tooltip,
     Typography, Select, MenuItem, Skeleton,TextField
 } from '@mui/material';
 import MainCard from 'components/MainCard';
@@ -41,6 +41,7 @@ const SelectorForm = () => {
     const urlSearchString = window.location.search;
     const params = new URLSearchParams(urlSearchString);
     const baselookup=params.get('baselookup')
+    const initialized = useRef(false);
 
     const isSubmitting=false;
     const [submitMessage, setSubmitMessage] = useState(null);
@@ -75,9 +76,21 @@ const SelectorForm = () => {
             const allColumns = []
             baseVariables.map(o =>{
                 allColumns.push({"baseVariable":o.term,"tableSelected":"", "matchingTableColumns":[]});
+                formData.push({
+                    "base_repository": baselookup,
+                    "base_variable_mapped_to": o.term,
+                    "is_required": o.is_required,
+                    "tablename": "",
+                    "columnname": "",
+                    "join_by": "",
+                    "datatype": o.datatype
+                })
+                setFormData(formData)
+
             });
 
             setColumns(allColumns);
+            console.log("basevariables formData",formData)
         }
     };
 
@@ -96,6 +109,7 @@ const SelectorForm = () => {
             formData.push({
                 "base_repository": baselookup,
                 "base_variable_mapped_to": baseVariable,
+                "is_required": baseVariable,
                 "tablename": filteredData[0].tableSelected,
                 "columnname": column,
                 "join_by": join_by,
@@ -196,7 +210,10 @@ const SelectorForm = () => {
 
 
     useEffect(() => {
-        getBaseVariables();
+        if (!initialized.current) {
+            getBaseVariables();
+            initialized.current = true;
+        }
         getDatabaseColumns();
 
     }, []);
@@ -270,9 +287,11 @@ const SelectorForm = () => {
                                                 <Stack spacing={1}>
                                                     {/*<InputLabel htmlFor="base-variable">Baseline Variable</InputLabel>*/}
                                                     {/*<Typography>{baseVariable}</Typography>*/}
+                                                    <Tooltip title={baseVariable.is_required ? baseVariable.term + "(*Mandatory)" : baseVariable.term}>
+
                                                     <TextField
                                                         id="base-indicators-{{baseVariable.term}}"
-                                                        value={baseVariable.term}
+                                                        value={baseVariable.is_required ? "*"+baseVariable.term : baseVariable.term }
                                                         readonly
                                                         placeholder="BaseVariable"
                                                         fullWidth
@@ -280,6 +299,7 @@ const SelectorForm = () => {
                                                         size="small" required
                                                         sx={{ backgroundColor:'white' }}
                                                     />
+                                                    </Tooltip>
 
                                                 </Stack>
                                             </Grid>
@@ -319,7 +339,7 @@ const SelectorForm = () => {
                                                         fullWidth
                                                         size="small" required
                                                         sx={{ backgroundColor:'#e6f7ff', borderRadius: '20px', border:'1px #40a9ff solid' }}
-                                                        // onChange={(e)=>{columnMappedQualityCheck(e, baseVariable, e.target.value)}}
+                                                        required={baseVariable.is_required}
                                                     >
                                                         { columns.filter(item => item.baseVariable === baseVariable.term)
                                                             .map(columnList => ( columnList.matchingTableColumns.map(variable => (

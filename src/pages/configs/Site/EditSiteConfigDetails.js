@@ -1,16 +1,19 @@
 import MainCard from "../../../components/MainCard";
 import {Alert, AlertTitle, Autocomplete, Box, Button, Stack, TextField, Typography} from "@mui/material";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import { useNavigate } from "react-router-dom";
+import {useParams} from "react-router-dom";
 
 import * as React from "react";
 import {API_URL} from "../../../constants";
 import "../../../ToggleButton..css";
+import {parseVersionChanges} from "../../../helpers/diffHelper";
 
 
 
-const AddSiteConfigs = () => {
+const EditSiteConfigDetails = () => {
     const navigate = useNavigate();
+    const { config_id } = useParams();
 
     const [formData, setFormData] = useState({
         site_name: '',
@@ -28,6 +31,21 @@ const AddSiteConfigs = () => {
         primary_system: false
     });
     const [isOn, setIsOn] = useState(false);
+
+    const getSiteConfigsDetails = async () => {
+        const res = await fetch(`${API_URL}/site_config/details/${config_id}`)
+        const jsonData = await res.json();
+        const details = jsonData?.data ?? []
+        console.log("jsonData ==>", jsonData)
+
+        setFormData({
+            site_name: details.site_name,
+            site_code: details.site_code,
+            primary_system: details.primary_system,
+            is_active:details.is_active
+        })
+        setIsOn(details.is_active)
+    };
 
     const handleToggle = () => {
         setIsOn(!isOn);
@@ -79,8 +97,8 @@ const AddSiteConfigs = () => {
             };
             // Call your API to test the connection
             try {
-                const response = await fetch(`${API_URL}/site_config/add/config`, {
-                    method: 'POST',
+                const response = await fetch(`${API_URL}/site_config/edit/config/${config_id}`, {
+                    method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
                     },
@@ -107,9 +125,13 @@ const AddSiteConfigs = () => {
         }
     };
 
+    useEffect(() => {
+       getSiteConfigsDetails()
+    }, []);
+
     return (
         <Box>
-            <Typography variant="h5" mb={2.5}>Site Configuration</Typography>
+            <Typography variant="h5" mb={2.5}>Edit Site Configuration</Typography>
             <form autoComplete="off" onSubmit={handleSave}>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
 
@@ -174,7 +196,7 @@ const AddSiteConfigs = () => {
                             color="primary"
                             onClick={handleSave}
                         >
-                            Save
+                            Save Changes
                         </Button>
                         <Button
                             type={'reset'}
@@ -205,4 +227,4 @@ const AddSiteConfigs = () => {
     )
 }
 
-export default AddSiteConfigs
+export default EditSiteConfigDetails

@@ -85,24 +85,36 @@ const TestMappings = ({formData, baselookup}) => {
     const saveMappings = useSaveMappings();
 
     const testVariableMappings = async () => {
-        setTestingSpinner(true)
-        setDisableSave(true)
 
-        const testingResponse = await testMappingsData.mutateAsync({baselookup,formData})
+        const missingMapping = formData.find(item => item.is_required == true &&  item.columnname == "");
 
-        if (testingResponse?.length==0){
-            if (testingResponse && testingResponse?.length==0) {
-                setDisableSave(false)
-                setAlertType("success");
-                setAlertMessage("No data issues found with mappings");
+        if (missingMapping === undefined) {
+            setTestingSpinner(true)
+            setDisableSave(true)
+
+            const testingResponse = await testMappingsData.mutateAsync({baselookup, formData})
+            console.log("testingResponse ",testingResponse)
+
+            if (testingResponse?.length == 0) {
+                if (testingResponse && testingResponse?.length == 0) {
+                    setDisableSave(false)
+                    setTestingSpinner(false)
+                    setAlertType("success");
+                    setAlertMessage("No data issues found with mappings");
+                }
+                setTestingSpinner(false)
+            } else {
+                setSpinner(false);
+                setTestingSpinner(false)
+
+                setAlertType("error");
+                setAlertMessage("Error testing mappings ");
+
             }
-            setTestingSpinner(false)
-        }
-        else {
-            setSpinner(false);
+        }else{
             setAlertType("error");
-            setAlertMessage("Error testing mappings ");
-
+            setAlertMessage("Error testing mappings. Missing mappings. Add mappings to the required base variables " +
+                "prefixed by * such as *"+missingMapping.base_variable_mapped_to);
         }
 
     };

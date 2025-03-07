@@ -25,10 +25,16 @@ const DataExtraction = ({baseRepo}) =>{
     const [progress, setProgress] = useState(null);
     const [socket, setSocket] = useState(null);
 
+    const [dataLoadedCount, setDataLoadedCount] = useState(null);
+    const [loadProgressSocket, setProgressSocket] = useState(null);
+
+
 
     const loadData = async (baseRepo) =>{
         setSpinner(true)
         setLoadSuccessAlert(false);
+        setProgress(null)
+        // checkLoadedCount(baseRepo)
 
         const { isSuccess, isError, error, data: loadedDataFromSource} = await refetch()
 
@@ -38,12 +44,23 @@ const DataExtraction = ({baseRepo}) =>{
             setAlertType("error");
             setLoadMessage("Error loading ==> "+loadedDataFromSource.error);
         }else{
-            if (loadedDataFromSource.length>0) setLoadedRepoData(loadedDataFromSource)
+            if (loadedDataFromSource.length>0) {
+                setLoadedRepoData(loadedDataFromSource)
+                setAlertType("success");
+                setLoadSuccessAlert(true);
+                setLoadMessage("Successfully loaded "+baseRepo+" data");
+            }else{
+                setAlertType("error");
+                setLoadSuccessAlert(true);
+                setLoadMessage("Failed to load "+baseRepo+" data. Check the Site Configured and make sure the data " +
+                    "in the source that matches this site is available to extract");
+            }
 
             setSpinner(false);
-            setAlertType("success");
-            setLoadSuccessAlert(true);
-            setLoadMessage("Successfully loaded "+baseRepo+" data");
+            // setAlertType("success");
+            // setLoadSuccessAlert(true);
+            // setLoadMessage("Successfully loaded "+baseRepo+" data");
+
         }
 
     }
@@ -121,7 +138,7 @@ const DataExtraction = ({baseRepo}) =>{
         console.log("sending data... ")
 
         setProgress(0); // Reset progress to 0
-        const newSocket = new WebSocket(`wss://${WS_API}/api/usl_data/ws/progress/${baseRepo}`);
+        const newSocket = new WebSocket(`${WS_API}/api/usl_data/ws/progress/${baseRepo}`);
 
         newSocket.onopen = () => {
             newSocket.send(JSON.stringify(manifest));
@@ -154,6 +171,47 @@ const DataExtraction = ({baseRepo}) =>{
     }
 
 
+    function checkLoadedCount(baseRepo) {
+
+        console.log("count loaded data... ")
+
+        setDataLoadedCount(0); // Reset progress to 0
+        const newProgressSocket = new WebSocket(`ws://${WS_API}/api/dictionary_mapper/ws/load/progress/${baseRepo}`);
+        console.log("count newProgressSocket... ",newProgressSocket)
+
+        newProgressSocket.onopen = () => {
+            newProgressSocket.send(baseRepo);
+        };
+        // Set up the WebSocket connection
+        newProgressSocket.onmessage = function (event) {
+            console.log("ws connection established ")
+
+            const data = event.data;
+            if (data.includes("Error")) {
+                console.error(data);
+                newProgressSocket.close();
+            } else {
+                console.log("data count--->",data)
+                setDataLoadedCount(Number(data.replace("%", ""))); // Update progress
+            }
+        };
+
+        newProgressSocket.onerror = function (error) {
+            console.log("connection failed with error: ", error)
+        };
+
+        newProgressSocket.onclose = function () {
+            console.log("ws connection closed");
+            setSendingSpinner(false);
+            setAlertType("success");
+            setLoadMessage("Loading data completed");
+        };
+
+        setSocket(newProgressSocket);
+    }
+
+
+
 
     useEffect(() => {
         return () => {
@@ -180,14 +238,15 @@ const DataExtraction = ({baseRepo}) =>{
                         }
                     </Fab>
                     {loadSuccessAlert &&
-                        <Alert color={alertType} onClose={() => {}}>
+                        <Alert color={alertType} onClose={() => {setLoadSuccessAlert(false)}}>
                             {loadMessage}
                         </Alert>
                     }
 
                 </Typography>
                 <Typography variant="h6">
-                    {baseRepo} Count: <b  style={{"color":"#13c2c2"}}>{datagridrows.length}</b>
+                    {/*{baseRepo} Count: <b  style={{"color":"#13c2c2"}}>{datagridrows.length}</b>*/}
+                    {baseRepo} Count: <b  style={{"color":"#13c2c2"}}>{dataLoadedCount}</b>
 
                     <Button variant="outlined" color="success" size="extraSmall" onClick={()=>verifyManifest(baseRepo)} style={{"marginLeft":"50px"}}>
                         Send To WareHouse
