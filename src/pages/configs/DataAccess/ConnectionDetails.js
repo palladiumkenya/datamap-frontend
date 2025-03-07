@@ -15,6 +15,7 @@ import {ReloadOutlined} from "@ant-design/icons";
 import {useDropzone} from "react-dropzone";
 import "./FileUpload.css";
 import {parseCSV} from "../../../helpers/parseCSV";
+import RestApiDataForm from "./RestApiDataForm";
 
 
 
@@ -27,6 +28,13 @@ const ConnectionDetails = ({ onNextStep }) => {
         db_type: '',
         conn_type: ''
     });
+    const [apiFormData, setApiFormData] = useState({
+        endpoint: '',
+        method: 'GET',
+        auth: false,
+        dataPath: '',
+        body: undefined
+    });
     const [alertType, setAlertType] = useState(null);
     const [alertMessage, setAlertMessage] = useState('');
     const [testLoader, setTestLoader] = useState(false);
@@ -36,6 +44,12 @@ const ConnectionDetails = ({ onNextStep }) => {
         password: false,
         database: false,
         db_type: false
+    });
+    const [apiFormErrors, setAPIFormErrors] = useState({
+        endpoint: false,
+        method: false,
+        auth: false,
+        dataPath: false
     });
     const [selectedFile, setSelectedFile] = useState(null);
 
@@ -69,10 +83,61 @@ const ConnectionDetails = ({ onNextStep }) => {
         return valid;
     };
 
-    const handleClick = () => {
-        if (handleValidation()) {
+    const handleValidationAPI = () => {
+        let valid = true;
+        const newErrors = { ...formErrors };
+
+        // Check if any required fields are empty
+        if (!apiFormData.endpoint.trim()) {
+            newErrors.endpoint = true;
+            valid = false;
+        }
+        if (!apiFormData.method.trim()) {
+            newErrors.method = true;
+            valid = false;
+        }
+
+        setAPIFormErrors(newErrors);
+        return valid;
+    };
+
+    const handleClick = async () => {
+        if (handleValidation() && formData.db_type !== 'api') {
             let conn_str = `${formData.db_type}://${formData.username}:${formData.password}@${formData.host_port}/${formData.database}`
             onNextStep({conn_str, conn_type: formData.conn_type});
+        } else if(handleValidationAPI() && formData.db_type === 'api'){
+            try {
+                const response = await fetch(apiFormData.endpoint, {
+                    method: apiFormData.method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    // body: JSON.stringify(formData.body), // TODO: add json body for post requests
+                });
+                const responseData = await response.json();
+                if (!response.ok) {
+                    setAlertType('error')
+                    setAlertMessage(`API connection failed! ${responseData}`)
+                } else {
+                    if (responseData.hasOwnProperty(apiFormData.dataPath) || apiFormData.dataPath === '') {
+                        onNextStep({
+                            conn_str: apiFormData.endpoint,
+                            conn_type: formData.conn_type,
+                            db: formData.db_type,
+                            data: responseData[apiFormData.dataPath] ?? responseData
+                        })
+                    } else {
+                        setAlertType('error')
+                        setAlertMessage('Data does not contain JSON key in result')
+                    }
+                }
+                setTestLoader(false)
+            } catch (error) {
+                setAlertType('error')
+                console.error('Error testing API connection:', JSON.stringify(error));
+                setAlertMessage(error)
+                setTestLoader(false)
+            }
         }
     };
 
@@ -97,9 +162,9 @@ const ConnectionDetails = ({ onNextStep }) => {
     };
 
     const handleConnectionTest = async (event) => {
-        if (handleValidation()) {
-            setTestLoader(true)
-            event.preventDefault();
+        setTestLoader(true)
+        event.preventDefault();
+        if (handleValidation() && formData.db_type !== 'api') {
             // Construct the API request with the driver and form data
             const apiRequest = {
                 ...formData,
@@ -130,7 +195,38 @@ const ConnectionDetails = ({ onNextStep }) => {
                 setAlertMessage(error.detail)
                 setTestLoader(false)
             }
+        } else if (handleValidationAPI()){
+            try {
+                const response = await fetch(apiFormData.endpoint, {
+                    method: apiFormData.method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    // body: JSON.stringify(formData.body), // TODO: add json body for post requests
+                });
+                const responseData = await response.json();
+                if (!response.ok) {
+                    setAlertType('error')
+                    setAlertMessage(`API connection failed! ${responseData}`)
+                } else {
+                    if (responseData.hasOwnProperty(apiFormData.dataPath) || apiFormData.dataPath === '') {
+                        setAlertType('success')
+                        setAlertMessage('Successfully connected to API')
+                    } else {
+                        setAlertType('error')
+                        setAlertMessage('Data does not contain JSON key in result')
+                    }
+                }
+            } catch (error) {
+                setAlertType('error')
+                console.error('Error testing API connection:', JSON.stringify(error));
+                setAlertMessage(error)
+                setTestLoader(false)
+            } finally {
+                setTestLoader(false)
+            }
         }
+        setTestLoader(false)
     };
 
     const images = [
@@ -173,10 +269,10 @@ const ConnectionDetails = ({ onNextStep }) => {
             disabled: false
         },
         {
-            url: '',
-            title: 'APIs/Web',
+            url: '/data_sources/rest-api.png',
+            title: 'RESTful APIs',
             driver: 'api',
-            disabled: true
+            disabled: false
         },
         {
             url: '/data_sources/snowflake.png',
@@ -192,7 +288,7 @@ const ConnectionDetails = ({ onNextStep }) => {
         reader.onload = () => {
             const data = reader.result;
             let parsedData = parseCSV(data);
-            onNextStep({db: formData.db_type, csvData: parsedData || [], conn_type: formData.conn_type})
+            onNextStep({db: formData.db_type, data: parsedData || [], conn_type: formData.conn_type})
         };
         reader.readAsText(acceptedFiles[0]);
     };
@@ -245,7 +341,6 @@ const ConnectionDetails = ({ onNextStep }) => {
                     {['mysql', 'mssql+pymssql', 'postgresql'].includes(formData.db_type) &&
                         <>
                             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                {/*<Typography variant="subtitle1">Host & Port</Typography>*/}
                                 <TextField
                                     type="text"
                                     name="host_port"
@@ -260,7 +355,6 @@ const ConnectionDetails = ({ onNextStep }) => {
                                 <Typography variant="body2" color="textSecondary">Enter the host address and port</Typography>
                             </Box>
                             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                {/*<Typography variant="subtitle1">Username</Typography>*/}
                                 <TextField
                                     type="text"
                                     name="username"
@@ -275,7 +369,6 @@ const ConnectionDetails = ({ onNextStep }) => {
                                 <Typography variant="body2" color="textSecondary">Enter the username</Typography>
                             </Box>
                             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                {/*<Typography variant="subtitle1">Password</Typography>*/}
                                 <TextField
                                     type="password"
                                     name="password"
@@ -322,37 +415,44 @@ const ConnectionDetails = ({ onNextStep }) => {
                             </div>
                         </Box>
                     }
+                    {
+                        formData.db_type === 'api' &&
+                        <RestApiDataForm setAPIData={setApiFormData} apiData={apiFormData} apiFormError={apiFormErrors}/>
+                    }
 
                 </Box>
-                <Box sx={{display: 'flex', flexDirection: 'row', pt: 2}}>
-                    <Box sx={{flex: '1 1 auto'}}/>
-                    <Stack direction="row" spacing={2}>
-                        <LoadingButton
-                            loading={testLoader}
-                            loadingPosition="start"
-                            startIcon={<ReloadOutlined />}
-                            variant="contained"
-                            color="success"
-                            onClick={handleConnectionTest}
-                        >
-                            Test Connection
-                        </LoadingButton>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={handleClick}
-                        >
-                            Save
-                        </Button>
-                        <Button
-                            type={'reset'}
-                            variant="contained"
-                            color="error"
-                        >
-                            Cancel
-                        </Button>
-                    </Stack>
-                </Box>
+                {
+                    formData.db_type !== 'csv' &&
+                    <Box sx={{display: 'flex', flexDirection: 'row', pt: 2}}>
+                        <Box sx={{flex: '1 1 auto'}}/>
+                        <Stack direction="row" spacing={2}>
+                            <LoadingButton
+                                loading={testLoader}
+                                loadingPosition="start"
+                                startIcon={<ReloadOutlined />}
+                                variant="contained"
+                                color="success"
+                                onClick={handleConnectionTest}
+                            >
+                                Test Connection
+                            </LoadingButton>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={handleClick}
+                            >
+                                Save
+                            </Button>
+                            <Button
+                                type={'reset'}
+                                variant="contained"
+                                color="error"
+                            >
+                                Cancel
+                            </Button>
+                        </Stack>
+                    </Box>
+                }
             </form>
             {/* Alert for success */}
             {alertType === 'success' && (
