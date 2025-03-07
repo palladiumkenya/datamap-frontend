@@ -85,26 +85,28 @@ const TestMappings = ({formData, baselookup}) => {
     const saveMappings = useSaveMappings();
 
     const testVariableMappings = async () => {
-        console.log("formData",formData)
 
         const missingMapping = formData.find(item => item.is_required == true &&  item.columnname == "");
-        console.log("missing ",missingMapping)
 
-        if (formData.length==0) {
+        if (missingMapping === undefined) {
             setTestingSpinner(true)
             setDisableSave(true)
 
             const testingResponse = await testMappingsData.mutateAsync({baselookup, formData})
+            console.log("testingResponse ",testingResponse)
 
             if (testingResponse?.length == 0) {
                 if (testingResponse && testingResponse?.length == 0) {
                     setDisableSave(false)
+                    setTestingSpinner(false)
                     setAlertType("success");
                     setAlertMessage("No data issues found with mappings");
                 }
                 setTestingSpinner(false)
             } else {
                 setSpinner(false);
+                setTestingSpinner(false)
+
                 setAlertType("error");
                 setAlertMessage("Error testing mappings ");
 
