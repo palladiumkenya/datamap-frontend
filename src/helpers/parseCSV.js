@@ -34,5 +34,5 @@ export const parseCSV = (csvData) => {
         result.push(obj);
     }
 
-    return result;
+    return result.pop();
 };

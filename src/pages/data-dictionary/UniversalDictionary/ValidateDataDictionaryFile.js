@@ -64,7 +64,6 @@ const ValidateDataDictionaryFile = ({file, onFinish, dictionary}) => {
 
     const validateFile = (data) => {
         setLoading(true);
-        data.pop()
         // Validate each row in the file
         const errors = data.map(row => checkErrors(row));
         setErrors(errors);

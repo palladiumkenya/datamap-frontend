@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {Box, TextField, Typography, Button, CircularProgress, Alert, AlertTitle, Autocomplete, LinearProgress} from "@mui/material";
 import {API_URL} from "../../../constants";
 import {useGetSystems} from "../../../store/access_configurations/queries";
@@ -51,7 +51,7 @@ const SaveConfig = ({ connString, onFinish }) => {
         setLoading(true);
 
         const connectionData = {
-            conn_string: connString?.db === 'csv' ? 'csv' : connString?.conn_str,
+            conn_string: ['csv'].includes(connString?.db) ? connString?.db : connString?.conn_str,
             conn_type: connString?.conn_type,
             name: formData.connectionName,
             system_id: formData.system_id
@@ -59,11 +59,12 @@ const SaveConfig = ({ connString, onFinish }) => {
 
         try {
             await createConfig.mutateAsync(connectionData);
-            if (connString?.db === 'csv') {
+            if (['csv', 'api'].includes(connString?.db)) {
                 try {
-                    const response = await axios.post(`${API_URL}/db_access/upload_csv`, {
-                        data: connString?.csvData,
-                        name: formData.connectionName
+                    const response = await axios.post(`${API_URL}/db_access/upload_data`, {
+                        data: connString?.data,
+                        name: formData.connectionName,
+                        upload: connString?.db
                     })
                 } catch (error) {
                     console.error(error?.response?.data?.detail || error.message)
