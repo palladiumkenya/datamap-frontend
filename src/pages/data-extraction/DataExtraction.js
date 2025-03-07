@@ -138,7 +138,7 @@ const DataExtraction = ({baseRepo}) =>{
         console.log("sending data... ")
 
         setProgress(0); // Reset progress to 0
-        const newSocket = new WebSocket(`ws://${WS_API}/api/usl_data/ws/progress/${baseRepo}`);
+        const newSocket = new WebSocket(`${WS_API}/api/usl_data/ws/progress/${baseRepo}`);
 
         newSocket.onopen = () => {
             newSocket.send(JSON.stringify(manifest));
