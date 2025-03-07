@@ -42,9 +42,9 @@ const EditSiteConfigDetails = () => {
             site_name: details.site_name,
             site_code: details.site_code,
             primary_system: details.primary_system,
-            is_active:details.status
-
+            is_active:details.is_active
         })
+        setIsOn(details.is_active)
     };
 
     const handleToggle = () => {
@@ -178,7 +178,7 @@ const EditSiteConfigDetails = () => {
                             error={formErrors.primary_system}
                             helperText={formErrors.primary_system ? "Primary System Name is required" : ""}
                         />
-                        <Typography variant="body2" color="textSecondary">Enter the rimary System Name</Typography>
+                        <Typography variant="body2" color="textSecondary">Enter the primary System Name</Typography>
                     </Box>
                     <Box>
                         <div className={`toggle-switch ${isOn ? 'on' : 'off'}`} onClick={handleToggle}>

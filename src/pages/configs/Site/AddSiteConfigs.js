@@ -156,7 +156,7 @@ const AddSiteConfigs = () => {
                             error={formErrors.primary_system}
                             helperText={formErrors.primary_system ? "Primary System Name is required" : ""}
                         />
-                        <Typography variant="body2" color="textSecondary">Enter the rimary System Name</Typography>
+                        <Typography variant="body2" color="textSecondary">Enter the primary System Name</Typography>
                     </Box>
                     <Box>
                         <div className={`toggle-switch ${isOn ? 'on' : 'off'}`} onClick={handleToggle}>
