@@ -34,34 +34,33 @@ const DataExtraction = ({baseRepo}) =>{
         setSpinner(true)
         setLoadSuccessAlert(false);
         setProgress(null)
-        // checkLoadedCount(baseRepo)
 
-        const { isSuccess, isError, error, data: loadedDataFromSource} = await refetch()
+        checkLoadedCount(baseRepo)
 
-        if(loadedDataFromSource.status == 500){
-            setSpinner(false);
-            setLoadSuccessAlert(true);
-            setAlertType("error");
-            setLoadMessage("Error loading ==> "+loadedDataFromSource.error);
-        }else{
-            if (loadedDataFromSource.length>0) {
-                setLoadedRepoData(loadedDataFromSource)
-                setAlertType("success");
-                setLoadSuccessAlert(true);
-                setLoadMessage("Successfully loaded "+baseRepo+" data");
-            }else{
-                setAlertType("error");
-                setLoadSuccessAlert(true);
-                setLoadMessage("Failed to load "+baseRepo+" data. Check the Site Configured and make sure the data " +
-                    "in the source that matches this site is available to extract");
-            }
 
-            setSpinner(false);
-            // setAlertType("success");
-            // setLoadSuccessAlert(true);
-            // setLoadMessage("Successfully loaded "+baseRepo+" data");
+        // const { isSuccess, isError, error, data: loadedDataFromSource} = await refetch()
 
-        }
+        // if(loadedDataFromSource.status == 500){
+        //     setSpinner(false);
+        //     setLoadSuccessAlert(true);
+        //     setAlertType("error");
+        //     setLoadMessage("Error loading ==> "+loadedDataFromSource.error);
+        // }else{
+        //     if (loadedDataFromSource.length>0) {
+        //         setLoadedRepoData(loadedDataFromSource)
+        //         setAlertType("success");
+        //         setLoadSuccessAlert(true);
+        //         setLoadMessage("Successfully loaded "+baseRepo+" data");
+        //     }else{
+        //         setAlertType("error");
+        //         setLoadSuccessAlert(true);
+        //         setLoadMessage("Failed to load "+baseRepo+" data. Check the Site Configured and make sure the data " +
+        //             "in the source that matches this site is available to extract");
+        //     }
+        //
+        //     setSpinner(false);
+        //
+        // }
 
     }
 
@@ -184,15 +183,37 @@ const DataExtraction = ({baseRepo}) =>{
         };
         // Set up the WebSocket connection
         newProgressSocket.onmessage = function (event) {
-            console.log("ws connection established ")
-
             const data = event.data;
             if (data.includes("Error")) {
-                console.error(data);
                 newProgressSocket.close();
+                setAlertType("error");
+                setLoadSuccessAlert(true);
+                setLoadMessage("Failed to load : ERROR -->" + data );
             } else {
-                console.log("data count--->",data)
-                setDataLoadedCount(Number(data.replace("%", ""))); // Update progress
+                try {
+                    const jsonData = JSON.parse(data);
+                    if (Array.isArray(jsonData)) {
+                        if (jsonData.length > 0) {
+                            setLoadedRepoData(jsonData)
+                            setAlertType("success");
+                            setLoadSuccessAlert(true);
+                            setLoadMessage("Successfully loaded " + baseRepo + " data");
+                        } else {
+                            setAlertType("error");
+                            setLoadSuccessAlert(true);
+                            setLoadMessage("Failed to load " + baseRepo + " data. Check the Site Configured and make sure the data " +
+                                "in the source that matches this site is available to extract");
+                        }
+
+                        setSpinner(false);
+                    }else {
+                        setDataLoadedCount(Number(data.replace("%", ""))); // Update progress
+                    }
+                } catch (e) {
+                    setAlertType("error");
+                    setLoadSuccessAlert(true);
+                    setLoadMessage("Failed to load: ERROR -->" + e);
+                }
             }
         };
 
