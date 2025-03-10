@@ -175,7 +175,7 @@ const DataExtraction = ({baseRepo}) =>{
         console.log("count loaded data... ")
 
         setDataLoadedCount(0); // Reset progress to 0
-        const newProgressSocket = new WebSocket(`ws://${WS_API}/api/dictionary_mapper/ws/load/progress/${baseRepo}`);
+        const newProgressSocket = new WebSocket(`${WS_API}/api/dictionary_mapper/ws/load/progress/${baseRepo}`);
         console.log("count newProgressSocket... ",newProgressSocket)
 
         newProgressSocket.onopen = () => {
