@@ -37,7 +37,7 @@ import TestMappings from "../test-mappings/TestMappings";
 
 
 
-const SelectorForm = () => {
+const AddQuerySelectorForm = () => {
     const urlSearchString = window.location.search;
     const params = new URLSearchParams(urlSearchString);
     const baselookup=params.get('baselookup')
@@ -227,7 +227,9 @@ const SelectorForm = () => {
                 </Alert>
             }
                     <form noValidate >
-
+                        <Typography color="text.info" variant="h4">{baselookup} Mapping
+                            <ActiveSiteConfigInfo />  <SourceSystemInfo />
+                        </Typography>
                         <Divider sx={{marginBottom:"20px"}}/>
                         <Grid container spacing={1}>
                             <Grid container spacing={1} sx={{marginBottom:"20px"}}>
@@ -367,11 +369,7 @@ const SelectorForm = () => {
                                                     </Select>
                                                 </Stack>
                                             </Grid>
-                                            {/*<Grid item xs={1} md={1}>*/}
-                                            {/*    <IconButton variant="outlined" color="success" style={{"marginTop": "35px"}} id={baseVariable+"Mapped"}>*/}
-                                            {/*        <CheckCircleFilled />*/}
-                                            {/*    </IconButton>*/}
-                                            {/*</Grid>*/}
+
                                         </Grid>
                                     </MainCard>
                                 ) )
@@ -396,7 +394,7 @@ const SelectorForm = () => {
 
                             {fetchedSourceTables &&
                                 <>
-                                    <TestMappings formData={formData} baselookup={baselookup}/>
+                                        <TestMappings formData={formData} baselookup={baselookup}/>
                                 </>
                             }
                         </Grid>
@@ -406,4 +404,4 @@ const SelectorForm = () => {
     );
 };
 
-export default SelectorForm;
+export default AddQuerySelectorForm;
