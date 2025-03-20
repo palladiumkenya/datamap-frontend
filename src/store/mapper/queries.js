@@ -63,7 +63,6 @@ export const useGetBaseVariables  = (baseRepo) => useQuery({
 export const fetchMappedBaseVariables = async (baseRepo) => {
     const res = await fetch(`${API_URL}/dictionary_mapper/base_schema_variables/${baseRepo}`);
     const jsonData = await res.json();
-    console.log("jsonData", jsonData)
     return jsonData ?? null;
 };
 export const useGetMappedBaseVariables  = (baseRepo) => useQuery({
@@ -91,7 +90,6 @@ export const useGetConfigCreation = () => useQuery({
 const fetchRepositoryLoadedData = async (baseRepo) => {
     const res = await fetch(`${API_URL}/usl_data/repository/${baseRepo}`);
     const jsonData = await res.json();
-    console.log("data ==>", jsonData)
     return jsonData?.data ?? null;
 };
 

@@ -91,7 +91,7 @@ const saveQuery = async ({baselookup,formData}) => {
         },
         body: JSON.stringify({"query":formData})
     });
-    console.log("res", res)
+
     const jsonData = await res.json();
 
     if (!res.ok) {

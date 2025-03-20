@@ -6,6 +6,7 @@ import {Grid, Stack, Typography,Checkbox, FormControlLabel, RadioGroup, Radio} f
 import SelectorForm from "./selector-form/SelectorForm";
 import ActiveSiteConfigInfo from "../configs/Site/ActiveSiteConfigInfo";
 import SourceSystemInfo from "./source-system/SourceSystemInfo";
+import AddQuerySelectorForm from "./selector-form/AddQuerySelectorForm";
 
 
 
@@ -65,7 +66,7 @@ const Mapper = () => {
                     }
                     {
                         isQueryChecked && (
-                            <p>under development</p>
+                            <AddQuerySelectorForm />
                         )
                     }
 
