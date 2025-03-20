@@ -79,6 +79,7 @@ const TestMappings = ({formData, baselookup}) => {
     const [alertType, setAlertType] = useState(null);
     const [alertMessage, setAlertMessage] = useState(null);
     const [disableSave, setDisableSave] = useState(true);
+    const [querySaved, setQuerySaved] = useState(true);
 
     const isSubmitting=false;
     const testMappingsData = useTestMappings();
@@ -95,14 +96,15 @@ const TestMappings = ({formData, baselookup}) => {
             const testingResponse = await testMappingsData.mutateAsync({baselookup, formData})
             console.log("testingResponse ",testingResponse)
 
-            if (testingResponse?.length == 0) {
-                if (testingResponse && testingResponse?.length == 0) {
-                    setDisableSave(false)
-                    setTestingSpinner(false)
-                    setAlertType("success");
-                    setAlertMessage("No data issues found with mappings");
-                }
+            if (testingResponse?.status_code == 200) {
+                // if (testingResponse && testingResponse?.length == 0) {
+                setQuerySaved(false)
+
+                setDisableSave(false)
                 setTestingSpinner(false)
+                setAlertType("success");
+                setAlertMessage("No data issues found with mappings");
+                // }
             } else {
                 setSpinner(false);
                 setTestingSpinner(false)
@@ -122,19 +124,34 @@ const TestMappings = ({formData, baselookup}) => {
     const handleSubmit = async () => {
         setSpinner(true);
 
-        // event.preventDefault();
-
         const saveResponse = await saveMappings.mutateAsync({baselookup,formData})
-        if (!saveResponse.ok) {
+        // if (!saveResponse.ok) {
+        //     setSpinner(false);
+        //     setAlertType("error");
+        //     // setSubmitMessage("Error saving mappings ==> " + errorData.detail);
+        //     console.log("success ",saveResponse.ok)
+        //
+        // }
+        // if (saveResponse.ok){
+        //     window.location.href = `${FRONTEND_URL}/schema/config?baselookup=${baselookup}`;
+        // }
+        console.log("saveResponse",saveResponse)
+        if (saveResponse?.status_code == 200) {
+            setDisableSave(false)
             setSpinner(false);
+            setAlertType("success");
+            setAlertMessage(saveResponse?.data);
+
+            setQuerySaved(true)
+        } else {
+            setSpinner(false);
+            setTestingSpinner(false)
+
             setAlertType("error");
-            // setSubmitMessage("Error saving mappings ==> " + errorData.detail);
-            console.log("success ",saveResponse.ok)
+            setAlertMessage("Error saving mappings, ERROR --> "+saveResponse?.data);
 
         }
-        if (saveResponse.ok){
-            window.location.href = `${FRONTEND_URL}/schema/config?baselookup=${baselookup}`;
-        }
+
 
 
     };
@@ -146,16 +163,24 @@ const TestMappings = ({formData, baselookup}) => {
         <Grid container spacing={1} sx={{marginBottom:"100px"}}>
 
             <Grid item xs={2}>
-                <AnimateButton>
-                    <Button disableElevation disabled={disableSave} fullWidth size="medium" type="button" variant="contained"
-                            color="primary" onClick={()=>handleSubmit()}>
-                        Save
-                        {spinner &&
-                            <CircularProgress style={{"color":"black","marginLeft":"10px"}} size="1rem"/>
-                        }
-                    </Button>
-
-                </AnimateButton>
+                { !querySaved ? (
+                    <AnimateButton>
+                        <Button disableElevation disabled={disableSave} fullWidth size="medium" type="button" variant="contained"
+                                color="primary" onClick={()=>handleSubmit()}>
+                            Save
+                            {spinner &&
+                                <CircularProgress style={{"color":"black","marginLeft":"10px"}} size="1rem"/>
+                            }
+                        </Button>
+                    </AnimateButton>
+                    ):(
+                    <AnimateButton>
+                        <Button disableElevation disabled={disableSave} fullWidth size="medium" type="button" variant="contained"
+                                color="success" onClick={() => window.location.href = `${FRONTEND_URL}/schema/config?baselookup=${baselookup}`}>
+                            Finish
+                        </Button>
+                    </AnimateButton>
+                )}
             </Grid>
             <Grid item xs={2}>
                 <AnimateButton>

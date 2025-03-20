@@ -74,7 +74,7 @@ export const useGetMappedBaseVariables  = (baseRepo) => useQuery({
 
 
 const fetchConfigCreation = async () => {
-    const res = await fetch(`${API_URL}/dictionary_mapper/generate_config/${baselookup}`);
+    const res = await fetch(`${API_URL}/mappings_config/generate_config/${baselookup}`);
     const jsonData = await res.json();
     return jsonData ?? null;
 };

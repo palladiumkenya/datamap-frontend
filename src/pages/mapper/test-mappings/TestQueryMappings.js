@@ -124,8 +124,6 @@ const TestQueryMappings = ({formData, baselookup}) => {
 
     const handleSubmit = async () => {
         setSpinner(true);
-        console.log("saving query")
-        // event.preventDefault();
 
         const saveResponse = await saveCustomQuery.mutateAsync({baselookup,formData})
         if (saveResponse?.status_code == 200) {
