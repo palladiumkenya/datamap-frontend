@@ -60,6 +60,19 @@ export const useGetBaseVariables  = (baseRepo) => useQuery({
 
 });
 
+export const fetchMappedBaseVariables = async (baseRepo) => {
+    const res = await fetch(`${API_URL}/dictionary_mapper/base_schema_variables/${baseRepo}`);
+    const jsonData = await res.json();
+    console.log("jsonData", jsonData)
+    return jsonData ?? null;
+};
+export const useGetMappedBaseVariables  = (baseRepo) => useQuery({
+    queryKey: ['baseRepo'],
+    queryFn: fetchMappedBaseVariables(baseRepo),
+    refetchInterval: 1800000, // refresh every 30min
+
+});
+
 
 const fetchConfigCreation = async () => {
     const res = await fetch(`${API_URL}/dictionary_mapper/generate_config/${baselookup}`);
