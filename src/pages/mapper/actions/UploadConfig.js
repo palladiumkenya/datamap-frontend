@@ -20,7 +20,7 @@ const UploadConfig = ({baselookup}) =>{
         setUploadSpinner(true);
         setSuccessAlert(false);
 
-        const response = await fetch(`${API_URL}/dictionary_mapper/generate_config/${baselookup}`);
+        const response = await fetch(`${API_URL}/mappings_config/generate_config/${baselookup}`);
 
         if (!response.ok) {
             const errorData = await response.json(); // Parse JSON error response

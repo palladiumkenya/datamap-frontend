@@ -19,7 +19,7 @@ const ImportConfig = ({baselookup, onUpdate}) =>{
         setImportSpinner(true);
         setSuccessAlert(false);
 
-        const response = await fetch(`${API_URL}/dictionary_mapper/import_config/${baselookup}`);
+        const response = await fetch(`${API_URL}/mappings_config/import_config/${baselookup}`);
 
         if (!response.ok) {
             const errorData = await response.json(); // Parse JSON error response

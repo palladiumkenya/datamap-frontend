@@ -55,11 +55,12 @@ const BaseRepositories = () =>{
                     </Stack>
                 </Grid>
 
-                <Grid item xs={12}>
 
                     {data.length >0  ?
                         data.map( (base) => (
-                        <Stack direction="row" justifyContent="space-between" alignItems="baseline" sx={{ mb: { xs: -0.5, sm: 0.5 } }}>
+                            <Grid item xs={5}>
+
+                            <Stack direction="row" justifyContent="space-between" alignItems="baseline" sx={{ mb: { xs: -0.5, sm: 0.5 } }}>
                             <MainCard border={false} boxShadow  sx={{ width: '100%' }}>
                                 <Typography variant="h6">
                                     {base.name}
@@ -74,6 +75,7 @@ const BaseRepositories = () =>{
 
                             </MainCard>
                         </Stack>
+                        </Grid>
                         ) ) :
                         (
                         <div>
@@ -92,7 +94,6 @@ const BaseRepositories = () =>{
                         </div>
                         )
                     }
-                </Grid>
             </Grid>
         </>
     );

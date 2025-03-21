@@ -184,6 +184,7 @@ const DataExtraction = ({baseRepo}) =>{
         // Set up the WebSocket connection
         newProgressSocket.onmessage = function (event) {
             const data = event.data;
+            console.log("data -->", data)
             if (data.includes("Error")) {
                 newProgressSocket.close();
                 setAlertType("error");

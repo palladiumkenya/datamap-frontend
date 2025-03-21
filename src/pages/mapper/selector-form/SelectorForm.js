@@ -90,7 +90,6 @@ const SelectorForm = () => {
             });
 
             setColumns(allColumns);
-            console.log("basevariables formData",formData)
         }
     };
 
@@ -131,7 +130,7 @@ const SelectorForm = () => {
     };
 
     const handleTableSelect = (tableSelected, basevariable) => {
-        //clear any selected data for base variable
+        //TO DO - clear any selected data for base variable
         // document.getElementById(basevariable+"column").value = "";
         // document.getElementById(basevariable+"JoinColumn").value = "";
         // console.log("columns  -->", columns)
@@ -192,12 +191,6 @@ const SelectorForm = () => {
                  ${baseVariable.datatype} or similar to it.  ${columnSelected} has datatype ${columnSelectedDatatype}`;
             }
         }
-        // const table = document.getElementsByName('PrimaryTable')[0].value;
-        //
-        // formData.push({"base_repository":baselookup,"base_variable_mapped_to":'PrimaryTableId', "tablename":table,
-        //     "columnname":uniqueId, "join_by":"-", "datatype":"string"})
-        // setFormData(formData)
-        // console.log(formData)
 
     };
 
@@ -220,16 +213,14 @@ const SelectorForm = () => {
 
     return (
         <>
-            { !fetchedSourceTables &&
+            { fetchedSourceTables == false &&
                 <Alert color="error" icon={<InfoCircleFilled  />}>
                     An error has occurred: Check your source DB/API connection in the Configurations page and make
                     sure you can connect to it and then restart the application. You cannot map unless the Source system is correctly configured
                 </Alert>
             }
                     <form noValidate >
-                        <Typography color="text.info" variant="h4">{baselookup} Mapping
-                            <ActiveSiteConfigInfo />  <SourceSystemInfo />
-                        </Typography>
+
                         <Divider sx={{marginBottom:"20px"}}/>
                         <Grid container spacing={1}>
                             <Grid container spacing={1} sx={{marginBottom:"20px"}}>
@@ -398,22 +389,7 @@ const SelectorForm = () => {
 
                             {fetchedSourceTables &&
                                 <>
-                                {/*<Grid item xs={4}>*/}
-                                {/*    <AnimateButton>*/}
-                                {/*        <Button disableElevation disabled={isSubmitting} fullWidth size="medium" type="submit" variant="contained" color="primary">*/}
-                                {/*                    Save*/}
-                                {/*        </Button>*/}
-                                {/*        {spinner ?*/}
-                                {/*            <CircularProgress style={{"color":"black"}} size="1rem"/>*/}
-                                {/*            :*/}
-                                {/*            <></>*/}
-                                {/*        }*/}
-                                {/*    </AnimateButton>*/}
-                                {/*</Grid>*/}
-                                {/*    <Grid item xs={12}>*/}
-                                        <TestMappings formData={formData} baselookup={baselookup}/>
-
-                                    {/*</Grid>*/}
+                                    <TestMappings formData={formData} baselookup={baselookup}/>
                                 </>
                             }
                         </Grid>

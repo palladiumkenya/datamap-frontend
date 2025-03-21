@@ -17,7 +17,6 @@ const getSiteConfigsDetails = async ({queryKey}) => {
     const [, id] = queryKey;
     const res = await fetch(`${API_URL}/site_config/details/${id}`)
     const jsonData = await res.json();
-    console.log("jsonData ==>", jsonData)
 
     return jsonData.data ?? [];
 };
