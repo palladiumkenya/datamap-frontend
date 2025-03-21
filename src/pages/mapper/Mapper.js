@@ -49,7 +49,6 @@ const Mapper = () => {
 
                         <RadioGroup
                             aria-labelledby="demo-radio-buttons-group-label"
-                            defaultValue="female"
                             name="radio-buttons-group" onChange={handleMethodChange}
                         >
                             <FormControlLabel value="dbschema" control={<Radio id="useDbSchema"/>} label="Use Source DB Schema" />
