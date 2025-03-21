@@ -14,7 +14,7 @@ const SourceSystemInfo = () =>{
     return(
     < >
         {data &&
-        <Chip label={"SYSTEM : "+data.name } variant="light" color="primary" />
+        <Chip label={"SYSTEM : "+data.name+" ("+data.conn_type+")" } variant="light" color="primary" />
         }
     </>
 );

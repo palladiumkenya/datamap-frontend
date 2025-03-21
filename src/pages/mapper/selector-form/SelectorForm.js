@@ -90,7 +90,6 @@ const SelectorForm = () => {
             });
 
             setColumns(allColumns);
-            console.log("basevariables formData",formData)
         }
     };
 
@@ -131,7 +130,7 @@ const SelectorForm = () => {
     };
 
     const handleTableSelect = (tableSelected, basevariable) => {
-        //clear any selected data for base variable
+        //TO DO - clear any selected data for base variable
         // document.getElementById(basevariable+"column").value = "";
         // document.getElementById(basevariable+"JoinColumn").value = "";
         // console.log("columns  -->", columns)
@@ -192,12 +191,6 @@ const SelectorForm = () => {
                  ${baseVariable.datatype} or similar to it.  ${columnSelected} has datatype ${columnSelectedDatatype}`;
             }
         }
-        // const table = document.getElementsByName('PrimaryTable')[0].value;
-        //
-        // formData.push({"base_repository":baselookup,"base_variable_mapped_to":'PrimaryTableId', "tablename":table,
-        //     "columnname":uniqueId, "join_by":"-", "datatype":"string"})
-        // setFormData(formData)
-        // console.log(formData)
 
     };
 

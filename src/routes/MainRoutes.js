@@ -31,6 +31,7 @@ const DataDictionary = Loadable(lazy(() => import('pages/data-dictionary/Dicitio
 const AddDataDictionary = Loadable(lazy(() => import('pages/data-dictionary/UniversalDictionary/AddDataDictionary')));
 const ViewDataDictionary = Loadable(lazy(() => import('pages/data-dictionary/DicitionarySync/ViewDataDictionary')));
 const Selector = Loadable(lazy(() => import('pages/mapper/Mapper')));
+const CsvApiSelector = Loadable(lazy(() => import('pages/mapper/CsvAndApiMapper')));
 const Indicators = Loadable(lazy(() => import('pages/mapper/BaseRepositories')));
 const Text2SQL = Loadable(lazy(() => import('pages/text2sql/Text2Sql')));
 const AddSiteConfigs = Loadable(lazy(() => import('pages/configs/Site/AddSiteConfigs')));
@@ -76,8 +77,12 @@ const MainRoutes = {
           element: <Indicators />
         },
         {
-          path: 'Selector',
+          path: 'DBmapper',
           element: <Selector />
+        },
+        {
+          path: 'CsvApiMapper',
+          element: <CsvApiSelector />
         },
         {
           path: 'Config',

@@ -123,8 +123,7 @@ const AddQuerySelectorForm = () => {
     const handleQueryInsert = () => {
         const handleInputChange = (event) => {
             setInputValue(event.target.value);
-            // Perform your desired action here
-            console.log('Input Value:', event.target.value);
+
         };
         const queryData = document.getElementById('custom-query').value;
         setFormData(queryData)

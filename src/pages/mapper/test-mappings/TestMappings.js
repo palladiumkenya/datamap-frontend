@@ -94,7 +94,6 @@ const TestMappings = ({formData, baselookup}) => {
             setDisableSave(true)
 
             const testingResponse = await testMappingsData.mutateAsync({baselookup, formData})
-            console.log("testingResponse ",testingResponse)
 
             if (testingResponse?.status_code == 200) {
                 // if (testingResponse && testingResponse?.length == 0) {
@@ -125,16 +124,7 @@ const TestMappings = ({formData, baselookup}) => {
         setSpinner(true);
 
         const saveResponse = await saveMappings.mutateAsync({baselookup,formData})
-        // if (!saveResponse.ok) {
-        //     setSpinner(false);
-        //     setAlertType("error");
-        //     // setSubmitMessage("Error saving mappings ==> " + errorData.detail);
-        //     console.log("success ",saveResponse.ok)
-        //
-        // }
-        // if (saveResponse.ok){
-        //     window.location.href = `${FRONTEND_URL}/schema/config?baselookup=${baselookup}`;
-        // }
+
         console.log("saveResponse",saveResponse)
         if (saveResponse?.status_code == 200) {
             setDisableSave(false)

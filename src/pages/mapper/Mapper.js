@@ -19,7 +19,6 @@ const Mapper = () => {
     const [isQueryChecked, setIsQueryChecked] = useState(false);
 
     const handleMethodChange = (event) => {
-        console.log("use what checked ", event.target.value)
         if(event.target.value=="dbschema") {
             setIsDbSchemaChecked(true)
             setIsQueryChecked(false)
