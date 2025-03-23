@@ -33,20 +33,16 @@ import {useDeleteSiteConfig} from "../../../store/site_configurations/mutations"
 // import {useSaveMappings} from "../../../store/mapper/mutations";
 import CircularProgress from "@mui/material/CircularProgress";
 import TestMappings from "../test-mappings/TestMappings";
+import {fetchSourceCsvHeaders} from "../../../store/csv-api-mapper/queries";
 
 
 
 
-const SelectorForm = () => {
+const CsvApiSelectorForm = () => {
     const urlSearchString = window.location.search;
     const params = new URLSearchParams(urlSearchString);
     const baselookup=params.get('baselookup')
     const initialized = useRef(false);
-
-    const isSubmitting=false;
-    const [submitMessage, setSubmitMessage] = useState(null);
-    const [alertType, setAlertType] = useState(null);
-    const [spinner, setSpinner] = useState(null);
 
     const [databaseColumns, setdatabaseColumns] = useState({});
     const [tablenames, setTablenames] = useState(Object.keys(databaseColumns));
@@ -75,14 +71,12 @@ const SelectorForm = () => {
 
             const allColumns = []
             baseVariables.map(o =>{
-                allColumns.push({"baseVariable":o.term,"tableSelected":"", "matchingTableColumns":[]});
+                allColumns.push({"baseVariable":o.term,"HeaderSelected":""});
                 formData.push({
                     "base_repository": baselookup,
                     "base_variable_mapped_to": o.term,
                     "is_required": o.is_required,
-                    "tablename": "",
                     "columnname": "",
-                    "join_by": "",
                     "datatype": o.datatype
                 })
                 setFormData(formData)
@@ -110,9 +104,7 @@ const SelectorForm = () => {
                 "base_repository": baselookup,
                 "base_variable_mapped_to": baseVariable,
                 "is_required": baseVariable,
-                "tablename": filteredData[0].tableSelected,
                 "columnname": column,
-                "join_by": join_by,
                 "datatype": "string"
             })
             setFormData(formData)
@@ -121,47 +113,23 @@ const SelectorForm = () => {
     };
 
     const getDatabaseColumns = async() => {
-        const res = await fetchSourceSystemTablesAndColumns();
+        const res = await fetchSourceCsvHeaders();
         if (res){
             setdatabaseColumns(res);
-            setTablenames(Object.keys(res));
             setFetchedSourceTables(true);
         }
+        console.log("databaseColumns", databaseColumns)
 
     };
 
-    const handleTableSelect = (tableSelected, basevariable) => {
-        //clear any selected data for base variable
-        // document.getElementById(basevariable+"column").value = "";
-        // document.getElementById(basevariable+"JoinColumn").value = "";
-        // console.log("columns  -->", columns)
+    const handleTableSelect = (csvHeaderSelected, basevariable) => {
+
         const variableObj = {};
-        variableObj[tableSelected] = databaseColumns[tableSelected];
+        variableObj["csvHeader"] = databaseColumns[csvHeaderSelected];
         variableObj["baseVariable"] = basevariable;
 
-        const updateColumns = columns.filter((item) => item["baseVariable"] === basevariable);
-
-        updateColumns[0]["matchingTableColumns"] = databaseColumns[tableSelected];
-        updateColumns[0]["tableSelected"] = tableSelected;
-
-        const updatedList = columns.map(item => {
-            if (item["baseVariable"] === basevariable) {
-
-                return { ...item, matchingTableColumns: databaseColumns[tableSelected],tableSelected:tableSelected }; // Update category for 'Banana'
-            }
-            return item; // Return unchanged item for other objects
-        });
-        setColumns(updatedList)
-
-    };
-
-    const handlePrimaryTableIdSelect = (uniqueId) => {
-        // const filteredData = columns.filter(item => item.baseVariable === baseVariable);
-
-        const table = document.getElementsByName('PrimaryTable')[0].value;
-
-        formData.push({"base_repository":baselookup,"base_variable_mapped_to":'PrimaryTableId', "tablename":table,
-            "columnname":uniqueId, "join_by":"-", "datatype":"string"})
+        formData.push({"base_repository":baselookup,"base_variable_mapped_to":basevariable, "tablename":"-",
+            "columnname":csvHeaderSelected, "join_by":"-", "datatype":"string"})
         setFormData(formData)
 
     };
@@ -231,49 +199,9 @@ const SelectorForm = () => {
                         <Divider sx={{marginBottom:"20px"}}/>
                         <Grid container spacing={1}>
                             <Grid container spacing={1} sx={{marginBottom:"20px"}}>
-                                <Grid item xs={3} md={3}>
-                                    <Stack spacing={1}>
-                                        <InputLabel htmlFor="base-variable">Primary Table</InputLabel>
-                                        <Select
-                                            id={"PrimaryTable"}
-                                            name={"PrimaryTable"}
-                                            fullWidth
-                                            size="small"
-                                            onChange={(e)=>{ setPrimaryTableColumns(databaseColumns[e.target.value])}}
-                                        >
-                                            {
-                                                tablenames.map(table => (
-                                                        <MenuItem value={table}>{table}</MenuItem>
-                                                    )
-                                                )}
-                                        </Select>
-                                    </Stack>
-                                </Grid>
-                                <Grid item xs={3} md={3}>
-                                    <Stack spacing={1}>
-                                        <InputLabel htmlFor="base-variable">Unique Identifier</InputLabel>
-                                        <Select
-                                            name={"UniqueIdentifier"}
-                                            id={"UniqueIdentifier"}
-                                            placeholder="variable"
-                                            fullWidth
-                                            size="small"
-                                            onChange={(e)=>{handlePrimaryTableIdSelect(e.target.value)}}
-                                        >
-                                            { primaryTableColumns.map(variable => ( <MenuItem value={variable.name}>{variable.name} : {variable.type}</MenuItem>))
-                                            }
-                                        </Select>
-
-                                    </Stack>
-                                </Grid>
-                            </Grid>
-                            <Typography>Secondary Tables</Typography>
-                            <Grid container spacing={1} sx={{marginBottom:"20px"}}>
                                 <Grid item xs={2} md={2}>Baseline Variable</Grid>
                                 <Grid item xs={1} md={1}></Grid>
-                                <Grid item xs={3} md={3}>Source Table</Grid>
-                                <Grid item xs={3} md={3}>Variable Mapped</Grid>
-                                <Grid item xs={3} md={3}>JOIN Primary table By</Grid>
+                                <Grid item xs={3} md={3}>Source Header</Grid>
                             </Grid>
 
                             { baseRepoVariables.length>0 ?
@@ -283,8 +211,6 @@ const SelectorForm = () => {
                                         <Grid container spacing={1} sx={{marginBottom:"20px"}}>
                                             <Grid item xs={2} md={2}>
                                                 <Stack spacing={1}>
-                                                    {/*<InputLabel htmlFor="base-variable">Baseline Variable</InputLabel>*/}
-                                                    {/*<Typography>{baseVariable}</Typography>*/}
                                                     <Tooltip title={baseVariable.is_required ? baseVariable.term + "(*Mandatory)" : baseVariable.term}>
 
                                                     <TextField
@@ -293,7 +219,6 @@ const SelectorForm = () => {
                                                         readonly
                                                         placeholder="BaseVariable"
                                                         fullWidth
-                                                        // helperText="Variable Description and expected value"
                                                         size="small" required
                                                         sx={{ backgroundColor:'white' }}
                                                     />
@@ -319,59 +244,14 @@ const SelectorForm = () => {
                                                         onChange={(e)=>{handleTableSelect(e.target.value, baseVariable.term)}}
                                                     >
                                                         {
-                                                            tablenames.map(table => (
-                                                            <MenuItem value={table}>{table}</MenuItem>
+                                                            databaseColumns.map(csvHeader => (
+                                                            <MenuItem value={csvHeader}>{csvHeader}</MenuItem>
                                                                 )
                                                             )}
                                                     </Select>
                                                 </Stack>
                                             </Grid>
 
-                                            <Grid item xs={3} md={3}>
-                                                <Stack spacing={1}>
-
-                                                    <Select
-                                                        name={baseVariable.term+"column"}
-                                                        id={baseVariable.term+"column"}
-                                                        placeholder="variable"
-                                                        fullWidth
-                                                        size="small" required
-                                                        sx={{ backgroundColor:'#e6f7ff', borderRadius: '20px', border:'1px #40a9ff solid' }}
-                                                        required={baseVariable.is_required}
-                                                    >
-                                                        { columns.filter(item => item.baseVariable === baseVariable.term)
-                                                            .map(columnList => ( columnList.matchingTableColumns.map(variable => (
-                                                                <MenuItem value={variable.name} onClick={() => columnMappedQualityCheck(baseVariable, variable.name, variable.type)}>{variable.name}</MenuItem>))
-                                                            ))
-                                                        }
-                                                    </Select>
-                                                    <p  style={{"color":"red","font-size":"9px"}} id={baseVariable.term+"columnWarning"}></p>
-                                                </Stack>
-                                            </Grid>
-
-                                            <Grid item xs={2} md={2}>
-                                                <Stack spacing={1}>
-                                                    {/*<InputLabel htmlFor="JoinColumn">Join Primary Table By</InputLabel>*/}
-                                                    <Select
-                                                        name={baseVariable.term+"JoinColumn"}
-                                                        id={baseVariable.term+"JoinColumn"}
-                                                        placeholder="JOIN"
-                                                        fullWidth
-                                                        size="small" required
-                                                        sx={{ backgroundColor:'#e6f7ff', borderRadius: '20px', border:'1px #40a9ff solid' }}
-                                                        onChange={(e)=>{handleColumnChange(e, baseVariable.term,Object.keys(columns)[0], e.target.value)}}
-                                                    >
-                                                        { columns.filter(item => item.baseVariable === baseVariable.term)
-                                                            .map(columnList => ( columnList.matchingTableColumns.map(variable => ( <MenuItem value={variable.name}>{variable.name}</MenuItem>))))
-                                                        }
-                                                    </Select>
-                                                </Stack>
-                                            </Grid>
-                                            {/*<Grid item xs={1} md={1}>*/}
-                                            {/*    <IconButton variant="outlined" color="success" style={{"marginTop": "35px"}} id={baseVariable+"Mapped"}>*/}
-                                            {/*        <CheckCircleFilled />*/}
-                                            {/*    </IconButton>*/}
-                                            {/*</Grid>*/}
                                         </Grid>
                                     </MainCard>
                                 ) )
@@ -396,7 +276,7 @@ const SelectorForm = () => {
 
                             {fetchedSourceTables &&
                                 <>
-                                    <TestMappings formData={formData} baselookup={baselookup}/>
+                                    <TestCsvMappings formData={formData} baselookup={baselookup}/>
                                 </>
                             }
                         </Grid>
@@ -406,4 +286,4 @@ const SelectorForm = () => {
     );
 };
 
-export default SelectorForm;
+export default CsvApiSelectorForm;
