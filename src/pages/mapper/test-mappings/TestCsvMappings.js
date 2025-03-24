@@ -73,7 +73,7 @@ const headCells = [
         label: 'Recommended Solution'
     }
 ];
-const TestCsvMappings = ({formData, baselookup}) => {
+const TestCsvMappings = ({formData, baselookup, conn_type}) => {
     const [spinner, setSpinner] = useState(null);
     const [testingSpinner, setTestingSpinner] = useState(null);
 
@@ -94,7 +94,7 @@ const TestCsvMappings = ({formData, baselookup}) => {
             setTestingSpinner(true)
             setDisableSave(true)
 
-            const testingResponse = await testMappingsData.mutateAsync({baselookup, formData})
+            const testingResponse = await testMappingsData.mutateAsync({baselookup, formData, conn_type})
 
             if (testingResponse?.status_code == 200) {
                 // if (testingResponse && testingResponse?.length == 0) {
@@ -131,7 +131,7 @@ const TestCsvMappings = ({formData, baselookup}) => {
     const handleSubmit = async () => {
         setSpinner(true);
 
-        const saveResponse = await saveMappings.mutateAsync({baselookup,formData})
+        const saveResponse = await saveMappings.mutateAsync({baselookup,formData, conn_type})
 
         console.log("saveResponse",saveResponse)
         if (saveResponse?.status_code == 200) {

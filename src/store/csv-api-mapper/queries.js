@@ -19,8 +19,8 @@ export const fetchRepoMappings = async(baselookup) => {
     return data;
 };
 
-export const fetchSourceCsvHeaders = async() => {
-    const res = await fetch(`${API_URL}/flatfile_mapper/get_csv_columns`);
+export const fetchSourceCsvHeaders = async(conn_type) => {
+    const res = await fetch(`${API_URL}/flatfile_mapper/columns/${conn_type}`);
     const jsonData = await res.json();
 
     return jsonData?.data ?? null;

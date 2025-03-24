@@ -50,7 +50,7 @@ const CsvAndApiMapper = () => {
 
                 <Grid item xs={12}>
                     {!isSourceSystemLoading  && (
-                            <CsvApiSelectorForm />
+                            <CsvApiSelectorForm conn_type={sourceSystemData.conn_type}/>
                         )
                     }
                 </Grid>

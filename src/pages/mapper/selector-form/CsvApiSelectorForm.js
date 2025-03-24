@@ -38,7 +38,7 @@ import {fetchSourceCsvHeaders} from "../../../store/csv-api-mapper/queries";
 
 
 
-const CsvApiSelectorForm = () => {
+const CsvApiSelectorForm = ({conn_type}) => {
     const urlSearchString = window.location.search;
     const params = new URLSearchParams(urlSearchString);
     const baselookup=params.get('baselookup')
@@ -113,7 +113,7 @@ const CsvApiSelectorForm = () => {
     };
 
     const getDatabaseColumns = async() => {
-        const res = await fetchSourceCsvHeaders();
+        const res = await fetchSourceCsvHeaders(conn_type);
         if (res){
             setdatabaseColumns(res);
             setFetchedSourceTables(true);
@@ -276,7 +276,7 @@ const CsvApiSelectorForm = () => {
 
                             {fetchedSourceTables &&
                                 <>
-                                    <TestCsvMappings formData={formData} baselookup={baselookup}/>
+                                    <TestCsvMappings formData={formData} baselookup={baselookup} conn_type={conn_type}/>
                                 </>
                             }
                         </Grid>
