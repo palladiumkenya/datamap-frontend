@@ -97,7 +97,7 @@ const TestQueryMappings = ({formData, baselookup}) => {
 
                 if (testingResponse?.status_code == 200) {
                     if (Array.isArray(testingResponse?.data) && testingResponse?.data.length > 0) {
-                        setDisableSave(false)
+                        setDisableSave(true)
                         setTestingSpinner(false)
                         setAlertType("error");
                         setAlertMessage("Issues with query found");

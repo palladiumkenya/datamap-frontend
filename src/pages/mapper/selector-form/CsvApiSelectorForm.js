@@ -32,7 +32,7 @@ import ActiveSiteConfigInfo from "../../configs/Site/ActiveSiteConfigInfo";
 import {useDeleteSiteConfig} from "../../../store/site_configurations/mutations";
 // import {useSaveMappings} from "../../../store/mapper/mutations";
 import CircularProgress from "@mui/material/CircularProgress";
-import TestCsvMappings  from "../test-mappings/TestCsvMappings ";
+import TestCsvMappings  from "../test-mappings/TestCsvMappings";
 import {fetchSourceCsvHeaders} from "../../../store/csv-api-mapper/queries";
 
 
@@ -88,30 +88,6 @@ const CsvApiSelectorForm = ({conn_type}) => {
         }
     };
 
-    const handleColumnChange = (e, baseVariable, table, join_by) => {
-        const filteredData = columns.filter(item => item.baseVariable === baseVariable);
-        const selectIdentifier = baseVariable+"column";
-        const column = document.getElementsByName(selectIdentifier)[0].value;
-
-        // if item in list, filter it out and update the current value picked
-        const mappingExists = formData.find(item => item.base_variable_mapped_to.toLowerCase() == baseVariable.toLowerCase());
-        if (mappingExists){
-            mappingExists.tablename = "-";
-            mappingExists.columnname = column;
-            mappingExists.join_by = "-";
-        }
-        // else {
-        //     formData.push({
-        //         "base_repository": baselookup,
-        //         "base_variable_mapped_to": baseVariable,
-        //         "is_required": baseVariable,
-        //         "columnname": column,
-        //         "datatype": "string"
-        //     })
-        //     setFormData(formData)
-        // }
-
-    };
 
     const getDatabaseColumns = async() => {
         const res = await fetchSourceCsvHeaders(conn_type);
@@ -123,19 +99,12 @@ const CsvApiSelectorForm = ({conn_type}) => {
 
     };
 
-    const handleTableSelect = (csvHeaderSelected, basevariable) => {
+    const handleHeaderSelect = (csvHeaderSelected, basevariable) => {
 
-        const variableObj = {};
-        variableObj["csvHeader"] = csvHeaderSelected;
-        variableObj["baseVariable"] = basevariable;
-
-        formData.push({"base_repository":baselookup,"base_variable_mapped_to":basevariable, "tablename":"-",
-            "columnname":csvHeaderSelected, "join_by":"-", "datatype":"string"})
-        setFormData(formData)
-        const mappingExists = formData.find(item => item.base_variable_mapped_to.toLowerCase() == baseVariable.toLowerCase());
+        const mappingExists = formData.find(item => item.base_variable_mapped_to.toLowerCase() == basevariable.toLowerCase());
         if (mappingExists){
             mappingExists.tablename = "-";
-            mappingExists.columnname = column;
+            mappingExists.columnname = csvHeaderSelected;
             mappingExists.join_by = "-";
         }
         setFormData(formData)
@@ -168,12 +137,6 @@ const CsvApiSelectorForm = ({conn_type}) => {
                  ${baseVariable.datatype} or similar to it.  ${columnSelected} has datatype ${columnSelectedDatatype}`;
             }
         }
-        // const table = document.getElementsByName('PrimaryTable')[0].value;
-        //
-        // formData.push({"base_repository":baselookup,"base_variable_mapped_to":'PrimaryTableId', "tablename":table,
-        //     "columnname":uniqueId, "join_by":"-", "datatype":"string"})
-        // setFormData(formData)
-        // console.log(formData)
 
     };
 
@@ -249,7 +212,7 @@ const CsvApiSelectorForm = ({conn_type}) => {
                                                         fullWidth
                                                         size="small" required
                                                         sx={{ backgroundColor:'#e6f7ff', borderRadius: '20px', border:'1px #40a9ff solid' }}
-                                                        onChange={(e)=>{handleTableSelect(e.target.value, baseVariable.term)}}
+                                                        onChange={(e)=>{handleHeaderSelect(e.target.value, baseVariable.term)}}
                                                     >
                                                         {
                                                             databaseColumns.map(csvHeader => (

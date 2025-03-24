@@ -144,7 +144,7 @@ const DataExtraction = ({baseRepo}) =>{
         };
         // Set up the WebSocket connection
         newSocket.onmessage = function (event) {
-            console.log("ws connection established ")
+            console.log("connection established ")
 
             const data = event.data;
             if (data.includes("Error")) {
@@ -160,7 +160,7 @@ const DataExtraction = ({baseRepo}) =>{
         };
 
         newSocket.onclose = function () {
-            console.log("ws connection closed");
+            console.log("connection closed");
             setSendingSpinner(false);
             setAlertType("success");
             setLoadMessage("Sending completed");
@@ -176,7 +176,6 @@ const DataExtraction = ({baseRepo}) =>{
 
         setDataLoadedCount(0); // Reset progress to 0
         const newProgressSocket = new WebSocket(`${WS_API}/api/dictionary_mapper/ws/load/progress/${baseRepo}`);
-        console.log("count newProgressSocket... ",newProgressSocket)
 
         newProgressSocket.onopen = () => {
             newProgressSocket.send(baseRepo);
@@ -184,7 +183,6 @@ const DataExtraction = ({baseRepo}) =>{
         // Set up the WebSocket connection
         newProgressSocket.onmessage = function (event) {
             const data = event.data;
-            console.log("data -->", data)
             if (data.includes("Error")) {
                 newProgressSocket.close();
                 setAlertType("error");
@@ -223,7 +221,7 @@ const DataExtraction = ({baseRepo}) =>{
         };
 
         newProgressSocket.onclose = function () {
-            console.log("ws connection closed");
+            console.log("connection closed");
             setSendingSpinner(false);
             setAlertType("success");
             setLoadMessage("Loading data completed");
