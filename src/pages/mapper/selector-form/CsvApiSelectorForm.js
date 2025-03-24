@@ -32,7 +32,7 @@ import ActiveSiteConfigInfo from "../../configs/Site/ActiveSiteConfigInfo";
 import {useDeleteSiteConfig} from "../../../store/site_configurations/mutations";
 // import {useSaveMappings} from "../../../store/mapper/mutations";
 import CircularProgress from "@mui/material/CircularProgress";
-import TestMappings from "../test-mappings/TestMappings";
+import TestCsvMappings  from "../test-mappings/TestCsvMappings ";
 import {fetchSourceCsvHeaders} from "../../../store/csv-api-mapper/queries";
 
 
@@ -44,7 +44,7 @@ const CsvApiSelectorForm = ({conn_type}) => {
     const baselookup=params.get('baselookup')
     const initialized = useRef(false);
 
-    const [databaseColumns, setdatabaseColumns] = useState({});
+    const [databaseColumns, setdatabaseColumns] = useState([]);
     const [tablenames, setTablenames] = useState(Object.keys(databaseColumns));
     const [baseRepoVariables, setBaseRepoVariables] = useState([])
     const [fetchedSourceTables, setFetchedSourceTables] = useState(null);
@@ -94,21 +94,22 @@ const CsvApiSelectorForm = ({conn_type}) => {
         const column = document.getElementsByName(selectIdentifier)[0].value;
 
         // if item in list, filter it out and update the current value picked
-        const mappingExists = formData.find(item => item.base_variable_mapped_to == baseVariable);
+        const mappingExists = formData.find(item => item.base_variable_mapped_to.toLowerCase() == baseVariable.toLowerCase());
         if (mappingExists){
-            mappingExists.tablename = filteredData[0].tableSelected;
+            mappingExists.tablename = "-";
             mappingExists.columnname = column;
-            mappingExists.join_by = join_by;
-        }else {
-            formData.push({
-                "base_repository": baselookup,
-                "base_variable_mapped_to": baseVariable,
-                "is_required": baseVariable,
-                "columnname": column,
-                "datatype": "string"
-            })
-            setFormData(formData)
+            mappingExists.join_by = "-";
         }
+        // else {
+        //     formData.push({
+        //         "base_repository": baselookup,
+        //         "base_variable_mapped_to": baseVariable,
+        //         "is_required": baseVariable,
+        //         "columnname": column,
+        //         "datatype": "string"
+        //     })
+        //     setFormData(formData)
+        // }
 
     };
 
@@ -125,11 +126,18 @@ const CsvApiSelectorForm = ({conn_type}) => {
     const handleTableSelect = (csvHeaderSelected, basevariable) => {
 
         const variableObj = {};
-        variableObj["csvHeader"] = databaseColumns[csvHeaderSelected];
+        variableObj["csvHeader"] = csvHeaderSelected;
         variableObj["baseVariable"] = basevariable;
 
         formData.push({"base_repository":baselookup,"base_variable_mapped_to":basevariable, "tablename":"-",
             "columnname":csvHeaderSelected, "join_by":"-", "datatype":"string"})
+        setFormData(formData)
+        const mappingExists = formData.find(item => item.base_variable_mapped_to.toLowerCase() == baseVariable.toLowerCase());
+        if (mappingExists){
+            mappingExists.tablename = "-";
+            mappingExists.columnname = column;
+            mappingExists.join_by = "-";
+        }
         setFormData(formData)
 
     };
