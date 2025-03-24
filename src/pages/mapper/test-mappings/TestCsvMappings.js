@@ -4,42 +4,23 @@ import { useEffect, useState } from 'react';
 import {
     Box,
     Button,
-    Divider,
-    FormControl,
-    FormHelperText,
     Grid,
-    Link,
-    IconButton,
-    InputAdornment,
-    InputLabel,
-    OutlinedInput,
-    Stack,
     Alert,
-    Chip,
-    Typography,
-    Select,
-    MenuItem,
-    Skeleton,
-    TextField,
     Table,
     TableHead,
     TableRow,
     TableCell,
     TableBody,
-    Tooltip,
     TableContainer
 } from '@mui/material';
 import MainCard from 'components/MainCard';
 
 // project import
 import AnimateButton from 'components/@extended/AnimateButton';
-import { strengthColor, strengthIndicator } from 'utils/password-strength';
 
 // assets
 import {API_URL, FRONTEND_URL} from '../../../constants';
-import {useSaveMappings} from "../../../store/mapper/mutations";
-import {useTestMappings} from "../../../store/mapper/mutations";
-import {Link as RouterLink} from "react-router-dom";
+
 import {InfoCircleFilled, WarningFilled} from "@ant-design/icons";
 import CircularProgress from "@mui/material/CircularProgress";
 import {useSaveCsvMappings, useTestCsvMappings} from "../../../store/csv-api-mapper/mutations";
@@ -87,7 +68,7 @@ const TestCsvMappings = ({formData, baselookup, conn_type}) => {
     const saveMappings = useSaveCsvMappings();
 
     const testVariableMappings = async () => {
-
+        console.log("formData",formData);
         const missingMapping = formData.find(item => item.is_required == true &&  item.columnname == "");
 
         if (missingMapping === undefined) {
@@ -118,6 +99,7 @@ const TestCsvMappings = ({formData, baselookup, conn_type}) => {
 
                 setAlertType("error");
                 setAlertMessage("Error testing mappings ");
+                console.log(testingResponse)
 
             }
         }else{
