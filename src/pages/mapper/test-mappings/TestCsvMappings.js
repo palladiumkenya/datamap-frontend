@@ -37,11 +37,12 @@ import { strengthColor, strengthIndicator } from 'utils/password-strength';
 
 // assets
 import {API_URL, FRONTEND_URL} from '../../../constants';
-import {useSaveQuery} from "../../../store/mapper/mutations";
-import {useTestQueryMappings} from "../../../store/mapper/mutations";
+import {useSaveMappings} from "../../../store/mapper/mutations";
+import {useTestMappings} from "../../../store/mapper/mutations";
 import {Link as RouterLink} from "react-router-dom";
 import {InfoCircleFilled, WarningFilled} from "@ant-design/icons";
 import CircularProgress from "@mui/material/CircularProgress";
+import {useSaveCsvMappings, useTestCsvMappings} from "../../../store/csv-api-mapper/mutations";
 
 
 
@@ -72,7 +73,7 @@ const headCells = [
         label: 'Recommended Solution'
     }
 ];
-const TestQueryMappings = ({formData, baselookup}) => {
+const TestCsvMappings = ({formData, baselookup, conn_type}) => {
     const [spinner, setSpinner] = useState(null);
     const [testingSpinner, setTestingSpinner] = useState(null);
 
@@ -80,58 +81,59 @@ const TestQueryMappings = ({formData, baselookup}) => {
     const [alertMessage, setAlertMessage] = useState(null);
     const [disableSave, setDisableSave] = useState(true);
     const [querySaved, setQuerySaved] = useState(true);
-    const [issuesList, setIssuesList] = useState(null);
 
     const isSubmitting=false;
-    const testMappingsData = useTestQueryMappings();
-    const saveCustomQuery = useSaveQuery();
+    const testMappingsData = useTestCsvMappings();
+    const saveMappings = useSaveCsvMappings();
 
-    const testQueryVariableMappings = async () => {
+    const testVariableMappings = async () => {
 
+        const missingMapping = formData.find(item => item.is_required == true &&  item.columnname == "");
+
+        if (missingMapping === undefined) {
             setTestingSpinner(true)
             setDisableSave(true)
 
-            try{
-                const testingResponse = await testMappingsData.mutateAsync({baselookup, formData})
-                setIssuesList(testingResponse?.data)
+            const testingResponse = await testMappingsData.mutateAsync({baselookup, formData, conn_type})
 
-                if (testingResponse?.status_code == 200) {
-                    if (Array.isArray(testingResponse?.data) && testingResponse?.data.length > 0) {
-                        setDisableSave(false)
-                        setTestingSpinner(false)
-                        setAlertType("error");
-                        setAlertMessage("Issues with query found");
-                    }else{
-                        setDisableSave(false)
-                        setTestingSpinner(false)
-                        setAlertType("success");
-                        setAlertMessage("No data issues found with mappings");
-                    }
-                    setQuerySaved(false)
+            if (testingResponse?.status_code == 200) {
+                // if (testingResponse && testingResponse?.length == 0) {
+                setQuerySaved(false)
 
-                } else {
-                    setSpinner(false);
+                if (Array.isArray(testingResponse?.data) && testingResponse?.data.length > 0) {
+                    setDisableSave(false)
                     setTestingSpinner(false)
-
                     setAlertType("error");
-                    setAlertMessage("Error testing mappings, ERROR --> "+testingResponse?.data);
-
+                    setAlertMessage("Issues with mappings found");
+                }else{
+                    setDisableSave(false)
+                    setTestingSpinner(false)
+                    setAlertType("success");
+                    setAlertMessage("No data issues found with mappings");
                 }
-            } catch (err) {
-                console.error('Error Status Code:', err.response);
+                // }
+            } else {
                 setSpinner(false);
                 setTestingSpinner(false)
 
                 setAlertType("error");
-                setAlertMessage("Error testing query: ERROR --> "+ err.response);
+                setAlertMessage("Error testing mappings ");
+
             }
+        }else{
+            setAlertType("error");
+            setAlertMessage("Error testing mappings. Missing mappings. Add mappings to the required base variables " +
+                "prefixed by * such as *"+missingMapping.base_variable_mapped_to);
+        }
 
     };
 
     const handleSubmit = async () => {
         setSpinner(true);
 
-        const saveResponse = await saveCustomQuery.mutateAsync({baselookup,formData})
+        const saveResponse = await saveMappings.mutateAsync({baselookup,formData, conn_type})
+
+        console.log("saveResponse",saveResponse)
         if (saveResponse?.status_code == 200) {
             setDisableSave(false)
             setSpinner(false);
@@ -144,9 +146,11 @@ const TestQueryMappings = ({formData, baselookup}) => {
             setTestingSpinner(false)
 
             setAlertType("error");
-            setAlertMessage("Error saving custom query, ERROR --> "+saveResponse?.data);
+            setAlertMessage("Error saving mappings, ERROR --> "+saveResponse?.data);
 
         }
+
+
 
     };
 
@@ -176,11 +180,11 @@ const TestQueryMappings = ({formData, baselookup}) => {
                     </AnimateButton>
                 )}
             </Grid>
-            <Grid item xs={4}>
+            <Grid item xs={2}>
                 <AnimateButton>
                     <Button disableElevation disabled={isSubmitting} fullWidth size="medium" type="button"
-                            variant="contained" color="error" onClick={()=>testQueryVariableMappings()}>
-                        Test Query against Mappings
+                            variant="contained" color="error" onClick={()=>testVariableMappings()}>
+                        Test Mappings
                         {testingSpinner &&
                             <CircularProgress style={{"color":"black","marginLeft":"10px"}} size="1rem"/>
                         }
@@ -194,15 +198,15 @@ const TestQueryMappings = ({formData, baselookup}) => {
                 </Alert>
             }
 
-            { issuesList && issuesList.length>0 &&
+            { testMappingsData?.data && testMappingsData?.data.length>0 &&
                 <TableContainer
                 sx={{
                     width: '100%',
                     overflowX: 'auto',
                     position: 'relative',
                     display: 'block',
-                    maxWidth: '100vw',
-                    '& td, & th': { whiteSpace: 'nowrap' },
+                    maxWidth: '100%',
+                    '& td, & th': { whiteSpace: 'nowrap' }
                 }}
             >
                 <Table
@@ -230,7 +234,7 @@ const TestQueryMappings = ({formData, baselookup}) => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        { issuesList && issuesList.map((row, index) => {
+                        { testMappingsData?.data.map((row, index) => {
                             const labelId = `enhanced-table-checkbox-${index}`;
 
                             return (
@@ -260,4 +264,4 @@ const TestQueryMappings = ({formData, baselookup}) => {
     );
 };
 
-export default TestQueryMappings;
+export default TestCsvMappings;

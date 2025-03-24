@@ -42,7 +42,7 @@ const CsvAndApiMapper = () => {
             <Grid container spacing={3}>
                 <Grid item xs={12}>
                     <Stack direction="row" justifyContent="space-between" alignItems="baseline" sx={{ mb: { xs: -0.5, sm: 0.5 } }}>
-                        <Typography color="text.info" variant="h4">{baselookup} Mapping
+                        <Typography color="text.info" variant="h4">{baselookup} Mapping for {sourceSystemData.conn_type}
                             <ActiveSiteConfigInfo />  <SourceSystemInfo />
                         </Typography>
                     </Stack>
@@ -50,7 +50,7 @@ const CsvAndApiMapper = () => {
 
                 <Grid item xs={12}>
                     {!isSourceSystemLoading  && (
-                            <CsvApiSelectorForm />
+                            <CsvApiSelectorForm conn_type={sourceSystemData.conn_type}/>
                         )
                     }
                 </Grid>

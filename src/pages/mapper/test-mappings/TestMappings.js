@@ -99,10 +99,17 @@ const TestMappings = ({formData, baselookup}) => {
                 // if (testingResponse && testingResponse?.length == 0) {
                 setQuerySaved(false)
 
-                setDisableSave(false)
-                setTestingSpinner(false)
-                setAlertType("success");
-                setAlertMessage("No data issues found with mappings");
+                if (Array.isArray(testingResponse?.data) && testingResponse?.data.length > 0) {
+                    setDisableSave(false)
+                    setTestingSpinner(false)
+                    setAlertType("error");
+                    setAlertMessage("Issues with mappings found");
+                }else{
+                    setDisableSave(false)
+                    setTestingSpinner(false)
+                    setAlertType("success");
+                    setAlertMessage("No data issues found with mappings");
+                }
                 // }
             } else {
                 setSpinner(false);
