@@ -100,7 +100,7 @@ const TestMappings = ({formData, baselookup}) => {
                 setQuerySaved(false)
 
                 if (Array.isArray(testingResponse?.data) && testingResponse?.data.length > 0) {
-                    setDisableSave(false)
+                    setDisableSave(true)
                     setTestingSpinner(false)
                     setAlertType("error");
                     setAlertMessage("Issues with mappings found");
