@@ -93,15 +93,17 @@ const TestQueryMappings = ({formData, baselookup}) => {
 
             try{
                 const testingResponse = await testMappingsData.mutateAsync({baselookup, formData})
-                setIssuesList(testingResponse?.data)
 
                 if (testingResponse?.status_code == 200) {
                     if (Array.isArray(testingResponse?.data) && testingResponse?.data.length > 0) {
+                        setIssuesList(testingResponse?.data)
+
                         setDisableSave(true)
                         setTestingSpinner(false)
                         setAlertType("error");
                         setAlertMessage("Issues with query found");
                     }else{
+                        setIssuesList(null)
                         setDisableSave(false)
                         setTestingSpinner(false)
                         setAlertType("success");
@@ -194,7 +196,7 @@ const TestQueryMappings = ({formData, baselookup}) => {
                 </Alert>
             }
 
-            { testMappingsData?.data && testMappingsData?.data.length>0 &&
+            { issuesList && issuesList.length>0 &&
                 <TableContainer
                 sx={{
                     width: '100%',
@@ -230,7 +232,7 @@ const TestQueryMappings = ({formData, baselookup}) => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        { testMappingsData?.data.map((row, index) => {
+                        { issuesList.length>0 && issuesList.map((row, index) => {
                             const labelId = `enhanced-table-checkbox-${index}`;
 
                             return (
