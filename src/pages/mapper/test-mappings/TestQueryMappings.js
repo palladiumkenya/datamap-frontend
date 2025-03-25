@@ -194,7 +194,7 @@ const TestQueryMappings = ({formData, baselookup}) => {
                 </Alert>
             }
 
-            { issuesList && issuesList.length>0 &&
+            { testMappingsData?.data && testMappingsData?.data.length>0 &&
                 <TableContainer
                 sx={{
                     width: '100%',
@@ -230,7 +230,7 @@ const TestQueryMappings = ({formData, baselookup}) => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        { issuesList && issuesList.map((row, index) => {
+                        { testMappingsData?.data.map((row, index) => {
                             const labelId = `enhanced-table-checkbox-${index}`;
 
                             return (

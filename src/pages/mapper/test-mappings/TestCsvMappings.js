@@ -68,7 +68,6 @@ const TestCsvMappings = ({formData, baselookup, conn_type}) => {
     const saveMappings = useSaveCsvMappings();
 
     const testVariableMappings = async () => {
-        console.log("formData",formData);
         const missingMapping = formData.find(item => item.is_required == true &&  item.columnname == "");
 
         if (missingMapping === undefined) {
@@ -82,7 +81,7 @@ const TestCsvMappings = ({formData, baselookup, conn_type}) => {
                 setQuerySaved(false)
 
                 if (Array.isArray(testingResponse?.data) && testingResponse?.data.length > 0) {
-                    setDisableSave(false)
+                    setDisableSave(true)
                     setTestingSpinner(false)
                     setAlertType("error");
                     setAlertMessage("Issues with mappings found");
