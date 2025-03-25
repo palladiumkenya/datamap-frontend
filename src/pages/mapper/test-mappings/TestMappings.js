@@ -80,6 +80,7 @@ const TestMappings = ({formData, baselookup}) => {
     const [alertMessage, setAlertMessage] = useState(null);
     const [disableSave, setDisableSave] = useState(true);
     const [querySaved, setQuerySaved] = useState(true);
+    const [issuesList, setIssuesList] = useState(null);
 
     const isSubmitting=false;
     const testMappingsData = useTestMappings();
@@ -100,11 +101,15 @@ const TestMappings = ({formData, baselookup}) => {
                 setQuerySaved(false)
 
                 if (Array.isArray(testingResponse?.data) && testingResponse?.data.length > 0) {
+                    setIssuesList(testingResponse?.data)
+
                     setDisableSave(true)
                     setTestingSpinner(false)
                     setAlertType("error");
                     setAlertMessage("Issues with mappings found");
                 }else{
+                    setIssuesList(null)
+
                     setDisableSave(false)
                     setTestingSpinner(false)
                     setAlertType("success");
@@ -197,7 +202,7 @@ const TestMappings = ({formData, baselookup}) => {
                 </Alert>
             }
 
-            { testMappingsData?.data && testMappingsData?.data.length>0 &&
+            { issuesList && issuesList.length>0 &&
                 <TableContainer
                 sx={{
                     width: '100%',
@@ -233,7 +238,7 @@ const TestMappings = ({formData, baselookup}) => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        { testMappingsData?.data.map((row, index) => {
+                        { issuesList.length>0 && issuesList.map((row, index) => {
                             const labelId = `enhanced-table-checkbox-${index}`;
 
                             return (
