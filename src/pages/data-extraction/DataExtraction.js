@@ -183,14 +183,21 @@ const DataExtraction = ({baseRepo}) =>{
         // Set up the WebSocket connection
         newProgressSocket.onmessage = function (event) {
             const data = event.data;
+            const jsonData = JSON.parse(data);
+
             if (data.includes("Error")) {
                 newProgressSocket.close();
                 setAlertType("error");
                 setLoadSuccessAlert(true);
                 setLoadMessage("Failed to load : ERROR -->" + data );
-            } else {
+            }
+            else if (typeof jsonData === 'object' && jsonData.status_code === 500) {
+                newProgressSocket.close();
+                setAlertType("error");
+                setLoadSuccessAlert(true);
+                setLoadMessage("Failed to load : ERROR -->" + jsonData.message );
+            }else {
                 try {
-                    const jsonData = JSON.parse(data);
                     if (Array.isArray(jsonData)) {
                         if (jsonData.length > 0) {
                             setLoadedRepoData(jsonData)
@@ -222,9 +229,9 @@ const DataExtraction = ({baseRepo}) =>{
 
         newProgressSocket.onclose = function () {
             console.log("connection closed");
-            setSendingSpinner(false);
-            setAlertType("success");
-            setLoadMessage("Loading data completed");
+            setSpinner(false);
+            // setAlertType("success");
+            // setLoadMessage("Loading data completed");
         };
 
         setSocket(newProgressSocket);
