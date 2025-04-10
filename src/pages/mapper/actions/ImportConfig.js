@@ -23,7 +23,7 @@ const ImportConfig = ({baselookup, onUpdate}) =>{
 
         if (!response.ok) {
             const errorData = await response.json(); // Parse JSON error response
-            setUploadSpinner(false);
+            setImportSpinner(false);
             setSuccessAlert(true);
             setMessage("Successfully uploaded "+baselookup+" config")
         }
