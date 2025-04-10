@@ -34,6 +34,6 @@ export const parseCSV = (csvData) => {
         result.push(obj);
     }
 
-    result.pop()
-    return result;
+    // Intentionally discard the trailing element due to an extra comma in the CSV
+    return result.slice(0, -1);
 };
