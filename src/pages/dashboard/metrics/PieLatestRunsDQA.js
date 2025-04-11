@@ -34,7 +34,7 @@ const PieLatestRunsDQA = () => {
                     offsetX: -8,
                     fontSize: '16px',
                     formatter: function (seriesName, opts) {
-                        return seriesName + ":  " + opts.w.globals.series[opts.seriesIndex]
+                        return seriesName + ":  " + opts.w.globals.series[opts.seriesIndex] + "%"
                     },
                 },
             }
@@ -60,7 +60,6 @@ const PieLatestRunsDQA = () => {
                 labels.push(item.base_table_name)
                 seriesData.push(((item.invalid_rows/item.total_rows) * 100).toFixed(2));
             })
-            console.log(labels, seriesData)
             setOptions((prevState) => ({
                 ...prevState, labels: labels
             }))
