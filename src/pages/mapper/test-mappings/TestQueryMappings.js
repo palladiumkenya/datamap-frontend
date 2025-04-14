@@ -241,7 +241,7 @@ const TestQueryMappings = ({formData, baselookup}) => {
                                     role="checkbox"
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                     tabIndex={-1}
-                                    key={row.site_name}
+                                    key={row.id}
                                 >
                                     <TableCell component="th" id={labelId} scope="row" align="left"> {row.base_variable}
                                     </TableCell>

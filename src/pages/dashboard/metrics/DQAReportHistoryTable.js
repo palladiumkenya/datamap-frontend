@@ -86,7 +86,7 @@ const DQAReportHistoryTable = () => {
             <TablePagination
                 rowsPerPageOptions={[5, 10, 25]}
                 component="div"
-                count={data?.dqa_report.length}
+                count={data?.dqa_report?.length}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 onPageChange={handleChangePage}

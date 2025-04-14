@@ -1,33 +1,58 @@
-import { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback  } from 'react';
 
 // material-ui
 import {
     Button,
     Divider,
-    Grid, Alert, Chip, Tooltip,
-    Typography, Select, MenuItem, Skeleton,TextField
+    Grid, Alert, TextField
 } from '@mui/material';
 import { styled } from '@mui/system';
 
-import MainCard from 'components/MainCard';
-
-// project import
-import AnimateButton from 'components/@extended/AnimateButton';
-import { strengthColor, strengthIndicator } from 'utils/password-strength';
 
 // assets
-import {ArrowRightOutlined, InfoCircleFilled, CheckCircleFilled, CloseCircleFilled} from '@ant-design/icons';
-import SourceSystemInfo from "../source-system/SourceSystemInfo";
+import {InfoCircleFilled, CheckCircleFilled, CloseCircleFilled} from '@ant-design/icons';
 
-import {API_URL, FRONTEND_URL} from '../../../constants';
-import { fetchBaseVariables, fetchSourceSystemTablesAndColumns, fetchMappedBaseVariables } from '../../../store/mapper/queries';
-import ActiveSiteConfigInfo from "../../configs/Site/ActiveSiteConfigInfo";
-import {useDeleteSiteConfig} from "../../../store/site_configurations/mutations";
-// import {useSaveMappings} from "../../../store/mapper/mutations";
-import CircularProgress from "@mui/material/CircularProgress";
+import { fetchBaseVariables } from '../../../store/mapper/queries';
+
 import TestQueryMappings  from "../test-mappings/TestQueryMappings";
 
 
+
+
+const SqlTextArea = React.memo(({ onChange }) => {
+    const SqlEditorTextarea = styled('textarea')({
+        fontFamily: 'monospace',
+        backgroundColor: 'darkslategray', // Dark theme like SQL editors
+        color: '#d4d4d4', // Light gray text
+        borderRadius: '5px',
+        border: '1px solid #555',
+        fontSize: '14px',
+        lineHeight: '1.5',
+        minWidth: '600px', // Resemble a query editor box
+        maxHeight: '200px', // Resemble a query editor box
+        whiteSpace: 'pre-wrap',
+        padding: '10px',
+        '&:hover': {
+            borderColor: '#888',
+        },
+        '&:focus': {
+            borderColor: '#4CAF50', // Green focus border like SQL editors
+            outline: 'none',
+        },
+    });
+
+    return (
+        <SqlEditorTextarea
+            variant="outlined"
+            multiline
+            rows={10}
+            placeholder="Add your SQL query here..."
+            id="custom-query"
+            onChange={onChange}
+
+        />
+    );
+});
 
 
 const AddQuerySelectorForm = () => {
@@ -36,17 +61,9 @@ const AddQuerySelectorForm = () => {
     const baselookup=params.get('baselookup')
     const initialized = useRef(false);
 
-    const isSubmitting=false;
-    const [submitMessage, setSubmitMessage] = useState(null);
-    const [alertType, setAlertType] = useState(null);
-    const [spinner, setSpinner] = useState(null);
-
     const [databaseColumns, setdatabaseColumns] = useState({});
-    const [tablenames, setTablenames] = useState(Object.keys(databaseColumns));
     const [baseRepoVariables, setBaseRepoVariables] = useState([])
     const [fetchedSourceTables, setFetchedSourceTables] = useState(null);
-
-    const [warning, setWarning] = useState("")
 
     const allColumns = []
     baseRepoVariables.map(o =>{
@@ -54,12 +71,12 @@ const AddQuerySelectorForm = () => {
     });
 
     const [columns, setColumns] = useState([]);
-    const [primaryTableColumns, setPrimaryTableColumns] = useState([]);
 
     const [formData, setFormData] = useState([]);
+    const [queryData, setQueryData] = useState('');
+
+    const inputRef = useRef(null);
     const [checkMapped, setCheckMapped] = useState([]);
-
-
 
 
     const getBaseVariables = async() => {
@@ -91,44 +108,9 @@ const AddQuerySelectorForm = () => {
     };
 
 
-
-    const SqlEditorTextField = styled(TextField)({
-        fontFamily: "monospace",
-        backgroundColor: "darkslategray", // Dark theme like SQL editors
-        color: "#d4d4d4", // Light gray text
-        borderRadius: "5px",
-        "& .MuiOutlinedInput-root": {
-            "& fieldset": {
-                borderColor: "#555",
-            },
-            "&:hover fieldset": {
-                borderColor: "#888",
-            },
-            "&.Mui-focused fieldset": {
-                borderColor: "#4CAF50", // Green focus border like SQL editors
-            },
-        },
-        "& .MuiInputBase-input": {
-            fontSize: "14px",
-            fontFamily: "monospace",
-            lineHeight: "1.5",
-            minWidth: "600px", // Resemble a query editor box
-            maxHeight: "200px", // Resemble a query editor box
-            whiteSpace: "pre-wrap",
-            color: "#d4d4d4", // Light gray text
-
-        },
-    });
-
-    const handleQueryInsert = () => {
-        const handleInputChange = (event) => {
-            setInputValue(event.target.value);
-
-        };
-        const queryData = document.getElementById('custom-query').value;
-        setFormData(queryData)
-
-    };
+    const handleQueryInput = useCallback((e) => {
+        setQueryData(e.target.value);
+    }, []);
 
 
 
@@ -154,25 +136,20 @@ const AddQuerySelectorForm = () => {
                         <Grid container spacing={3}>
 
                             <Grid item xs={10}>
-                                <SqlEditorTextField
-                                    variant="outlined"
-                                    multiline
-                                    rows={10}
-                                    placeholder="Add your SQL query here..."
-                                    id="custom-query"
-                                    onChange={handleQueryInsert}
+                                <SqlTextArea
+                                    onChange={handleQueryInput}
                                 />
                             </Grid>
                             <Grid item xs={10}>
                                 {checkMapped.length > 0 && checkMapped.map(base => (
-                                        <Button variant="outlined" color={base.matched ? "warning" : "error"} endIcon={base.matched ? <CheckCircleFilled /> : <CloseCircleFilled />} className={{backgroundColor:'rgb(82, 196, 26)'}}>{base.variable}</Button>
+                                        <Button key={base.id} variant="outlined" color={base.matched ? "warning" : "error"} endIcon={base.matched ? <CheckCircleFilled /> : <CloseCircleFilled />} className={{backgroundColor:'rgb(82, 196, 26)'}}>{base.variable}</Button>
                                     )
                                 )}
                             </Grid>
                             <Grid item xs={10}>
-                                {formData.length>0 &&
+                                {queryData != '' &&
                                     <>
-                                            <TestQueryMappings formData={formData} baselookup={baselookup}/>
+                                        <TestQueryMappings formData={queryData} baselookup={baselookup}/>
                                     </>
                                 }
                             </Grid>
