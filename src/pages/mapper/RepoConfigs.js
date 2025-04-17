@@ -35,6 +35,7 @@ import EditMappings from "./actions/EditMappings";
 import ImportConfig from "./actions/ImportConfig";
 import RepoSkeleton from "../../components/skeleton/Skeleton";
 import ActiveSiteConfigInfo from "../configs/Site/ActiveSiteConfigInfo";
+import ScheduledRunsStatus from "../configs/Schedules/ScheduledRunsStatus";
 
 
 
@@ -105,6 +106,7 @@ const RepoConfigs = () =>{
                                         <Divider/>
 
                                         <DataExtraction baseRepo={baselookup} />
+                                        <ScheduledRunsStatus />
 
                                     </MainCard>
                             </MainCard>

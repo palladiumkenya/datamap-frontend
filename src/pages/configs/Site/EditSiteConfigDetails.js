@@ -19,8 +19,10 @@ const EditSiteConfigDetails = () => {
         site_name: '',
         site_code: '',
         primary_system: '',
-        is_active:false
-
+        is_active:false,
+        country:'',
+        region:'',
+        organization:''
     });
 
     const [alertType, setAlertType] = useState(null);
@@ -28,7 +30,10 @@ const EditSiteConfigDetails = () => {
     const [formErrors, setFormErrors] = useState({
         site_name: false,
         site_code: false,
-        primary_system: false
+        primary_system: false,
+        country:false,
+        region:false,
+        organization:false
     });
     const [isOn, setIsOn] = useState(false);
 
@@ -36,13 +41,15 @@ const EditSiteConfigDetails = () => {
         const res = await fetch(`${API_URL}/site_config/details/${config_id}`)
         const jsonData = await res.json();
         const details = jsonData?.data ?? []
-        console.log("jsonData ==>", jsonData)
 
         setFormData({
             site_name: details.site_name,
             site_code: details.site_code,
             primary_system: details.primary_system,
-            is_active:details.is_active
+            is_active:details.is_active,
+            country:details.country,
+            region:details.region,
+            organization:details.organization
         })
         setIsOn(details.is_active)
     };
@@ -71,6 +78,18 @@ const EditSiteConfigDetails = () => {
         }
         if (!formData.primary_system.trim()) {
             newErrors.primary_system = true;
+            valid = false;
+        }
+        if (!formData.country.trim()) {
+            newErrors.country = true;
+            valid = false;
+        }
+        if (!formData.region.trim()) {
+            newErrors.region = true;
+            valid = false;
+        }
+        if (!formData.organization.trim()) {
+            newErrors.organization = true;
             valid = false;
         }
 
@@ -164,6 +183,51 @@ const EditSiteConfigDetails = () => {
                             helperText={formErrors.site_code ? "Site code is required" : ""}
                         />
                         <Typography variant="body2" color="textSecondary">Enter the Site Code</Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                        {/*<Typography variant="subtitle1">Password</Typography>*/}
+                        <TextField
+                            type="text"
+                            name="country"
+                            label="Country"
+                            variant="outlined"
+                            value={formData.country}
+                            onChange={handleChange}
+                            required
+                            error={formErrors.country}
+                            helperText={formErrors.country ? "Country site is located in is required" : ""}
+                        />
+                        <Typography variant="body2" color="textSecondary">Enter the country the site is located in</Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                        {/*<Typography variant="subtitle1">Password</Typography>*/}
+                        <TextField
+                            type="text"
+                            name="region"
+                            label="Region"
+                            variant="outlined"
+                            value={formData.region}
+                            onChange={handleChange}
+                            required
+                            error={formErrors.region}
+                            helperText={formErrors.region ? "Region site is located in is required" : ""}
+                        />
+                        <Typography variant="body2" color="textSecondary">Enter the region the site is located in</Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                        {/*<Typography variant="subtitle1">Password</Typography>*/}
+                        <TextField
+                            type="text"
+                            name="organization"
+                            label="Organization"
+                            variant="outlined"
+                            value={formData.organization}
+                            onChange={handleChange}
+                            required
+                            error={formErrors.organization}
+                            helperText={formErrors.organization ? "Organization is required" : ""}
+                        />
+                        <Typography variant="body2" color="textSecondary">Enter the Site's Organization/Partner</Typography>
                     </Box>
                     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                         {/*<Typography variant="subtitle1">Password</Typography>*/}

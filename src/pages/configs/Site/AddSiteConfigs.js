@@ -16,6 +16,9 @@ const AddSiteConfigs = () => {
         site_name: '',
         site_code: '',
         primary_system: '',
+        country:'',
+        region:'',
+        organization:'',
         is_active:false
 
     });
@@ -25,7 +28,10 @@ const AddSiteConfigs = () => {
     const [formErrors, setFormErrors] = useState({
         site_name: false,
         site_code: false,
-        primary_system: false
+        primary_system: false,
+        country:false,
+        region:false,
+        organization:false
     });
     const [isOn, setIsOn] = useState(false);
 
@@ -53,6 +59,18 @@ const AddSiteConfigs = () => {
         }
         if (!formData.primary_system.trim()) {
             newErrors.primary_system = true;
+            valid = false;
+        }
+        if (!formData.country.trim()) {
+            newErrors.country = true;
+            valid = false;
+        }
+        if (!formData.region.trim()) {
+            newErrors.region = true;
+            valid = false;
+        }
+        if (!formData.organization.trim()) {
+            newErrors.organization = true;
             valid = false;
         }
 
@@ -142,6 +160,51 @@ const AddSiteConfigs = () => {
                             helperText={formErrors.site_code ? "Site code is required" : ""}
                         />
                         <Typography variant="body2" color="textSecondary">Enter the Site Code</Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                        {/*<Typography variant="subtitle1">Password</Typography>*/}
+                        <TextField
+                            type="text"
+                            name="country"
+                            label="Country"
+                            variant="outlined"
+                            value={formData.country}
+                            onChange={handleChange}
+                            required
+                            error={formErrors.country}
+                            helperText={formErrors.country ? "Country site is located in is required" : ""}
+                        />
+                        <Typography variant="body2" color="textSecondary">Enter the country the site is located in</Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                        {/*<Typography variant="subtitle1">Password</Typography>*/}
+                        <TextField
+                            type="text"
+                            name="region"
+                            label="Region"
+                            variant="outlined"
+                            value={formData.region}
+                            onChange={handleChange}
+                            required
+                            error={formErrors.region}
+                            helperText={formErrors.region ? "Region site is located in is required" : ""}
+                        />
+                        <Typography variant="body2" color="textSecondary">Enter the region the site is located in</Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                        {/*<Typography variant="subtitle1">Password</Typography>*/}
+                        <TextField
+                            type="text"
+                            name="organization"
+                            label="Organization"
+                            variant="outlined"
+                            value={formData.organization}
+                            onChange={handleChange}
+                            required
+                            error={formErrors.organization}
+                            helperText={formErrors.organization ? "Organization is required" : ""}
+                        />
+                        <Typography variant="body2" color="textSecondary">Enter the Site's Organization/Partner</Typography>
                     </Box>
                     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                         {/*<Typography variant="subtitle1">Password</Typography>*/}
