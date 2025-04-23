@@ -47,6 +47,18 @@ const headCells = [
         label: 'Primary System'
     },
     {
+        id: 'country',
+        align: 'left',
+        disablePadding: false,
+        label: 'Country'
+    },
+    {
+        id: 'organization',
+        align: 'left',
+        disablePadding: false,
+        label: 'Organization'
+    },
+    {
         id: 'actions',
         align: 'right',
         disablePadding: false,
@@ -172,6 +184,10 @@ const ConfigsList = () =>{
                                         <SiteConfigStatus status={row.is_active} />
                                     </TableCell>
                                     <TableCell align="left">{row.primary_system}</TableCell>
+                                    <TableCell align="left">{row.country}</TableCell>
+                                    {/*<TableCell align="left">{row.region}</TableCell>*/}
+                                    <TableCell align="left">{row.organization}</TableCell>
+
                                     <TableCell align="right">
                                         <Tooltip title={`Edit`}>
                                             <NavLink to={`/configs/site/edit/${row.id}`} exact activeClassName="active-link">

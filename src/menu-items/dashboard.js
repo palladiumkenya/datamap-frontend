@@ -44,14 +44,6 @@ const dashboard = {
       url: '/Schema/Configs',
       icon: icons.BarChartOutlined,
       breadcrumbs: true
-    },
-    {
-      id: 'text2SQL',
-      title: 'TAFSIRI',
-      type: 'item',
-      url: '/text2sql',
-      icon: icons.ExperimentOutlined,
-      breadcrumbs: true
     }
   ]
 };

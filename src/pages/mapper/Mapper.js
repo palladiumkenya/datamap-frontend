@@ -51,8 +51,8 @@ const Mapper = () => {
                             aria-labelledby="demo-radio-buttons-group-label"
                             name="radio-buttons-group" onChange={handleMethodChange}
                         >
-                            <FormControlLabel value="dbschema" control={<Radio id="useDbSchema"/>} label="Use Source DB Schema" />
-                            <FormControlLabel value="query" control={<Radio id="useQuery" />} label="Use Custom Query" />
+                            <FormControlLabel value="dbschema" control={<Radio id="useDbSchema"/>} label="Map from source DB schema" />
+                            <FormControlLabel value="query" control={<Radio id="useQuery" />} label="Generate mapping from query" />
                         </RadioGroup>
                     </Stack>
                 </Grid>

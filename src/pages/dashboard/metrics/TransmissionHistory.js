@@ -70,10 +70,10 @@ const TransmissionHistory = () =>{
                                 <ListItemText primary={<Typography variant="subtitle1">{historicalData.action}</Typography>} secondary="Action" />
                             </TableCell>
                             <TableCell>
-                                <ListItemText primary={<Typography variant="subtitle1">{moment(historicalData.created_at).format('LL')}</Typography>} secondary="Started" />
+                                <ListItemText primary={<Typography variant="subtitle1">{moment(historicalData.created_at).format('LL')}</Typography>} secondary="On Date" />
                             </TableCell>
                             <TableCell>
-                                <ListItemText primary={<Typography variant="subtitle1">{moment(historicalData.created_at).fromNow()}</Typography>} secondary="Days Ago" />
+                                <ListItemText primary={<Typography variant="subtitle1">{moment(historicalData.created_at).fromNow()}</Typography>} secondary={"Last "+ historicalData.action} />
                             </TableCell>
                             </TableRow>
                     ) )
