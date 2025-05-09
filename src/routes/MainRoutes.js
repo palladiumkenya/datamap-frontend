@@ -8,14 +8,7 @@ import RepoConfigs from "../pages/mapper/RepoConfigs";
 // render - dashboard
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
 
-// render - sample page
-const SamplePage = Loadable(lazy(() => import('pages/extra-pages/SamplePage')));
-
 // render - utilities
-const Typography = Loadable(lazy(() => import('pages/components-overview/Typography')));
-const Color = Loadable(lazy(() => import('pages/components-overview/Color')));
-const Shadow = Loadable(lazy(() => import('pages/components-overview/Shadow')));
-const AntIcons = Loadable(lazy(() => import('pages/components-overview/AntIcons')));
 const Configs = Loadable(lazy(() => import('pages/configs/Configs')));
 const USLConfigs = Loadable(lazy(() => import('pages/configs/USL/USLConfigs')));
 const SchedulesConfigs = Loadable(lazy(() => import('pages/configs/Schedules/SchedulesConfigs')));
@@ -27,7 +20,6 @@ const EditConfig = Loadable(lazy(() => import('pages/configs/DataAccess/UpdateCo
 // const Indicators = Loadable(lazy(() => import('pages/indicator-selection/Indicators')));
 const DataExtraction = Loadable(lazy(() => import('pages/data-extraction/DataExtraction')));
 const DataDictionary = Loadable(lazy(() => import('pages/data-dictionary/DicitionarySync/DataDictionary')));
-// const DictionaryConfigs = Loadable(lazy(() => import('pages/indicator-selection/DictionaryConfigs')));
 const AddDataDictionary = Loadable(lazy(() => import('pages/data-dictionary/UniversalDictionary/AddDataDictionary')));
 const ViewDataDictionary = Loadable(lazy(() => import('pages/data-dictionary/DicitionarySync/ViewDataDictionary')));
 const Selector = Loadable(lazy(() => import('pages/mapper/Mapper')));
@@ -47,10 +39,6 @@ const MainRoutes = {
     {
       path: '/',
       element: <DashboardDefault />
-    },
-    {
-      path: 'color',
-      element: <Color />
     },
     {
       path: 'dashboard',
@@ -157,22 +145,6 @@ const MainRoutes = {
 
       ]
     },
-    {
-      path: 'sample-page',
-      element: <SamplePage />
-    },
-    {
-      path: 'shadow',
-      element: <Shadow />
-    },
-    {
-      path: 'typography',
-      element: <Typography />
-    },
-    {
-      path: 'icons/ant',
-      element: <AntIcons />
-    }
   ]
 };
 
