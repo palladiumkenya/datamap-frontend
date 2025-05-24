@@ -24,6 +24,7 @@ const DataExtraction = ({baseRepo}) =>{
 
     const [progress, setProgress] = useState(null);
     const [socket, setSocket] = useState(null);
+    const [sendDataSocket, setSendDataSocket] = useState(null);
 
     const [dataLoadedCount, setDataLoadedCount] = useState(null);
     const [loadProgressSocket, setProgressSocket] = useState(null);
@@ -166,7 +167,7 @@ const DataExtraction = ({baseRepo}) =>{
             setLoadMessage("Sending completed");
         };
 
-        setSocket(newSocket);
+        setSendDataSocket(newSocket);
     }
 
 
@@ -245,8 +246,12 @@ const DataExtraction = ({baseRepo}) =>{
             if (socket) {
                 socket.close();
             }
+            if (sendDataSocket) {
+                sendDataSocket.close();
+            }
+
         };
-    }, [socket]);
+    }, [socket, sendDataSocket]);
 
 
 
